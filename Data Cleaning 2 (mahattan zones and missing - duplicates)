@@ -1,0 +1,40 @@
+import pandas as pd
+import os
+
+# Define the file path
+csv_file_path = "C:/Users/MSI-Pc/Desktop/2019 TLC data/selected_2019data.csv"
+
+# Define Manhattan zones
+manhattan_zones = [262, 261, 249, 246, 244, 243, 263, 238, 237, 236, 234, 233, 232, 239, 231, 230, 229, 224, 211, 209, 202, 194, 186, 166, 170, 164, 163, 162, 161, 158, 153, 148, 144, 143, 152, 142, 141, 137, 140, 151, 128, 127, 120, 116, 114, 113, 107, 103, 100, 125, 90, 88, 87, 75, 74, 79, 68, 50, 48, 43, 42, 45, 41, 13, 12, 24, 4]
+
+# Load the dataset
+df = pd.read_csv(csv_file_path, low_memory=False)
+
+# Print the initial number of rows
+print("Initial number of rows: ", len(df))
+
+# Drop rows where neither the pickup or dropoff location is in Manhattan
+df = df[(df['PULocationID'].isin(manhattan_zones)) | (df['DOLocationID'].isin(manhattan_zones))]
+
+# Calculate the number of rows dropped
+rows_dropped = len(df) - len(df.drop_duplicates())
+print("Number of rows dropped: ", rows_dropped)
+
+# Drop duplicates
+df = df.drop_duplicates()
+
+# Calculate the number of rows dropped due to missing values
+rows_dropped_missing = len(df) - len(df.dropna())
+print("Number of rows dropped due to missing values: ", rows_dropped_missing)
+
+# Drop rows with missing values
+df = df.dropna()
+
+# Print the final number of rows
+print("Final number of rows: ", len(df))
+
+# Specify the output CSV file path
+output_csv_path = "C:/Users/MSI-Pc/Desktop/2019 TLC data/selected_2019data_clean1.csv"
+
+# Write the cleaned DataFrame to a new CSV file
+df.to_csv(output_csv_path, index=False)
