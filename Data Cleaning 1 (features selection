@@ -1,0 +1,28 @@
+import os
+import pandas as pd
+
+# Define the file path
+csv_file_path = 'C:/Users/MSI-Pc/Desktop/2019 TLC data/2019_Yellow_Taxi_Trip_Data.csv'
+
+# Use 'low_memory=False' to avoid dtype warning due to the size of the dataset
+df = pd.read_csv(csv_file_path, low_memory=False)
+
+# Define the desired columns
+selected_columns = [
+    'tpep_pickup_datetime',
+    'tpep_dropoff_datetime',
+    'passenger_count',
+    'PULocationID',
+    'DOLocationID',
+    'trip_distance',
+]
+
+# Drop the unwanted columns
+unwanted_columns = set(df.columns) - set(selected_columns)
+df = df.drop(columns=unwanted_columns)
+
+# Specify the output CSV file path
+output_csv_path = 'C:/Users/MSI-Pc/Desktop/2019 TLC data/selected_2019data.csv'
+
+# Write the selected data to the new CSV file
+df.to_csv(output_csv_path, index=False)
