@@ -1,0 +1,33 @@
+// Login.scss
+
+.login-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-top: 230px;
+
+}
+
+.login-content {
+  text-align: center;
+  transform: scale(1.2); /* 调整缩放比例 */
+}
+
+.login-title {
+  font-size: 24px;
+  font-weight: bold;
+  margin-bottom: 30px;
+
+  transform: scale(1.5); /* 调整缩放比例 */
+}
+
+
+.login-form {
+  width: 300px;
+}
+
+/* 可选：居中对齐表单元素 */
+.login-form-item {
+  display: flex;
+  justify-content: center;
+}

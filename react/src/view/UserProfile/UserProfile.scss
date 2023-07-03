@@ -1,0 +1,62 @@
+// User Information
+.user-information {
+  display: flex;
+  align-items: center;
+  height: 100%;
+
+  .avatar {
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+  }
+
+  .user-details {
+    margin-left: 20px;
+
+    .username {
+      font-size: 18px;
+      font-weight: bold;
+    }
+
+    .email {
+      color: #888;
+    }
+
+    .info-item {
+      margin-bottom: 10px;
+    }
+  }
+}
+
+// Saved Places
+.saved-places {
+  height: 100%;
+
+  .place-card {
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    margin-bottom: 10px;
+  }
+}
+
+// Browsing History
+.browsing-history {
+  height: 100%;
+
+  .page-card {
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    margin-bottom: 10px;
+  }
+}
+
+// Settings
+.settings {
+  height: 100%;
+
+  .setting-item {
+    margin-bottom: 10px;
+  }
+}
