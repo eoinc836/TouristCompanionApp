@@ -1,56 +1,61 @@
-import React, { useEffect } from "react";
-import { Form, Input, Button } from "antd";
-import { useNavigate } from "react-router-dom";
-import PubSub from "pubsub-js";
+import React from 'react';
+import { LockOutlined, UserOutlined } from '@ant-design/icons';
+import { Button, Checkbox, Form, Input } from 'antd';
+import './Login.scss';
 
-import "./Login.scss";
-export default function Login() {
-  useEffect(() => {
-    PubSub.publish("getData", { title1: "Login", title2: "Regsiter" });
-  }, []);
-  const navigate = useNavigate();
-  const onFinish = () => {
-    navigate("/");
+import { Link } from 'react-router-dom'; // Import the Link component from react-router-dom
+
+const App: React.FC = () => {
+  const onFinish = (values: any) => {
+    console.log('Received values of form: ', values);
   };
 
   return (
-    <div className="Login">
-      <div className="left">
-        <Form name="basic" onFinish={onFinish} autoComplete="off">
+    <div className="login-container">
+      <div className="login-content">
+        <h1 className="login-title">BusyBuddy</h1>
+        <Form
+          name="normal_login"
+          className="login-form"
+          initialValues={{ remember: true }}
+          onFinish={onFinish}
+        >
           <Form.Item
-            labelCol={{ span: 8 }}
-            label="Name"
-            name="Name"
-            rules={[{ required: true, message: "Please input your username!" }]}
+            name="username"
+            rules={[{ required: true, message: 'Please input your Username!' }]}
           >
-            <Input />
+            <Input prefix={<UserOutlined className="site-form-item-icon" />} placeholder="Username" />
           </Form.Item>
           <Form.Item
-            labelCol={{ span: 8 }}
-            label="Email"
-            name="Email"
-            rules={[{ required: true, message: "Please input your Email!" }]}
+            name="password"
+            rules={[{ required: true, message: 'Please input your Password!' }]}
           >
-            <Input />
+            <Input
+              prefix={<LockOutlined className="site-form-item-icon" />}
+              type="password"
+              placeholder="Password"
+            />
           </Form.Item>
-          <Form.Item
-            labelCol={{ span: 8 }}
-            label="Password"
-            name="Password"
-            rules={[{ required: true, message: "Please input your password!" }]}
-          >
-            <Input.Password />
+          <Form.Item>
+            <Form.Item name="remember" valuePropName="checked" noStyle>
+              <Checkbox>Remember me</Checkbox>
+            </Form.Item>
+
+            <a className="login-form-forgot" href="">
+              Forgot password
+            </a>
           </Form.Item>
-          <Form.Item wrapperCol={{ offset: 8, span: 16 }}>
-            <Button type="primary" htmlType="submit">
-              Sign up
+
+          <Form.Item>
+            <Button type="primary" htmlType="submit" className="login-form-button">
+              Log in
             </Button>
+            Or <Link to="/register">register now!</Link> {/* Replace <a href=""> with <Link to="/register"> */}
           </Form.Item>
         </Form>
       </div>
-      <div className="right">
-        <img src={require("../../assets/login.jpg")} alt="" />
-      </div>
     </div>
   );
-}
+};
+
+export default App;

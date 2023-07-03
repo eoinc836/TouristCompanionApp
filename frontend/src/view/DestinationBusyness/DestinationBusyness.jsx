@@ -3,12 +3,15 @@ import { Form, Input, Button } from "antd";
 import * as echarts from "echarts";
 import "./DestinationBusyness.scss";
 import PubSub from 'pubsub-js'
+
 export default function DestinationBusyness() {
   useEffect(() => {
-    PubSub.publish("getData", {title1:'Destination',title2:'Busyness'});
+    PubSub.publish("getData", { title1: 'Destination', title2: 'Busyness' });
   }, []);
+
   const chartsNode = useRef(null);
   const [search, setSearch] = useState(false);
+
   const onFinish = () => {
     setSearch(true);
     const option = {
@@ -33,13 +36,14 @@ export default function DestinationBusyness() {
     const mayCharts = chartsNode.current && echarts.init(chartsNode.current);
     mayCharts && mayCharts.setOption(option);
   };
+
   return (
     <div className="DestinationBusyness">
       {search ? (
         <div className="bottom">
           <div className="desc">
-            <div>Destination:'123'</div>
-            <div>Time:'22121'</div>
+            <div>Destination: '123'</div>
+            <div>Time: '22121'</div>
           </div>
 
           <div className="Echart" ref={chartsNode}></div>
@@ -49,11 +53,9 @@ export default function DestinationBusyness() {
           <Form name="basic" onFinish={onFinish} autoComplete="off">
             <Form.Item
               labelCol={{ span: 2 }}
-              label="Destination "
-              name="Destination "
-              rules={[
-                { required: true, message: "Please input your username!" },
-              ]}
+              label="Destination"
+              name="Destination"
+              rules={[{ required: true, message: "Please input your destination!" }]}
             >
               <Input />
             </Form.Item>
@@ -61,7 +63,7 @@ export default function DestinationBusyness() {
               labelCol={{ span: 2 }}
               label="Time"
               name="Time"
-              rules={[{ required: true, message: "Please input your Email!" }]}
+              rules={[{ required: true, message: "Please input the time!" }]}
             >
               <Input />
             </Form.Item>

@@ -1,51 +1,76 @@
-import React, { useState, useEffect } from "react";
-import { Form, Input, Button } from "antd";
-import { useNavigate } from "react-router-dom";
+import React, { useState } from 'react';
+import { Layout, Popover, Form, Input, Button } from 'antd';
+import { GoogleMap, LoadScript } from '@react-google-maps/api';
 import "./Map.scss";
-import PubSub from "pubsub-js";
+const { Content } = Layout;
 
-export default function Map() {
-  useEffect(() => {
-    PubSub.publish("getData", { title1: "Map", title2: "Page" });
-  }, []);
-  const navigate = useNavigate();
-  const onFinish = () => {
-    navigate("/");
+const containerStyle = {
+  width: '100%',
+  height: '100vh',
+};
+
+const center = {
+  lat: 51.5074,
+  lng: -0.1278,
+};
+
+const MapWithSidebar = () => {
+  const [popoverVisible, setPopoverVisible] = useState(false);
+
+  const onFinish = (values) => {
+    console.log('Form values:', values);
+    setPopoverVisible(false); // Hide the popover after submitting the form
   };
-  return (
-    <div className="Map">
-      <div className="left">
-        <Form name="basic" onFinish={onFinish} autoComplete="off">
-          <Form.Item
-            labelCol={{ span: 8 }}
-            label="Departure "
-            name="Departure "
-            rules={[
-              { required: true, message: "Please input your Departure !" },
-            ]}
-          >
-            <Input />
-          </Form.Item>
-          <Form.Item
-            labelCol={{ span: 8 }}
-            label="Destination "
-            name="Destination "
-            rules={[
-              { required: true, message: "Please input your Destination !" },
-            ]}
-          >
-            <Input />
-          </Form.Item>
-          <Form.Item wrapperCol={{ offset: 8, span: 16 }}>
-            <Button type="primary" htmlType="submit">
-              Search
-            </Button>
-          </Form.Item>
-        </Form>
-      </div>
-      <div className="right">
-        <img src={require("../../assets/login.jpg")} alt="" />
-      </div>
-    </div>
+
+  const handlePopoverVisibleChange = (visible) => {
+    setPopoverVisible(visible);
+  };
+
+  const content = (
+    <Form name="basic" onFinish={onFinish} autoComplete="off">
+      <Form.Item
+        label="Departure"
+        name="Departure"
+        rules={[{ required: true, message: 'Please input your Departure!' }]}
+      >
+        <Input />
+      </Form.Item>
+      <Form.Item
+        label="Destination"
+        name="Destination"
+        rules={[{ required: true, message: 'Please input your Destination!' }]}
+      >
+        <Input />
+      </Form.Item>
+      <Form.Item>
+        <Button type="primary" htmlType="submit">
+          Search
+        </Button>
+      </Form.Item>
+    </Form>
   );
-}
+
+  return (
+    <Layout>
+      <Content>
+        <LoadScript googleMapsApiKey="AIzaSyCNSp3z6NakRpJX2H_OAUGAs-HIaqc4WbE">
+          <GoogleMap mapContainerStyle={containerStyle} center={center} zoom={10} />
+        </LoadScript>
+        <Popover
+          content={content}
+          visible={popoverVisible}
+          onVisibleChange={handlePopoverVisibleChange}
+          title="Search"
+          trigger="click"
+          placement="bottom"
+        >
+          <Button type="primary" style={{ position: 'absolute', top: 20, left: 20 }}>
+            Open Search
+          </Button>
+        </Popover>
+      </Content>
+    </Layout>
+  );
+};
+
+export default MapWithSidebar;
