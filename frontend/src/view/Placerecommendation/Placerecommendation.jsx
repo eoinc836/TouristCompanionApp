@@ -129,7 +129,7 @@ const treeData = [
   },
 ];
 
-const Placerecommenclation = () => {
+const Placerecommendation = () => {
   return (
     <div>
       <div className="search-bar">
@@ -145,7 +145,7 @@ const Placerecommenclation = () => {
             style={{ padding: '20px' }}
           />
         </Sider>
-        <Content className="placerecommenclation">
+        <Content className="placerecommendation">
           <Title level={4} className="title">
             Recommendations
           </Title>
@@ -162,4 +162,4 @@ const Placerecommenclation = () => {
     </div>
   );
 };
-export default Placerecommenclation;
+export default Placerecommendation;

@@ -27,7 +27,7 @@ export default function Header() {
 
       <div className="menu">
         <Link to={"/home"}>Home</Link>
-        <Link to={"/placerecommenclation"}>Place recommenclation</Link>
+        <Link to={"/placerecommendation"}>Place recommenclation</Link>
         <Link to={"/destinationBusyness"}>Destination Busyness</Link>
         <Link to={"/map"}>Map Page</Link>
         <Link to={"/login"}>Login</Link>
