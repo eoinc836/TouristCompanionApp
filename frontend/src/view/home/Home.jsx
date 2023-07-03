@@ -1,4 +1,5 @@
 import React, { useEffect } from "react";
+import { Link } from 'react-router-dom';
 import { Button } from "antd";
 import "./Home.scss";
 import PubSub from "pubsub-js";
@@ -69,17 +70,7 @@ export default function Home() {
         <p>BusyBuddy? Dive right in!</p>
       </div>
 
-      <Button
-        style={{
-          backgroundColor: "#fbf6d7",
-          color: "#000",
-          borderColor: "#fbf6d7",
-          marginRight: "10px",
-          marginTop: "50px",
-        }}
-      >
-        Explore Now
-      </Button>
+
       <Button
         style={{
           backgroundColor: "#eebf9f",
@@ -89,7 +80,7 @@ export default function Home() {
           marginTop: "50px",
         }}
       >
-        Join Us
+        <Link to="/register">Join Us</Link>
       </Button>
 
       <footer>2023</footer>

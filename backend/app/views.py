@@ -8,6 +8,9 @@ class UserView(generics.CreateAPIView):
     queryset = User.objects.all()
     serializer_class = UserSerializer
 
-def front(request):
-    context = { }
-    return render(request, "index.html", context)   
+def index(request):
+    return render(request, "index.html")   
+
+def register(request):
+    pass
+    # return render(request, "index.html")   
