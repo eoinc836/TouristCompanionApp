@@ -34,6 +34,19 @@ def register(request):
                 return JsonResponse({'message': 'User created successfully!'}, status=200)
         else:
             return JsonResponse({'message': 'Passwords do not match!'}, status=400)
+
+def login(request):
+    if request.method == 'POST':
+        data = json.loads(request.body)
+        username = data.get('username')
+        password = data.get('password')
+        user = authenticate(request, username=username, password=password)
+        if user is not None:
+            return JsonResponse({'message': 'Logged in successfully!'})
+        else:
+            return JsonResponse({'message': 'Invalid credentials!'})
+    else:
+        return JsonResponse({'message': 'Invalid request method!'})
         
 def logout(request):
     logout(request)

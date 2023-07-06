@@ -5,10 +5,32 @@ import './Login.scss';
 
 import { Link } from 'react-router-dom'; // Import the Link component from react-router-dom
 
+var csrftoken = getCookie('csrftoken');
+
 const App: React.FC = () => {
-  const onFinish = (values: any) => {
-    console.log('Received values of form: ', values);
-  };
+  const [form] = Form.useForm();
+
+  const onFinish = (values) => {
+  console.log('Received values of form:', values);
+  fetch('/api/login', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'X-CSRFToken': csrftoken
+    },
+    body: JSON.stringify(values),
+  })
+    .then((response) => response.json())
+    .then((data) => {
+      // Handle response data if needed
+      console.log('Response:', data);
+    })
+    .catch((error) => {
+      // Handle error if needed
+      console.error('Error:', error);
+    });
+
+  }
 
   return (
     <div className="login-container">
@@ -57,5 +79,22 @@ const App: React.FC = () => {
     </div>
   );
 };
+
+function getCookie(name) {
+  let cookieValue = null;
+  if (document.cookie && document.cookie !== '') {
+      const cookies = document.cookie.split(';');
+      for (let i = 0; i < cookies.length; i++) {
+          const cookie = cookies[i].trim();
+          // Does this cookie string begin with the name we want?
+          if (cookie.substring(0, name.length + 1) === (name + '=')) {
+              cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+              break;
+          }
+      }
+  }
+  return cookieValue;
+}
+
 
 export default App;
