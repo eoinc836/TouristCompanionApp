@@ -1,13 +1,33 @@
-import React from 'react';
-import { LockOutlined, UserOutlined } from '@ant-design/icons';
-import { Button, Checkbox, Form, Input } from 'antd';
-import './Login.scss';
+import React from "react";
+import { LockOutlined, UserOutlined } from "@ant-design/icons";
+import { Button, Checkbox, Form, Input } from "antd";
+import "./Login.scss";
+import axios from "axios"; // Import the axios library
 
-import { Link } from 'react-router-dom'; // Import the Link component from react-router-dom
+import { Link, useNavigate } from "react-router-dom";
 
-const App: React.FC = () => {
-  const onFinish = (values: any) => {
-    console.log('Received values of form: ', values);
+const Login = () => {
+  const navigate = useNavigate();
+
+  const onFinish = (values) => {
+    console.log("Received values of form: ", values);
+
+    // Send login request to the backend
+    axios
+      .post("/api/login", {
+        username: values.username,
+        password: values.password,
+      })
+      .then((response) => {
+        // Handle successful response
+        console.log("Response:", response.data);
+        // Perform appropriate actions, such as setting user identity information, redirecting to other pages, etc.
+        navigate("../view/home/Home"); // Redirect to '/home' page after successful login
+      })
+      .catch((error) => {
+        // Handle error response
+        console.error("Error:", error);
+      });
   };
 
   return (
@@ -22,13 +42,16 @@ const App: React.FC = () => {
         >
           <Form.Item
             name="username"
-            rules={[{ required: true, message: 'Please input your Username!' }]}
+            rules={[{ required: true, message: "Please input your Username!" }]}
           >
-            <Input prefix={<UserOutlined className="site-form-item-icon" />} placeholder="Username" />
+            <Input
+              prefix={<UserOutlined className="site-form-item-icon" />}
+              placeholder="Username"
+            />
           </Form.Item>
           <Form.Item
             name="password"
-            rules={[{ required: true, message: 'Please input your Password!' }]}
+            rules={[{ required: true, message: "Please input your Password!" }]}
           >
             <Input
               prefix={<LockOutlined className="site-form-item-icon" />}
@@ -38,7 +61,7 @@ const App: React.FC = () => {
           </Form.Item>
           <Form.Item>
             <Form.Item name="remember" valuePropName="checked" noStyle>
-              <Checkbox>Remember me</Checkbox>
+              <Checkbox style={{ color: "#DCD7C9" }}>Remember me</Checkbox>
             </Form.Item>
 
             <a className="login-form-forgot" href="">
@@ -47,10 +70,19 @@ const App: React.FC = () => {
           </Form.Item>
 
           <Form.Item>
-            <Button type="primary" htmlType="submit" className="login-form-button">
+            <Button
+              type="primary"
+              htmlType="submit"
+              className="login-form-button"
+            >
               Log in
             </Button>
-            Or <Link to="/register">register now!</Link> {/* Replace <a href=""> with <Link to="/register"> */}
+            <span className="login-form-or" style={{ color: "#DCD7C9" }}>
+              Or{" "}
+              <Link to="/register" style={{ color: "#DCD7C9" }}>
+                register now!
+              </Link>
+            </span>
           </Form.Item>
         </Form>
       </div>
@@ -58,4 +90,4 @@ const App: React.FC = () => {
   );
 };
 
-export default App;
+export default Login;

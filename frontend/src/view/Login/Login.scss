@@ -4,30 +4,54 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  margin-top: 230px;
-
+  height: 100vh;
+  background-color: #2C3639;
 }
 
 .login-content {
   text-align: center;
-  transform: scale(1.2); /* 调整缩放比例 */
 }
 
 .login-title {
-  font-size: 24px;
+  font-size: 40px;
   font-weight: bold;
-  margin-bottom: 30px;
-
-  transform: scale(1.5); /* 调整缩放比例 */
+  margin-bottom: 25px;
+  color: #DCD7C9; /* Change the color of the title */
 }
-
 
 .login-form {
-  width: 300px;
+  width: 400px;
+  margin-top: 20px;
 }
 
-/* 可选：居中对齐表单元素 */
-.login-form-item {
-  display: flex;
-  justify-content: center;
+.site-form-item-icon {
+  color: rgba(0, 0, 0, 0.25);
+}
+
+.login-form-button {
+  width: 100%;
+  background-color: #1890ff;
+  border-color: #1890ff;
+  color: #DCD7C9; /* Change the color of the login button */
+}
+
+.login-form-button:hover,
+.login-form-button:active,
+.login-form-button:focus,
+.login-form-button:visited {
+  background-color: #40a9ff;
+  border-color: #40a9ff;
+  color: #DCD7C9; /* Change the color of the login button on different states */
+}
+
+.login-form-forgot {
+  float: right;
+  color: #DCD7C9 !important; /* Change the color of "Forgot password" */
+}
+
+.login-form-forgot:hover,
+.login-form-forgot:active,
+.login-form-forgot:focus,
+.login-form-forgot:visited {
+  color: #DCD7C9 !important; /* Change the color of the "Forgot password" on different states */
 }
