@@ -4,7 +4,7 @@ from django.contrib.auth.models import User
 from django.contrib.auth import authenticate, logout
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
-from .utils import is_us_holiday, model
+from .utils import is_us_holiday, model, zones
 import pandas as pd
 import json
 import datetime
@@ -49,20 +49,17 @@ def logout(request):
     logout(request)
     return JsonResponse({'message': 'Logout successful!'})
 
-@csrf_exempt
 def predict(request):
-# zone busyness    
-    zone = request.POST['zone']
-    hour = request.POST['hour']
-    month = request.POST['month']
-    day_of_month = request.POST['day_of_month']
+    hour = request.GET['hour']
+    month = request.GET['month']
+    day_of_month = request.GET['day_of_month']
     day_of_week = datetime.date(2023, int(month), int(day_of_month)).weekday()
     is_weekend = int(day_of_week in [5, 6])
     is_holiday = is_us_holiday(f"2023-{str(month).zfill(2)}-{str(day_of_month).zfill(2)}")
-    X = pd.DataFrame([{'zone': zone, 'hour': hour, 'day_of_week': day_of_week,
+    predictions = {}
+    for zone in zones:
+        X = pd.DataFrame([{'zone': zone, 'hour': hour, 'day_of_week': day_of_week,
                        'is_weekend': is_weekend, 'is_holiday': is_holiday, 'month': month}])
-    busyness = model.predict(X)
-    return HttpResponse(busyness[0])
-
-# besttime busyness
-# insert code
+        busyness = model.predict(X)
+        predictions[zone] = busyness[0]
+    return HttpResponse(json.dumps(predictions))
