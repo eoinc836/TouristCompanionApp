@@ -1,58 +1,78 @@
-.map-page {
+.map-container {
   display: flex;
-  flex-direction: column;
+  flex-wrap: wrap;
   height: 100vh;
+  background-color: #2C3639;
+  color: #DCD7C9;
+}
+.sidebar {
+  // Add spacing around the sidebar
+  padding: 20px;
 
-  .drawer-buttons {
-    margin: 20px 0;
-  }
 
-  .left-drawer {
-    &.show {
-      transform: translateX(0);
-    }
+  .search-bar {
+    margin-bottom: 20px;
 
-    .offcanvas-header {
-      background-color: #DCD7C9;
-    }
-
-    .offcanvas-body {
-      background-color: #DCD7C9;
-      padding: 20px;
-    }
-  }
-
-  .right-drawer {
-    &.show {
-      transform: translateX(0);
-    }
-
-    .offcanvas-header {
-      background-color: #DCD7C9;
-    }
-
-    .offcanvas-body {
-      background-color: #DCD7C9;
-      padding: 20px;
+    // Increase Autocomplete input size
+    input {
+      width: 100%;
+      padding: 10px;
+      font-size: 16px;
     }
   }
 
-  #Map {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100vh;
+  .time-configuration {
+    margin-bottom: 30px;
+
+    // Increase DatePicker size
+    .ant-picker {
+      width: 100%;
+    }
+  }
+
+  .filter-section {
+    margin-bottom: 25px;
+
+    .filter-option {
+      // Increase Dropdown menu font size
+      .ant-dropdown-link {
+        font-size: 16px;
+      }
+    }
+  }
+
+  .search-button-container {
+    // Increase search button font size
+    button {
+      font-size: 16px;
+
+    }
   }
 }
 
-@media screen and (max-width: 576px) {
-  .map-page {
-    .left-drawer,
-    .right-drawer {
-      &.show {
-        transform: translateY(0);
-      }
-    }
+
+.map {
+  width: 80%;
+}
+
+
+@media (max-width: 768px) {
+  .map-container {
+    flex-direction: column;
+  }
+
+  .sidebar,
+  .map {
+    width: 100%;
+  }
+}
+
+@media (max-width: 768px) and (orientation: landscape) {
+  .map {
+    width: 60%;
+  }
+
+  .drawer {
+    width: 20%;
   }
 }
