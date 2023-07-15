@@ -1,15 +1,20 @@
 {
   "files": {
-    "main.css": "/static/css/main.7adab75b.css",
-    "main.js": "/static/js/main.c5b834b1.js",
-    "static/media/2.png": "/static/media/2.4e421ce6f7c5bcbef972.png",
-    "static/media/1.png": "/static/media/1.33838e8e174817dc2d44.png",
+    "main.css": "/static/css/main.351c4096.css",
+    "main.js": "/static/js/main.63a0779b.js",
+    "static/media/manhattancity.jpg": "/static/media/manhattancity.a2ca336a55fa87cd0206.jpg",
+    "static/media/manhattan3.jpg": "/static/media/manhattan3.115e8d91706189357dd6.jpg",
+    "static/media/manhattan1.jpg": "/static/media/manhattan1.25d773ca7904acd3b3e0.jpg",
+    "static/media/manhattanculture.jpg": "/static/media/manhattanculture.85318ad2effeb7ea1242.jpg",
+    "static/media/manhattanfood.jpg": "/static/media/manhattanfood.c824c3af7cfe27100b26.jpg",
+    "static/media/manhattan2.jpg": "/static/media/manhattan2.769ba7bf4f5d14946437.jpg",
+    "static/media/login.jpg": "/static/media/login.1532bec37230fdb81de5.jpg",
     "index.html": "/index.html",
-    "main.7adab75b.css.map": "/static/css/main.7adab75b.css.map",
-    "main.c5b834b1.js.map": "/static/js/main.c5b834b1.js.map"
+    "main.351c4096.css.map": "/static/css/main.351c4096.css.map",
+    "main.63a0779b.js.map": "/static/js/main.63a0779b.js.map"
   },
   "entrypoints": [
-    "static/css/main.7adab75b.css",
-    "static/js/main.c5b834b1.js"
+    "static/css/main.351c4096.css",
+    "static/js/main.63a0779b.js"
   ]
 }

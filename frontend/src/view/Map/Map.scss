@@ -1,14 +1,18 @@
+
 .map-container {
   display: flex;
-  flex-wrap: wrap;
   height: 100vh;
   background-color: #2C3639;
   color: #DCD7C9;
 }
-.sidebar {
-  // Add spacing around the sidebar
-  padding: 20px;
 
+.sidebar {
+  width: 300px;
+  padding: 20px;
+  background-color: #2C3639;
+  color: #DCD7C9;
+  transition: width 0.3s;
+}
 
   .search-bar {
     margin-bottom: 20px;
@@ -24,6 +28,7 @@
   .time-configuration {
     margin-bottom: 30px;
 
+
     // Increase DatePicker size
     .ant-picker {
       width: 100%;
@@ -31,10 +36,10 @@
   }
 
   .filter-section {
-    margin-bottom: 25px;
+    margin-bottom: 30px;
 
     .filter-option {
-      // Increase Dropdown menu font size
+       font-size: 16px;
       .ant-dropdown-link {
         font-size: 16px;
       }
@@ -44,17 +49,20 @@
   .search-button-container {
     // Increase search button font size
     button {
-      font-size: 16px;
+      font-size: 18px;
 
     }
   }
-}
+
+
+
 
 
 .map {
-  width: 80%;
+  flex: 1;
+  background-color: #2C3639;
+  transition: flex 0.3s;
 }
-
 
 @media (max-width: 768px) {
   .map-container {
@@ -65,14 +73,24 @@
   .map {
     width: 100%;
   }
-}
 
-@media (max-width: 768px) and (orientation: landscape) {
-  .map {
-    width: 60%;
+  .sidebar {
+    position: absolute;
+    left: -300px;
+    z-index: 10;
+    transition: left 0.3s;
   }
 
-  .drawer {
-    width: 20%;
+  .map {
+    margin-left: 0;
+    transition: margin-left 0.3s;
+  }
+
+  .map-container.open-drawer .sidebar {
+    left: 0;
+  }
+
+  .map-container.open-drawer .map {
+    margin-left: 300px;
   }
 }
