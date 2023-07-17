@@ -9,6 +9,7 @@ import pandas as pd
 import json
 import datetime
 
+
 def index(request):
     return render(request, "index.html")   
 
@@ -63,3 +64,8 @@ def predict(request):
         busyness = model.predict(X)
         predictions[zone] = busyness[0]
     return HttpResponse(json.dumps(predictions))
+
+
+
+
+
