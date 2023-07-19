@@ -5,6 +5,8 @@ from django.contrib.auth import authenticate, logout
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 from .utils import is_us_holiday, model, zones
+
+import os
 import pandas as pd
 import json
 import datetime
@@ -63,3 +65,9 @@ def predict(request):
         busyness = model.predict(X)
         predictions[zone] = busyness[0]
     return HttpResponse(json.dumps(predictions))
+
+def geoJson(request):
+    file_path = os.path.join(os.path.dirname(os.path.dirname(__file__)), 'modeling', 'NYC Taxi Zones.geojson')
+    with open(file_path) as file:
+        data = json.load(file)
+    return JsonResponse(data)

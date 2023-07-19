@@ -1,8 +1,8 @@
 import React, { useEffect, useState, useRef } from "react";
-import { GoogleMap, Marker, InfoWindow } from "@react-google-maps/api";
+import { GoogleMap, Marker, InfoWindow, Polygon, Data  } from "@react-google-maps/api";
 import { useLoadScript } from "@react-google-maps/api";
 import { Drawer, Switch, Button, Cascader, DatePicker, Select } from "antd";
-import moment from "moment";
+
 import axios from "axios";
 import { Autocomplete } from "@react-google-maps/api";
 import "antd/dist/antd.css";
@@ -112,60 +112,130 @@ const tourStops = [
     placeId: "ChIJPbfh-GFZwokRY7R5SP6jN8Q",
   },
 ];
-
-const BusyIndicator = () => {
-  const busyColor = "crimson";
-  const moderateColor = "yellow";
-  const quietColor = "green";
+const BusyLegend = () => {
+  const getColor = (busyness) => {
+    if (busyness <= 28) {
+      return "#008000"; // Deep Green for very low busyness
+    } else if (busyness <= 138) {
+      return "#ADFF2F"; // Green Yellow for low busyness
+    } else if (busyness <= 536) {
+      return "#FFFF00"; // Yellow for medium busyness
+    } else if (busyness <= 15000) {
+      return "#FFA500"; // Orange for high busyness
+    } else {
+      return "#FF0000"; // Deep Red for very high busyness
+    }
+  };
 
   return (
-    <div>
+    <div
+      className="busy-legend"
+      style={{
+        position: "absolute",
+        top: "10px",
+        left: "10px",
+        backgroundColor: "white",
+        padding: "10px",
+        borderRadius: "5px",
+        display: "flex",
+        alignItems: "center",
+        color: "black",
+      }}
+    >
       <div
         style={{
-          position: "absolute",
-          top: "10px",
-          left: "10px",
-          backgroundColor: "white",
-          padding: "10px",
-          borderRadius: "5px",
           display: "flex",
           alignItems: "center",
-          color: "black",
+          marginRight: "10px",
         }}
       >
         <div
+          className="legend-color"
           style={{
+            backgroundColor: getColor(28),
             width: "20px",
             height: "20px",
             marginRight: "5px",
-            backgroundColor: busyColor,
           }}
-        />
-        <span>Busy</span>
+        ></div>
+        <span>Very Low</span>
+      </div>
+      <div
+        style={{
+          display: "flex",
+          alignItems: "center",
+          marginRight: "10px",
+        }}
+      >
         <div
+          className="legend-color"
           style={{
+            backgroundColor: getColor(138),
             width: "20px",
             height: "20px",
-            marginLeft: "10px",
             marginRight: "5px",
-            backgroundColor: moderateColor,
           }}
-        />
-        <span>Moderate</span>
+        ></div>
+        <span>Low</span>
+      </div>
+      <div
+        style={{
+          display: "flex",
+          alignItems: "center",
+          marginRight: "10px",
+        }}
+      >
         <div
+          className="legend-color"
           style={{
+            backgroundColor: getColor(536),
             width: "20px",
             height: "20px",
-            marginLeft: "10px",
             marginRight: "5px",
-            backgroundColor: quietColor,
           }}
-        />
-        <span>Quiet</span>
+        ></div>
+        <span>Medium</span>
+      </div>
+      <div
+        style={{
+          display: "flex",
+          alignItems: "center",
+          marginRight: "10px",
+        }}
+      >
+        <div
+          className="legend-color"
+          style={{
+            backgroundColor: getColor(15000),
+            width: "20px",
+            height: "20px",
+            marginRight: "5px",
+          }}
+        ></div>
+        <span>High</span>
+      </div>
+      <div
+        style={{
+          display: "flex",
+          alignItems: "center",
+        }}
+      >
+        <div
+          className="legend-color"
+          style={{
+            backgroundColor: getColor(15001),
+            width: "20px",
+            height: "20px",
+            marginRight: "5px",
+          }}
+        ></div>
+        <span>Very High</span>
       </div>
     </div>
   );
 };
+
+const libraries = ["places"];
 
 const Map = () => {
   const mapContainerStyle = {
@@ -182,26 +252,29 @@ const Map = () => {
 
   const { isLoaded, loadError } = useLoadScript({
     googleMapsApiKey: "AIzaSyA-vxxFyGSdqhaGkOwnfGhp-klnkMLRQJA",
-    libraries: ["places"],
+     libraries: libraries,
   });
 
   const [selectedMarker, setSelectedMarker] = useState(null);
   const [drawerVisible, setDrawerVisible] = useState(false);
   const [placeDetails, setPlaceDetails] = useState([]);
   const [currentWeather, setCurrentWeather] = useState(null);
-  const [showPrediction, setShowPrediction] = useState(true);
+ const [predictions, setPredictions] = useState({});
+   const [showPrediction, setShowPrediction] = useState(false);
   const [isMarkerHovered, setMarkerHovered] = useState(null);
   const [userMarkers, setUserMarkers] = useState([]);
   const [shouldRemoveMarkers, setShouldRemoveMarkers] = useState(false);
   const [destination, setDestination] = useState("");
   const [selectedFilters, setSelectedFilters] = useState([]);
-  const [date, setDate] = useState(null);
+  const [selectedTime, setSelectedTime] = useState(null);
+ const [date, setDate] = useState(false);
+  const [jsonData, setJsonData] = useState(null);
   const [searchedPlaces, setSearchedPlaces] = useState([]);
   const [isSearchButtonClicked, setIsSearchButtonClicked] = useState(false);
   const [isMapClicked, setIsMapClicked] = useState(false);
   const [newMarkers, setNewMarkers] = useState([]);
 
-  const format = "HH";
+
 
   const options = [
     {
@@ -348,6 +421,8 @@ const Map = () => {
     setIsMapClicked(true);
   };
 
+
+
   const userMarkerIcons = {
     purple: {
       url: "https://maps.google.com/mapfiles/ms/icons/purple-dot.png",
@@ -362,105 +437,165 @@ const Map = () => {
   const handleDestinationChange = (e) => {
     setDestination(e.target.value);
   };
+const format = 'HH'; // The format for time (e.g., "HH:mm")
+const map = useRef(null); // Reference to the Google Maps instance
+const validZones = [ /* An array of valid zone IDs */ ];
 
-  const handleTimeChange = (time, timeString) => {
-    // Handle time change logic
-    console.log(time, timeString);
+// Function to get the color for a given busyness level
+const getZoneColor = (busyness) => {
+  console.log("Busyness Level:", busyness);
+  if (busyness <= 28) {
+    console.log("Color: Deep Green");
+    return "#008000"; // Deep Green for very low busyness
+  } else if (busyness <= 138) {
+    console.log("Color: Green Yellow");
+    return "#ADFF2F"; // Green Yellow for low busyness
+  } else if (busyness <= 536) {
+    console.log("Color: Yellow");
+    return "#FFFF00"; // Yellow for medium busyness
+  } else if (busyness <= 15000) {
+    console.log("Color: Orange");
+    return "#FFA500"; // Orange for high busyness
+  } else {
+    console.log("Color: Deep Red");
+    return "#FF0000"; // Deep Red for very high busyness
+  }
+};
+
+// Handle time change event
+const handleTimeChange = (time, timeString) => {
+  console.log(time, timeString);
+};
+
+// Handle date change event
+const handleDateChange = (date, dateString) => {
+  setDate(date);
+  console.log(date, dateString);
+};
+
+// Fetch GeoJSON data and update the map
+useEffect(() => {
+  const fetchData = async () => {
+    try {
+      const response = await fetch('http://localhost:8000/api/geoJson');
+      const data = await response.json();
+
+      // Log response details (optional)
+      console.log(response.status);
+      console.log(response.statusText);
+      console.log(response.headers);
+
+      // Log one feature to see its structure (optional)
+      console.log(data.features[0]);
+
+      // Update the state with the fetched data
+      setJsonData(data);
+
+      // Add GeoJSON data to the map
+      if (map.current && map.current.data) {
+        map.current.data.addGeoJson(data);
+        updateMap();
+      }
+    } catch (error) {
+      console.error('Error fetching JSON data:', error);
+    }
   };
 
-  const handleDateChange = (date, dateString) => {
-    setDate(date);
-    console.log(date, dateString);
-  };
+  fetchData();
+}, []);
+
+// Handle API request to get predictions
+const handleApiRequest = () => {
+  if (date) {
+    const hour = date.format(format);
+    const month = date.format('MM');
+    const dayOfMonth = date.format('DD');
+
+    const url = `/api/predict?hour=${hour}&month=${month}&day_of_month=${dayOfMonth}`;
+
+    try {
+      axios
+        .get(url)
+        .then((response) => {
+          const data = response.data;
+          setPredictions(data);
+          setShowPrediction(true);
+          console.log(data);
+
+          // Update the map with predictions
+          updateMap();
+        })
+        .catch((error) => {
+          console.error(error);
+        });
+    } catch (error) {
+      console.error(error);
+    }
+  } else {
+    console.log('Please select a date');
+  }
+};
+
+// Function to update the map with busyness predictions
+const updateMap = () => {
+  if (jsonData && predictions) {
+    map.current.data.forEach((feature) => {
+      const zoneId = parseInt(feature.getProperty('location_id'), 10);
+      const busyness = predictions[zoneId] || 0;
+      const fillColor = getZoneColor(busyness);
+
+      // Override the style of the feature on the map with the new color
+      map.current.data.overrideStyle(feature, {
+        fillColor: fillColor,
+        strokeColor: "#000000",
+        strokeWeight: 1,
+      });
+
+      // Set a custom property 'color' to the feature for further reference
+      feature.setProperty('color', fillColor);
+    });
+
+    // Trigger the map's 'resize' event to update the display
+    window.google.maps.event.trigger(map.current, 'resize');
+  }
+};
+
 
   const handlePlaceSelected = (place) => {
     console.log(place);
     setDestination(place.name);
   };
   const handleSearch = () => {
-    try {
-      setShouldRemoveMarkers(true);
-      setDrawerVisible(true);
-      setIsSearchButtonClicked(true);
+    setShouldRemoveMarkers(true);
+    setDrawerVisible(true);
+    setIsSearchButtonClicked(true);
 
+    setSelectedMarker(null);
 
-      setSelectedMarker(null);
-
-      const searchResults = [
-        { position: { lat: 40.7831, lng: -73.9712 }, title: "Central Park" },
-        { position: { lat: 40.7589, lng: -73.9851 }, title: "Times Square" },
-        {
-          position: { lat: 40.7488, lng: -73.9854 },
-          title: "Empire State Building",
+    const searchResults = [
+      { position: { lat: 40.7831, lng: -73.9712 }, title: "Central Park" },
+      { position: { lat: 40.7589, lng: -73.9851 }, title: "Times Square" },
+      {
+        position: { lat: 40.7488, lng: -73.9854 },
+        title: "Empire State Building",
+      },
+      {
+        position: { lat: 40.7794, lng: -73.9632 },
+        title: "The Metropolitan Museum of Art",
+      },
+    ];
+setSearchedPlaces(searchResults);
+    setNewMarkers(
+      searchResults.map((marker) => ({
+        ...marker,
+        icon: {
+          url: "https://maps.google.com/mapfiles/ms/icons/yellow-dot.png",
+          scaledSize: new window.google.maps.Size(40, 40),
         },
-        {
-          position: { lat: 40.7794, lng: -73.9632 },
-          title: "The Metropolitan Museum of Art",
-        },
-
-      ];
-
-      const resultsWithDetails = Promise.all(
-        searchResults.map((result) =>
-          axios
-            .get(
-              `https://maps.googleapis.com/maps/api/place/details/json?key=AIzaSyA-vxxFyGSdqhaGkOwnfGhp-klnkMLRQJA&place_id=${result.placeId}&fields=name,formatted_address,opening_hours,rating`
-            )
-            .then((response) => {
-              const placeDetails = response.data.result;
-              return {
-                ...result,
-                busyness: "",
-                openingHours:
-                  placeDetails.opening_hours?.weekday_text?.join(", "),
-                generalInfo: "",
-                rating: placeDetails.rating,
-              };
-            })
-            .catch((error) => {
-              console.error(error);
-              return result;
-            })
-        )
-      );
-
-      resultsWithDetails
-        .then((updatedResults) => {
-
-          setSearchedPlaces(updatedResults);
-
-          // Call the backend API "/api/predict"
-          axios
-            .post("/api/predict", {
-              searchResults, // Pass the search results to the backend
-            })
-            .then((response) => {
-              // Handle the API response
-              const data = response.data;
-              console.log(data);
-            })
-            .catch((error) => {
-              console.error(error);
-            });
-        })
-        .catch((error) => {
-          console.error(error);
-        });
-
-
-      setNewMarkers(
-        searchResults.map((marker) => ({
-          ...marker,
-          icon: {
-            url: "https://maps.google.com/mapfiles/ms/icons/yellow-dot.png",
-            scaledSize: new window.google.maps.Size(40, 40),
-          },
-        }))
-      );
-    } catch (error) {
-      console.error(error);
-    }
+      }))
+    );
   };
+
 
   const autocompleteRef = useRef(null);
 
@@ -497,16 +632,18 @@ const Map = () => {
             </Autocomplete>
           )}
         </div>
-        <div className="time-configuration">
-          <h5>Busyness Forecast Calendar</h5>
-          <DatePicker
-            value={date}
-            onChange={handleDateChange}
-            showTime={{ format: format }}
-            format={`YYYY-MM-DD ${format}`}
-            style={{ width: "100%" }}
-          />
-        </div>
+       <div className="time-configuration">
+         <h5>Busyness Forecast Calendar</h5> {/* Display a heading for the time configuration */}
+         <DatePicker
+           value={date} // Set the selected date for the DatePicker
+           onChange={handleDateChange} // Handle the date change event with the specified function
+           onOk={handleApiRequest} // Handle the "OK" button click event with the specified function
+           showTime={{ format: format }} // Display time selector with the specified time format
+           format={`YYYY-MM-DD ${format}`} // Format for displaying the date and time in the DatePicker
+           style={{ width: "100%" }} // Set the width of the DatePicker
+         />
+       </div>
+
         <div className="filter-section">
           <div className="filter-section">
             <Cascader
@@ -532,6 +669,9 @@ const Map = () => {
           zoom={zoom}
           center={center}
           onClick={handleMapClick}
+           ref={map}
+            jsonData={jsonData}
+                  predictions={predictions}
         >
           {currentWeather && (
             <div
@@ -556,7 +696,7 @@ const Map = () => {
               )}
             </div>
           )}
-          <BusyIndicator />
+
           {!shouldRemoveMarkers &&
             tourStops.map(({ position, title, placeId }) => (
               <Marker

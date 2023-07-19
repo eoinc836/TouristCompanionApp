@@ -1,7 +1,7 @@
 {
   "files": {
     "main.css": "/static/css/main.351c4096.css",
-    "main.js": "/static/js/main.63a0779b.js",
+    "main.js": "/static/js/main.0ab15325.js",
     "static/media/manhattancity.jpg": "/static/media/manhattancity.a2ca336a55fa87cd0206.jpg",
     "static/media/manhattan3.jpg": "/static/media/manhattan3.115e8d91706189357dd6.jpg",
     "static/media/manhattan1.jpg": "/static/media/manhattan1.25d773ca7904acd3b3e0.jpg",
@@ -11,10 +11,10 @@
     "static/media/login.jpg": "/static/media/login.1532bec37230fdb81de5.jpg",
     "index.html": "/index.html",
     "main.351c4096.css.map": "/static/css/main.351c4096.css.map",
-    "main.63a0779b.js.map": "/static/js/main.63a0779b.js.map"
+    "main.0ab15325.js.map": "/static/js/main.0ab15325.js.map"
   },
   "entrypoints": [
     "static/css/main.351c4096.css",
-    "static/js/main.63a0779b.js"
+    "static/js/main.0ab15325.js"
   ]
 }
