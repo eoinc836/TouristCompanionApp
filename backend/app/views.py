@@ -1,18 +1,13 @@
-from django.shortcuts import render, HttpResponse
-from rest_framework import generics
+from django.shortcuts import HttpResponse
 from django.contrib.auth.models import User
 from django.contrib.auth import authenticate, logout
 from django.http import JsonResponse
-from django.views.decorators.csrf import csrf_exempt
 from .utils import is_us_holiday, model, zones
 
 import os
 import pandas as pd
 import json
-import datetime
-
-def index(request):
-    return render(request, "index.html")   
+import datetime 
 
 def register(request):
     if request.method == 'POST':

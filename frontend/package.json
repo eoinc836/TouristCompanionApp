@@ -2,7 +2,7 @@
   "name": "web-news-system",
   "version": "0.1.0",
   "private": true,
-  "proxy": "http://localhost:8000/",
+  "proxy": "http://localhost:8000",
   "dependencies": {
     "@react-google-maps/api": "^2.18.1",
     "@testing-library/jest-dom": "^5.16.5",
@@ -25,6 +25,7 @@
     "react-scripts": "5.0.0",
     "recharts": "^2.7.2",
     "sass": "^1.49.9",
+    "sass-loader": "^13.3.2",
     "web-vitals": "^2.1.4"
   },
   "scripts": {

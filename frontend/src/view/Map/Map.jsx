@@ -511,7 +511,7 @@ const handleApiRequest = () => {
     const month = date.format('MM');
     const dayOfMonth = date.format('DD');
 
-    const url = `/api/predict?hour=${hour}&month=${month}&day_of_month=${dayOfMonth}`;
+    const url = `http://localhost:8000/api/predict?hour=${hour}&month=${month}&day_of_month=${dayOfMonth}`;
 
     try {
       axios

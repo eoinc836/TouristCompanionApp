@@ -1,4 +1,6 @@
 import React from "react";
+import { Link } from 'react-router-dom';
+import { useState } from "react";
 import "./Home.scss";
 
 const Home = () => (
@@ -77,7 +79,7 @@ const Home = () => (
       </div>
       <div className="container marketing">
         <div className="row">
-          <div className="col-lg-4">
+          <div className="col-lg-3">
             <svg
               xmlns="http://www.w3.org/2000/svg"
               width="100"
@@ -91,7 +93,7 @@ const Home = () => (
             <h2>Place Recommendation</h2>
             <p>Explore, Experience, and Embrace the Best place</p>
           </div>
-          <div className="col-lg-4">
+          <div className="col-lg-3">
             <svg
               xmlns="http://www.w3.org/2000/svg"
               width="100"
@@ -108,7 +110,7 @@ const Home = () => (
             <h2>Destination Busyness</h2>
             <p>Escape to Serenity: Unwind from the Destination Busyness</p>
           </div>
-          <div className="col-lg-4">
+          <div className="col-lg-3">
             <svg
               xmlns="http://www.w3.org/2000/svg"
               width="100"
@@ -128,6 +130,23 @@ const Home = () => (
             </svg>
             <h2>BusyBuddy Map</h2>
             <p>Navigate Your Way through the Urban Jungle</p>
+          </div>
+          <div className="col-lg-3">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="100"
+              height="100"
+              fill="currentColor"
+              class="bi bi-houses"
+              viewBox="0 0 16 16"
+            >
+              <path d="M5.793 1a1 1 0 0 1 1.414 0l.647.646a.5.5 0 1 1-.708.708L6.5 1.707 2 6.207V12.5a.5.5 0 0 0 .5.5.5.5 0 0 1 0 1A1.5 1.5 0 0 1 1 12.5V7.207l-.146.147a.5.5 0 0 1-.708-.708L5.793 1Zm3 1a1 1 0 0 1 1.414 0L12 3.793V2.5a.5.5 0 0 1 .5-.5h1a.5.5 0 0 1 .5.5v3.293l1.854 1.853a.5.5 0 0 1-.708.708L15 8.207V13.5a1.5 1.5 0 0 1-1.5 1.5h-8A1.5 1.5 0 0 1 4 13.5V8.207l-.146.147a.5.5 0 1 1-.708-.708L8.793 2Zm.707.707L5 7.207V13.5a.5.5 0 0 0 .5.5h8a.5.5 0 0 0 .5-.5V7.207l-4.5-4.5Z" />
+            </svg>
+            
+          <Link to= "/topattractions">
+            <h2>Top Attraction</h2>
+          </Link> 
+            <p>Explore Top Attaractions in Manhattan</p>
           </div>
         </div>
 
