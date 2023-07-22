@@ -1,0 +1,18 @@
+header {
+  background-color: #DCD7C9;
+}
+.custom-buttons {
+  display: flex;
+  justify-content: flex-end;
+
+  .btn {
+    display: flex;
+    align-items: center;
+
+    &.btn-outline-primary {
+      justify-content: center;
+    }
+  }
+}
+
+
