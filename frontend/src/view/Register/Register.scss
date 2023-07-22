@@ -1,47 +1,69 @@
-// register.scss
+
+$primary-color: #DCD7C9;
+$background-color: #2C3639;
 
 .register {
   display: flex;
   justify-content: center;
   align-items: center;
-  margin-top: 100px;
+  height: 100vh;
+  background-color: $background-color;
+  padding: 20px;
 
   .form-container {
-    max-width: 600px;
+    margin-top: 20px;
 
     h1 {
       text-align: center;
       font-size: 40px;
       font-weight: bold;
       margin-bottom: 25px;
+      color: $primary-color;
+    }
+
+    .ant-form {
+      font-family: Arial, sans-serif;
+
+      .ant-form-item-label {
+        label {
+          font-weight: bold;
+          display: block;
+          margin-bottom: 8px;
+          color: $primary-color; // Set label font color
+        }
+      }
+
+      .ant-form-item-control-input-content {
+        color: $primary-color; // Set input content font color
+      }
     }
 
     .ant-form-item {
       margin-bottom: 24px;
     }
 
-        &-label {
-            label {
-              font-weight: bold;
-              display: block;
-              margin-bottom: 8px;
-            }
-          }
-
-          &-control {
-            .ant-input-affix-wrapper {
-              input[type="password"] {
-                padding-right: 40px; // Increase the padding to make room for the visibility toggle icon
-              }
-            }
-          }
-
-          &-explain {
-            margin-top: 10px; // Add margin-top to create space below the error message
-          }
+    &-control {
+      .ant-input-affix-wrapper {
+        input[type="password"] {
+          padding-right: 40px;
         }
-
-    .ant-btn-primary {
-      margin-top: 16px;
+      }
     }
+
+    &-explain {
+      margin-top: 10px;
+    }
+  }
+
+  .ant-btn-primary {
+    margin-top: 16px;
+  }
+
+  @media screen and (max-width: 768px) {
+    flex-direction: column;
+
+    .form-container {
+      margin-top: 40px;
+    }
+  }
 }
