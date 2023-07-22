@@ -1,7 +1,5 @@
 from pandas.tseries.holiday import USFederalHolidayCalendar as calendar
-import os 
-import joblib
-import pandas as pd
+import os, joblib, pandas as pd
 
 current_dir = os.path.dirname(os.path.abspath(__file__))
 model_path = os.path.join(current_dir, "../modeling/DecisionTreeRegressor.sav")

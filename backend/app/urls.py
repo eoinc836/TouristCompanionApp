@@ -1,10 +1,11 @@
 from django.urls import path
-from .views import index, register, login, predict, geoJson
+from . import views, services
 
 urlpatterns = [
-    path('', index, name='index'),
-    path('api/register', register, name='register'),
-    path('api/login', login, name='login'),
-    path('api/predict', predict, name='predict'),
-    path('api/geoJson', geoJson, name='geoJson')
+    path('register', views.register, name='register'),
+    path('login', views.login, name='login'),
+    path('predict', views.predict, name='predict'),
+    path('geoJson', views.geoJson, name='geoJson'),
+    path('get_forecasts', services.get_forecasts, name='get_forecasts'),
+    path('get_venue_search', services.get_venue_search, name='get_venue_search'),
 ]

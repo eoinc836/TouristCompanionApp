@@ -11,7 +11,6 @@ https://docs.djangoproject.com/en/4.2/ref/settings/
 """
 
 from pathlib import Path
-import os
 import environ
 
 env = environ.Env()
@@ -48,7 +47,6 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'app',
-    'rest_framework',
     'corsheaders',
 ]
 
@@ -93,7 +91,7 @@ DATABASES = {
         'NAME': env('DATABASE_NAME'),  
         'USER': env('DATABASE_USER'),  
         'PASSWORD': env('DATABASE_PASS'),  
-        'HOST': 'busybuddy.ckipslrb7wya.us-east-1.rds.amazonaws.com',  
+        'HOST': env('DATABASE_HOST'),  
         'PORT': '3306',
         'OPTIONS': {  
             'init_command': "SET sql_mode='STRICT_TRANS_TABLES'"  
@@ -143,7 +141,3 @@ STATIC_URL = 'static/'
 # https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
-
-CORS_ORIGIN_WHITELIST = [
-     'http://localhost:3000'
-]
