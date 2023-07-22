@@ -2,9 +2,7 @@ import { Navigate } from "react-router-dom";
 import Home from "../view/Home/Home";
 import UserProfile from "../view/UserProfile/UserProfile";
 import Login from "../view/Login/Login";
-
 import Map from '../view/Map/Map';
-
 import Register from '../view/Register/Register';
 
 
