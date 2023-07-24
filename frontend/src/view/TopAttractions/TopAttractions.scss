@@ -1,0 +1,99 @@
+.container{
+  margin-top: 10px;
+  padding-top: 10px;
+}
+
+.card {
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+    aspect-ratio: 1/1;
+    
+  }
+  
+  .card-img-top {
+    object-fit: cover;
+    height: 100%;
+    width: 100%;
+  }
+  
+  .card-text {
+    color: #333;
+    font-family: Cambria;
+    
+  }
+
+  .position-relative {
+    position: relative;
+    font-family: Cambria;
+    font-weight: bold;
+    background-color: rgba(255, 255, 255, 0.95);
+    
+  }
+
+  .section {
+    background-color: #f8f5f8;
+    border-radius: 5px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.8);
+    padding: 20px;
+    
+  }
+  
+  .section h2 {
+    color: #333;
+    font-size: 24px;
+    margin-top: 0;
+    margin-bottom: 10px;
+    font-family: Monotype corsiva;
+    font-weight: bold;
+  }
+  
+  .section p {
+    color: #666;
+    font-size: 16px;
+    line-height: 1;
+    font-family: Cambria, Cochin, Georgia, Times, 'Times New Roman', serif;
+    color: rgb(10, 10, 10);
+  }
+  
+  
+  .card-img-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: rgba(0, 0, 0, 0.0);
+  }
+  
+  .card-title {
+    margin-bottom: 0;
+    background-color: rgba(0, 0, 0, 0.5);
+    
+  }
+  
+  .card-body {
+    background-color: rgba(255, 255, 255, 0);
+  }
+
+  .card:hover .card-body {
+    background-color: rgba(255, 255, 255, 0.95);
+   
+  }
+
+  .custom-list {
+    list-style: none;
+    padding-left: 0;
+  }
+  
+  .custom-list li:before {
+    content: "\2022";
+    color: #ff7f00; /* Customize the color of the bullet point */
+    font-size: 1.2em; /* Customize the size of the bullet point */
+    margin-right: 0.5em; /* Customize the spacing between the bullet point and the list item */
+  }
+
+
+
