@@ -47,16 +47,66 @@
   }
 
   .search-button-container {
-    // Increase search button font size
-    button {
-      font-size: 18px;
-
-    }
+    display: flex;
+    justify-content: space-around; /* Adds space between buttons */
+    margin-bottom: 20px; /* Adds some margin to the bottom of the button container */
   }
+  
 
 
+/* Modify the Switch's handle size and position */
+.ant-switch-handle {
+  width: 25px !important;
+  height: 25px !important;
+  top: 7px !important;
+}
+
+/* Position when the switch is checked */
+.ant-switch-checked .ant-switch-handle {
+  left: auto !important;
+  right: 3px !important; /* adjust as needed */
+}
+
+/* Center the Switch's text vertically */
+.ant-switch-checked .ant-switch-inner, .ant-switch .ant-switch-inner {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  
+}
 
 
+/* General styles for both buttons */
+.button {
+  font-size: 18px;
+  font-weight: bold;
+  padding: 15px 30px; /* Adds more padding to buttons */
+  border-radius: 30px; /* Makes the buttons rounded */
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1); /* Adds a subtle shadow to the buttons */
+  transition: transform 0.3s ease; /* Smooth transform transition */
+}
+
+.button:hover {
+  transform: scale(1.05); /* Makes the button slightly bigger when hovered */
+}
+
+/* Individual styles for the search button */
+.search-button {
+  background-color: #13038a; /* Light blue */
+  color: white; /* White text */
+}
+
+/* Individual styles for the geo button */
+.geo-button {
+  background-color: #13038a; /* Lime green */
+  color: white; /* White text */
+}
+
+/* Individual styles for the geo button */
+.routing-button {
+  background-color: #13038a; /* Lime green */
+  color: white; /* White text */
+}
 
 .map {
   flex: 1;

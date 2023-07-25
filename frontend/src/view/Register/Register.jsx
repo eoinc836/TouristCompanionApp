@@ -226,7 +226,7 @@ const App = () => {
 
           <Form.Item {...tailFormItemLayout}>
             <Button type="primary" htmlType="submit">
-              Sigh up
+              Sign up
             </Button>
           </Form.Item>
         </Form>
