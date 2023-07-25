@@ -6,9 +6,11 @@ BESTTIME_API_URL = "https://besttime.app/api/v1/"
 BESTTIME_API_KEY = ""
 
 @require_http_methods(['GET'])
-def get_forecasts(venue_name, venue_address):
+def get_forecasts(request):
+    
     url = BESTTIME_API_URL + "forecasts"
-
+    venue_name = request.GET.get('venue_name')
+    venue_address = request.GET.get('venue_address')
     params = {
         'api_key_private': BESTTIME_API_KEY,
         'venue_name': venue_name,

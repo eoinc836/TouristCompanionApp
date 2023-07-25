@@ -669,7 +669,7 @@ setSearchedPlaces(searchResults);
 
       const queryParams = `?venue_name=${place.name}&venue_address=${place.formatted_address}`;
       
-      axios.get(`/api/get_forecasts/${queryParams}`)
+      axios.get(`/api/get_forecasts${queryParams}`)
         .then((response) => {
           console.log('API Response:', response.data);
         })
