@@ -666,6 +666,16 @@ setSearchedPlaces(searchResults);
   const handlePlaceChanged = () => {
     if (autocompleteRef.current !== null) {
       const place = autocompleteRef.current.getPlace();
+
+      const queryParams = `?venue_name=${place.name}&venue_address=${place.formatted_address}`;
+      axios.get(`/get_forecasts/${queryParams}`)
+        .then((response) => {
+          setData(response.data);
+        })
+        .catch((error) => {
+          console.error('Error fetching data:', error);
+        });
+
       console.log(place);
       setDestination(place.name);
     }
