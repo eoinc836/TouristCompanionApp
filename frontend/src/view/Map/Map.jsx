@@ -142,6 +142,7 @@ const BusyLegend = () => {
         color: "black",
       }}
     >
+     <h5 style={{ marginRight: "10px" }}>Area Busyness:</h5>
       <div
         style={{
           display: "flex",
@@ -671,6 +672,14 @@ setSearchedPlaces(searchResults);
     }
   };
 
+   const bounds = {
+      north: 40.915255,
+      south: 40.477398,
+      east: -73.700272,
+      west: -74.259090,
+    };
+
+
   if (loadError) return "Error loading maps";
   if (!isLoaded) return "Loading maps";
 
@@ -682,6 +691,7 @@ setSearchedPlaces(searchResults);
             <Autocomplete
               onLoad={handleLoad}
               onPlaceChanged={handlePlaceChanged}
+              options={{ bounds: bounds }}
             >
               <input
                 type="text"
