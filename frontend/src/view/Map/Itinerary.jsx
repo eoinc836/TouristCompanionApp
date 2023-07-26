@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { Form, Button, DatePicker, TimePicker, Switch, Select, Drawer, List, Typography, Collapse, Space, Card } from "antd";
+import { GoogleMap, Marker, Polyline } from '@react-google-maps/api';
 
 const { Panel } = Collapse;
 const { Option } = Select;
@@ -10,9 +11,11 @@ const Itinerary = ({ setItinerary }) => {
     const [form] = Form.useForm();
     const [visible, setVisible] = useState(false);
     const [itineraryList, setItineraryList] = useState([]);
+    const [displayRoute, setDisplayRoute] = useState(false); // 1. Add state variable
 
     const onFinish = (values) => {
         setItinerary(values);
+        setDisplayRoute(values.displayRoute); // 2. Update displayRoute state
         if (values.markers === "top20") {
           generateItinerary([values.startEndHour[0].hour(), values.startEndHour[1].hour()], values.dateRange);
             setVisible(true);
@@ -162,14 +165,37 @@ const tourStops = [
 
 return (
   <div>
-      <Card title="Itinerary Generator" style={{ textAlign: "center", width: "100%", borderRadius: "15px", boxShadow: "0px 4px 4px rgba(0, 0, 0, 0.25)" }}>
+      <GoogleMap
+          id="map"
+          zoom={10}
+          center={tourStops[0].position}
+      >
+          {tourStops.map((stop, index) => (
+              <Marker
+                  key={index}
+                  position={stop.position}
+                  label={index < 20 ? (index + 1).toString() : undefined}
+              />
+          ))}
+          {displayRoute &&  // 3. Conditionally render the Polyline
+              <Polyline
+                  path={tourStops.map(stop => stop.position)}
+                  options={{
+                      strokeColor: "#ff2527",
+                  }}
+              />
+          }
+      </GoogleMap>
+      <Card style={{ textAlign: "center", width: "100%", borderRadius: "15px", boxShadow: "0px 4px 4px rgba(0, 0, 0, 0.25)" }}>
+      <Collapse defaultActiveKey={['1']} ghost>
+        <Panel header={<span style={{ fontWeight: "bold" }}>Itinerary Generator</span>} key="1">
           <Form
-              form={form}
-              name="itinerary"
-              layout="vertical"
-              onFinish={onFinish}
-              initialValues={{ itinerary: "" }}
-              style={{ marginBottom: '10px' }}
+            form={form}
+            name="itinerary"
+            layout="vertical"
+            onFinish={onFinish}
+            initialValues={{ itinerary: "" }}
+            style={{ marginBottom: '10px' }}
           >
               <Form.Item
                   name="dateRange"
@@ -180,7 +206,7 @@ return (
               </Form.Item>
               <Form.Item
                   name="startEndHour"
-                  label="Start and End Hour"
+                  label="Visting Hours"
                   rules={[{ required: true, message: 'Please select the start and end hour!' }]}
               >
                   <TimePicker.RangePicker format="HH" />
@@ -200,13 +226,6 @@ return (
               </Form.Item>
               
               <Form.Item
-                  name="displayRoute"
-                  label="Display Route on Map"
-                  valuePropName="checked"
-              >
-                  <Switch />
-              </Form.Item>
-              <Form.Item
                   name="markers"
                   label="Markers for Itinerary"
                   rules={[{ required: true, message: 'Please select markers for your itinerary!' }]}
@@ -222,6 +241,8 @@ return (
                   </Button>
               </Form.Item>
           </Form>
+          </Panel>
+          </Collapse>
           <Drawer
               title="Your Itinerary"
               placement="bottom"
