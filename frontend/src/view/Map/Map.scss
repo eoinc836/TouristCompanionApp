@@ -35,10 +35,14 @@
 
 .table th,
 .table td {
-  padding: 8px;
+  padding: 0px;
   border: none;
   font-weight: bold;
   font-family: Cambria;
+}
+
+.tr{
+  border: none;
 }
 
 .table th {
@@ -50,9 +54,26 @@
   height: 35px; 
 }
 
-.weather-forecast{
-  padding-top:20px;
-  padding-bottom:10px;
+.weather-forecast {
+  position: absolute;
+  background-color: white;
+  width: 35%;
+  left:40%;
+  top:1%;
+  border-radius: 20px; /* Add border-radius to make the box rounded */
+  z-index: 1;
+  overflow: hidden; /* Hide any content that overflows, ensuring rounded corners */
+}
+
+.weather-table {
+  position: absolute;
+  background-color: white;
+}
+
+.weather-font{
+  color: black;
+  font-family: cambria;
+  font-weight: bold;
 }
 
   .search-bar {

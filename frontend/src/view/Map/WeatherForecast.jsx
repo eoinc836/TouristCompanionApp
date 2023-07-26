@@ -114,32 +114,41 @@ const WeatherForecast = ({ onWeatherDataReceived }) => {
     };
 
     return (
-      <table className="table table-bordered">
+      <table className="table">
+        <thead>
+          <tr>
+
+            {weatherData.daily.time.map((date, index) => (
+              <th key={index}>{formatDate(date)}</th>
+            ))}
+          </tr>
+        </thead>
         <tbody>
-          {weatherData.daily.time.map((date, index) => (
-            <tr key={index}>
-              <td>{formatDate(date)}</td>
-              <td>{weatherData.daily.temperature_2m_max[index]} &deg;C</td>
-              <td>
+          <tr>
+
+            {weatherData.daily.temperature_2m_max.map((temp, index) => (
+              <td key={index}>{temp} &deg;C</td>
+            ))}
+          </tr>
+          <tr>
+
+            {weatherData.daily.weathercode.map((code, index) => (
+              <td key={index}>
                 <img
-                  src={getWeatherIconPath(weatherData.daily.weathercode[index])}
+                  src={getWeatherIconPath(code)}
                   alt="Weather Icon"
                   className="weather-icon"
                 />
               </td>
-            </tr>
-          ))}
+            ))}
+          </tr>
         </tbody>
       </table>
     );
   };
 
   return (
-    <div>
-      <h5 className="weather-forecast">Weather Forecast</h5>
-      {/*<button className="btn btn-primary mb-4" onClick={getWeatherData}>
-            Weather Forecast
-  </button>*/}
+    <div className="weather-forecast">
       <div>{renderWeatherTable()}</div>
     </div>
   );
