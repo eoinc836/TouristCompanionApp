@@ -21,6 +21,7 @@ def get_forecast(request):
         venue = VenueData.objects.get(venue_id=venue_static.venue_id)
         if not venue.rating:
             venue.rating = venue_rating
+            venue.save()
         venue_response = {
             "venue_name": venue_static.venue_name,
             "venue_address": venue_static.venue_address,
