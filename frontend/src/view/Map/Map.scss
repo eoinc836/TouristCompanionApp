@@ -8,10 +8,51 @@
 
 .sidebar {
   width: 300px;
-  padding: 20px;
+  height: calc(100vh - 100px); 
+  padding: 12px;
+  border: 1px solid #ccc;
+  box-sizing: border-box;
   background-color: #2C3639;
   color: #DCD7C9;
+  overflow-y: auto; /* Enable vertical scroll when the content overflows the height */
   transition: width 0.3s;
+}
+
+.sidebar table {
+  border-collapse: collapse; 
+  width: 100%; 
+}
+
+.sidebar th,
+.sidebar td {
+  border: none; 
+  padding: 8px; 
+}
+
+.table {
+  width: 100%;
+}
+
+.table th,
+.table td {
+  padding: 8px;
+  border: none;
+  font-weight: bold;
+  font-family: Cambria;
+}
+
+.table th {
+  background-color: #f2f2f2;
+}
+
+.weather-icon {
+  width: 35px; 
+  height: 35px; 
+}
+
+.weather-forecast{
+  padding-top:20px;
+  padding-bottom:10px;
 }
 
   .search-bar {

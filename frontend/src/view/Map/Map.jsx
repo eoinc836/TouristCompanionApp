@@ -7,6 +7,7 @@ import axios from "axios";
 import { Autocomplete } from "@react-google-maps/api";
 import "antd/dist/antd.css";
 import "./Map.scss";
+import WeatherForecast from './WeatherForecast';
 
 const { Option } = Select;
 
@@ -276,6 +277,11 @@ const Map = () => {
 
   const mapRef = useRef(null);
 
+  const [weatherDataFromAPI, setWeatherDataFromAPI] = useState(null);
+
+  const handleWeatherDataReceived = (data) => {
+    setWeatherDataFromAPI(data);
+  };
 
   const options = [
     {
@@ -721,7 +727,17 @@ setSearchedPlaces(searchResults);
             Search
           </Button>
         </div>
+        <div>
+      <WeatherForecast onWeatherDataReceived={handleWeatherDataReceived} />
+      {weatherDataFromAPI && (
+        <div>
+          <table>
+          </table>
+        </div>
+      )}
+    </div>
       </div>
+      
 
       <div className="map">
       <GoogleMap
@@ -732,29 +748,7 @@ setSearchedPlaces(searchResults);
   onLoad={map => mapRef.current = map}
   ref={mapRef}
 >
-          {currentWeather && (
-            <div
-              style={{
-                position: "absolute",
-                bottom: "10px",
-                left: "10px",
-                backgroundColor: "white",
-                padding: "10px",
-                borderRadius: "5px",
-                color: "black",
-              }}
-            >
-              <h5>Current Weather</h5>
-              <p>Temperature: {currentWeather.main.temp}°C</p>
-              <p>Condition: {currentWeather.weather[0].description}</p>
-              {currentWeather.weather[0].icon && (
-                <img
-                  src={`http://openweathermap.org/img/wn/${currentWeather.weather[0].icon}.png`}
-                  alt="Weather Icon"
-                />
-              )}
-            </div>
-          )}
+
 
           {!shouldRemoveMarkers &&
             tourStops.map(({ position, title, placeId }) => (
