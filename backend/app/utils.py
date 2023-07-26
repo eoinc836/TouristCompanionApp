@@ -1,5 +1,5 @@
 from pandas.tseries.holiday import USFederalHolidayCalendar as calendar
-import os, joblib, pandas as pd
+import os, joblib, requests, pandas as pd
 
 current_dir = os.path.dirname(os.path.abspath(__file__))
 model_path = os.path.join(current_dir, "../modeling/DecisionTreeRegressor.sav")
@@ -12,3 +12,19 @@ def is_us_holiday(date_str):
     cal = calendar()
     holidays = cal.holidays(start='2020-01-01', end='2023-12-31')
     return pd.to_datetime(date_str) in holidays
+
+def forecast_available(venue):
+    return venue["forecast"]
+
+def is_in_manhattan(venue):
+    venue_lat = venue["venue_lat"]
+    venue_lon = venue["venue_lon"]
+    url = f"https://maps.googleapis.com/maps/api/geocode/json?latlng={venue_lat},{venue_lon}&key={GOOGLE_MAPS_API_KEY}"
+    response = requests.get(url)
+    data = response.json()
+    if "Manhattan" in data["results"][0]["formatted_address"]:
+        return True
+    elif "Manhattan" in data["results"][0]["address_components"][2]["long_name"]:
+        print(data["results"][0]["address_components"][2]["long_name"])
+        return True
+    return False

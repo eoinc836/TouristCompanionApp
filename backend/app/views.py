@@ -8,8 +8,6 @@ import json, datetime, os, pandas as pd
 def register(request):
     if request.method == 'POST':
         data = json.loads(request.body)
-        first_name = data.get['fname']
-        last_name = data.get['lname']
         email = data.get('email')
         username = data.get('username')
         password = data.get('password')
@@ -20,7 +18,7 @@ def register(request):
             elif User.objects.filter(username=username).exists():
                 return JsonResponse({'message': 'Username already exists!'}, status=400)
             else:
-                User.objects.create_user(username=username, email=email, password=password, first_name=first_name, last_name=last_name)
+                User.objects.create_user(username=username, email=email, password=password)
                 return JsonResponse({'message': 'User created successfully!'}, status=200)
         else:
             return JsonResponse({'message': 'Passwords do not match!'}, status=400)
