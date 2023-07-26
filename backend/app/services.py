@@ -13,7 +13,7 @@ GOOGLE_MAPS_API_KEY = env('GOOGLE_MAPS_API_KEY')
 @require_http_methods(['GET'])
 def get_forecast(request):
     venue_name = request.GET['venue_name']
-    venue_address = request.GET['venue_address']
+    venue_address = request.GET['venue_address'].replace(", USA", "")
     venue_rating = request.GET['venue_rating']
 
     if Venue.objects.filter(venue_address=venue_address).exists():
