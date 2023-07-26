@@ -76,15 +76,7 @@
 }
 
 
-/* General styles for both buttons */
-.button {
-  font-size: 18px;
-  font-weight: bold;
-  padding: 15px 30px; /* Adds more padding to buttons */
-  border-radius: 30px; /* Makes the buttons rounded */
-  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1); /* Adds a subtle shadow to the buttons */
-  transition: transform 0.3s ease; /* Smooth transform transition */
-}
+
 
 .button:hover {
   transform: scale(1.05); /* Makes the button slightly bigger when hovered */
@@ -92,20 +84,20 @@
 
 /* Individual styles for the search button */
 .search-button {
-  background-color: #13038a; /* Light blue */
-  color: white; /* White text */
+  background-color: #fefefe; /* Light blue */
+  color: rgb(0, 0, 0); /* White text */
 }
 
 /* Individual styles for the geo button */
 .geo-button {
-  background-color: #13038a; /* Lime green */
-  color: white; /* White text */
+  background-color: #ffffff; /* Lime green */
+  color: rgb(0, 0, 0); /* White text */
 }
 
 /* Individual styles for the geo button */
 .routing-button {
-  background-color: #13038a; /* Lime green */
-  color: white; /* White text */
+  background-color: #ffffff; /* Lime green */
+  color: rgb(0, 0, 0); /* White text */
 }
 
 .map {

@@ -165,27 +165,7 @@ const tourStops = [
 
 return (
   <div>
-      <GoogleMap
-          id="map"
-          zoom={10}
-          center={tourStops[0].position}
-      >
-          {tourStops.map((stop, index) => (
-              <Marker
-                  key={index}
-                  position={stop.position}
-                  label={index < 20 ? (index + 1).toString() : undefined}
-              />
-          ))}
-          {displayRoute &&  // 3. Conditionally render the Polyline
-              <Polyline
-                  path={tourStops.map(stop => stop.position)}
-                  options={{
-                      strokeColor: "#ff2527",
-                  }}
-              />
-          }
-      </GoogleMap>
+      
       <Card style={{ textAlign: "center", width: "100%", borderRadius: "15px", boxShadow: "0px 4px 4px rgba(0, 0, 0, 0.25)" }}>
       <Collapse defaultActiveKey={['1']} ghost>
         <Panel header={<span style={{ fontWeight: "bold" }}>Itinerary Generator</span>} key="1">

@@ -917,18 +917,16 @@ const handleTourStopsToggle = () => {
             />
           </div>
         </div>
-        <div className="search-button-container">
-  <Button type="primary" onClick={handleSearch} className="search-button">
+        <Button type="primary" onClick={handleSearch} className="button search-button">
     Search
-  </Button>
-  <Button type="primary" onClick={getUserGeoLocation} className="geo-button">
+</Button>
+<Button type="primary" onClick={getUserGeoLocation} className="button geo-button">
     Locate Me
-  </Button>
-  <div className="routing-button-container">
-  <Button type="primary" onClick={handleRouting} className="routing-button">
-    {isRoutingOn ? "Remove Route" : "Show Route"}
-  </Button>
-</div>
+</Button>
+<div className="routing-button-container">
+    <Button type="primary" onClick={handleRouting} className="button routing-button">
+        {isRoutingOn ? "Remove Route" : "Show Route"}
+    </Button>
 </div>
 <Itinerary setItinerary={setItinerary} />  {/* Here we are using Itinerary component */}
       </div>
