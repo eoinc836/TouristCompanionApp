@@ -1,0 +1,120 @@
+$primary-color: #DCD7C9;
+$background-color: #2C3639;
+
+.user-page {
+  background-color: #2C3639;
+  color: #DCD7C9;
+  height: 100vh;
+
+  .ant-card {
+    height: 100%;
+    background-color: $background-color;
+    color: $primary-color;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+
+    // User Information
+    .user-information {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      flex-grow: 1;
+
+      .ant-avatar {
+        margin-bottom: 16px;
+      }
+
+      .user-details {
+        color: $primary-color;
+      }
+    }
+
+    // Saved Places & Browsing History
+    .saved-places,
+    .browsing-history {
+      .ant-list-item {
+        color: $primary-color;
+      }
+    }
+  }
+
+  .ant-tabs {
+    &.ant-tabs-left {
+      .ant-tabs-nav {
+        background-color: #2C3639;
+
+        .ant-tabs-tab {
+          color: #DCD7C9;
+
+          &.ant-tabs-tab-active {
+            color: #DCD7C9;
+            background-color: #333C3F;
+          }
+        }
+      }
+    }
+  }
+
+  .ant-tabs-content {
+    background-color: #333C3F;
+
+    .tab-content {
+      display: flex;
+      flex-direction: column;
+      height: 100%;
+
+      .user-information {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-direction: column;
+        margin-bottom: 16px;
+
+        .user-details {
+          margin-top: 16px;
+        }
+
+        .edit-button-container {
+          margin-top: 16px;
+        }
+      }
+
+      .card-container {
+        flex: 1;
+        padding: 16px;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+      }
+
+      .saved-places,
+      .browsing-history {
+        flex-grow: 1;
+        padding: 16px;
+
+        .ant-list {
+          height: 100%;
+
+          .ant-list-item {
+            color: $primary-color;
+            height: 100%;
+            display: flex;
+            align-items: center;
+          }
+        }
+      }
+    }
+  }
+
+  @media (max-width: 576px) {
+    .ant-tabs.ant-tabs-left {
+      .ant-tabs-nav {
+        .ant-tabs-tab {
+          padding: 8px;
+        }
+      }
+    }
+  }
+}

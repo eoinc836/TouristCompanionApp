@@ -1,0 +1,40 @@
+.custom-background {
+  background-color: #2C3639;
+  color:#DCD7C9;
+}
+
+.carousel-item img {
+  object-fit: cover;
+  width: 100%;
+  height: 100%;
+}
+
+.container.marketing {
+  margin-top: 5rem;
+}
+
+
+.featurette-divider {
+  margin: 5rem 0;
+}
+.featurette-divider1 {
+  margin: 3rem 0;
+}
+.featurette-heading {
+  font-weight: 500;
+  line-height: 1.2;
+}
+
+.featurette p {
+  font-size: 18px;
+  line-height: 1.5;
+  .image-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 100%;
+  }
+
+
+}
