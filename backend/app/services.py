@@ -1,14 +1,13 @@
 from django.http import JsonResponse
 from django.views.decorators.http import require_http_methods
 from .models import *
-from .utils import forecast_available, is_in_manhattan
+from .utils import is_forecast_available, find_zone, is_in_manhattan
 import time, environ, requests
 
 env = environ.Env()
 environ.Env.read_env("../backend/.env")
 
 BESTTIME_API_URL = "https://besttime.app/api/v1/"
-GOOGLE_MAPS_API_KEY = env('GOOGLE_MAPS_API_KEY')
 
 @require_http_methods(['GET'])
 def get_forecast(request):
@@ -97,32 +96,59 @@ def get_forecast(request):
 
 @require_http_methods(['GET'])
 def get_venues(request):
+
     url = BESTTIME_API_URL + "venues/search"
-    params = {
-        'api_key_private': env('BESTTIME_API_KEY'),
-        'q': f"{request.GET.get('busyness','')} {request.GET.get('attraction_type','')} in Manhattan New York {request.GET.get('day','')} {request.GET.get('time','')}",
-        'num': 10,
-        'fast': False,
-        'format': 'raw'
-    }
+    user_lat = request.GET.get('latitude')
+    user_lng = request.GET.get('longitude')
+    if not user_lat and not user_lng:
+        params = {
+            'api_key_private': env('BESTTIME_API_KEY'),
+            'q': f"{request.GET.get('busyness','')} {request.GET.get('attraction_type','')} in Manhattan New York {request.GET.get('day','')} {request.GET.get('time','')}",
+            'num': 10,
+            'fast': False,
+            'format': 'raw'
+        }
+    
+    else:
+        params = {
+            'api_key_private': env('BESTTIME_API_KEY'),
+            'q': f"{request.GET.get('busyness','')} {request.GET.get('attraction_type','')} in Manhattan New York {request.GET.get('day','')} {request.GET.get('time','')}",
+            'num': 10,
+            'lat': user_lat,
+            'lng': user_lng,
+            'radius': 2000,
+            'fast': False,
+            'format': 'raw'
+        }
     
     venue_search_response = requests.post(url, params=params)
     meta_data = venue_search_response.json()
+    print(meta_data)
     search_progress_link = meta_data["_links"]["venue_search_progress"]
     search_progress_response = requests.get(search_progress_link)
     search_progress_response_json = search_progress_response.json()
 
     while not search_progress_response_json["job_finished"]:
-        time.sleep(0.5)
         search_progress_response = requests.get(search_progress_link)
         search_progress_response_json = search_progress_response.json()
 
-    venues = search_progress_response_json["venues"]
-    manhattan_venues = filter(is_in_manhattan, venues)
-    forecasted_manhattan_venues = list(filter(forecast_available, manhattan_venues))
+    unfiltered_venues = search_progress_response_json["venues"]
+    forecasted_venues = filter(is_forecast_available, unfiltered_venues)
+    forecasted_manhattan_venues = list(filter(is_in_manhattan, forecasted_venues))
+    if user_lat and user_lng:
+        nearby_venues = []
+        user_zone = find_zone(user_lat, user_lng)
+        for venue in forecasted_manhattan_venues:
+            venue_zone = find_zone(venue["venue_lat"], venue["venue_lon"])
+            if venue_zone is not None and user_zone is not None and venue_zone == user_zone:
+                nearby_venues.append(venue)
+        venues = nearby_venues
+        
+    else:
+        venues = forecasted_manhattan_venues
 
     venue_response = {}
-    for venue in forecasted_manhattan_venues:
+    for venue in venues:
         if not Venue.objects.filter(venue_id=venue["venue_id"]).exists():
             venues_static = Venue.objects.create(
             venue_id = venue["venue_id"],

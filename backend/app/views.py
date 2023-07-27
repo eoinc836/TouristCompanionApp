@@ -2,7 +2,7 @@ from django.shortcuts import HttpResponse
 from django.contrib.auth.models import User
 from django.contrib.auth import authenticate, logout
 from django.http import JsonResponse
-from .utils import is_us_holiday, model, zones
+from .utils import is_us_holiday, model, zones, geo_json_data
 import json, datetime, os, pandas as pd
 
 def register(request):
@@ -56,7 +56,4 @@ def predict(request):
     return HttpResponse(json.dumps(predictions))
 
 def geoJson(request):
-    file_path = os.path.join(os.path.dirname(os.path.dirname(__file__)), 'modeling', 'NYC Taxi Zones.geojson')
-    with open(file_path) as file:
-        data = json.load(file)
-    return JsonResponse(data)
+    return JsonResponse(geo_json_data)
