@@ -2,7 +2,7 @@
 .map-container {
   display: flex;
   height: 100vh;
-  background-color: #2C3639;
+  background-color: #2b3345;
   color: #DCD7C9;
 }
 
@@ -12,7 +12,7 @@
   padding: 12px;
   border: 1px solid #ccc;
   box-sizing: border-box;
-  background-color: #2C3639;
+  background-color: #2b3345;
   color: #DCD7C9;
   overflow-y: auto; /* Enable vertical scroll when the content overflows the height */
   transition: width 0.3s;
@@ -38,7 +38,7 @@
   padding: 0px;
   border: none;
   font-weight: bold;
-  font-family: Cambria;
+  font-family: 'Roboto', sans-serif;
 }
 
 .tr{
@@ -72,7 +72,7 @@
 
 .weather-font{
   color: black;
-  font-family: cambria;
+  font-family: 'Roboto', sans-serif;
   font-weight: bold;
 }
 
