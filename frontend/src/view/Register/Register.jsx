@@ -223,12 +223,13 @@ const App = () => {
               <Option value="other">Other</Option>
             </Select>
           </Form.Item>
+<Form.Item {...tailFormItemLayout} style={{ display: "flex", justifyContent: "center", alignItems: "center" }}>
+  <Button type="primary" htmlType="submit" style={{ backgroundColor: "#627B82" }}>
+    Sign up
+  </Button>
+</Form.Item>
 
-          <Form.Item {...tailFormItemLayout}>
-            <Button type="primary" htmlType="submit">
-              Sigh up
-            </Button>
-          </Form.Item>
+
         </Form>
       </div>
     </div>

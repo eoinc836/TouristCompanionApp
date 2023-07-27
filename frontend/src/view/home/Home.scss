@@ -1,3 +1,5 @@
+
+
 .custom-background {
   background-color: #2C3639;
   color:#DCD7C9;
@@ -6,7 +8,7 @@
 .carousel-item img {
   object-fit: cover;
   width: 100%;
-  height: 100%;
+  height: auto;
 }
 
 .container.marketing {
@@ -16,6 +18,8 @@
 
 .featurette-divider {
   margin: 5rem 0;
+   border-color: #2C3639;
+
 }
 .featurette-divider1 {
   margin: 3rem 0;
@@ -36,5 +40,28 @@
     height: 100%;
   }
 
+}
+.img-container {
+     @media (max-width: 947px) {
+        flex-direction: column;
+     }
+}
+.img-container-text {
+    @media (max-width: 947px) {
+        width: 100% !important;
+     }
+}
+.img-container-style {
+    @media (max-width: 947px) {
+        width: 100% !important;
+     }
+}
+.img-style {
+    @media (max-width: 947px) {
+        width: 100%;
+     }
+}
 
+.carousel-img {
+    height: auto !important;
 }

@@ -19,7 +19,7 @@ const Routes = [
   { path: "/userProfile", element: <UserProfile /> },
   { path: "/map", element: <Map /> },
   { path: "/register", element: <Register />},
-  
+
 ];
 
 export default Routes;

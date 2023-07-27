@@ -10,8 +10,8 @@ const Home = () => (
           <div className="carousel-item active">
             <img
               src={require("../../assets/manhattan1.jpg")}
-              className="d-block mx-auto"
-              style={{ maxWidth: "100%", maxHeight: "100%" }}
+              className="d-block mx-auto carousel-img"
+              style={{ maxWidth: "100%" }}
               alt="Slide 1"
             />
             <div className="container">
@@ -24,8 +24,8 @@ const Home = () => (
           <div className="carousel-item">
             <img
               src={require("../../assets/manhattan2.jpg")}
-              className="d-block mx-auto"
-              style={{ maxWidth: "100%", maxHeight: "100%" }}
+              className="d-block mx-auto carousel-img"
+              style={{ maxWidth: "100%"}}
               alt="Slide 2"
             />
             <div className="container">
@@ -38,8 +38,8 @@ const Home = () => (
           <div className="carousel-item">
             <img
               src={require("../../assets/manhattan3.jpg")}
-              className="d-block mx-auto"
-              style={{ maxWidth: "100%", maxHeight: "100%" }}
+              className="d-block mx-auto carousel-img"
+              style={{ maxWidth: "100%" }}
               alt="Slide 3"
             />
             <div className="container">
@@ -133,8 +133,8 @@ const Home = () => (
 
         <hr className="featurette-divider" />
 
-        <div className="row featurette">
-          <div className="col-md-7">
+        <div className="row featurette img-container">
+          <div className="col-7 col-md-7 img-container-text">
             <h2 className="featurette-heading fw-normal lh-1">
               Explore Manhattan: Discover Endless Scenery and Surprises
             </h2>
@@ -145,22 +145,23 @@ const Home = () => (
               adventure paradise.
             </p>
           </div>
-          <div className="col-md-5">
-            <div className="col-md-5 order-md-1">
+          <div className="col-5 col-md-5 img-container-style">
+            <div className="col-md-5 order-md-1 w-100">
               <img
                 src={require("../../assets/manhattancity.jpg")}
                 alt="Manhattan City"
                 width={380}
                 height={300}
+                className="img-style"
               />
             </div>
           </div>
-
+        </div>
           <hr className="featurette-divider" />
 
-          <div className="row featurette">
-            <div className="col-md-7 order-md-2">
-              <h2 className="featurette-heading fw-normal lh-1 ">
+           <div className="row featurette img-container">
+                    <div className="col-7 col-md-7 img-container-text">
+                      <h2 className="featurette-heading fw-normal lh-1">
                 Manhattan Culinary Journey: Savour Unique and Delicious
                 Experiences
               </h2>
@@ -171,21 +172,22 @@ const Home = () => (
                 cravings for delicious and unique dining experiences.
               </p>
             </div>
-            <div className="col-md-5 order-md-1 ">
+            <div className="col-5 col-md-5 img-container-style">
+                       <div className="col-md-5 order-md-1 w-100">
               <img
                 src={require("../../assets/manhattanfood.jpg")}
                 alt="Manhattan Food"
                 width={380}
                 height={300}
+                 className="img-style"
               />
             </div>
           </div>
-
+ </div>
           <hr className="featurette-divider" />
-
-          <div className="row featurette">
-            <div className="col-md-7">
-              <h2 className="featurette-heading fw-normal lh-1 ">
+ <div className="row featurette img-container">
+          <div className="col-7 col-md-7 img-container-text">
+            <h2 className="featurette-heading fw-normal lh-1">
                 Manhattan's Cultural Extravaganza: Immerse Yourself in the
                 Charms of Art and History
               </h2>
@@ -197,18 +199,20 @@ const Home = () => (
                 soul.
               </p>
             </div>
-            <div className="col-md-5 order-md-1">
+              <div className="col-5 col-md-5 img-container-style">
+                        <div className="col-md-5 order-md-1 w-100">
               <img
                 src={require("../../assets/manhattanculture.jpg")}
                 alt="Manhattan Culture"
                 width={380}
                 height={300}
+
+                 className="img-style"
               />
             </div>
           </div>
+           </div>
 
-          <hr className="featurette-divider1" />
-        </div>
       </div>
     </div>
   </div>

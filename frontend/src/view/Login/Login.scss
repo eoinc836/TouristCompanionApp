@@ -17,10 +17,13 @@
   font-weight: bold;
   margin-bottom: 40px;
   color: #DCD7C9; /* Change the color of the title */
+  @media (max-width: 445px) {
+      font-size: 50px;
+    }
 }
 
 .login-form {
-  width: 600px;
+  width: 68vw;
   margin-top: 5px;
 }
 
@@ -45,7 +48,10 @@
 }
 
 .login-form-forgot {
-  float: right;
+  @media (min-width: 445px) {
+    float: right;
+  }
+  display: block;
   color: #DCD7C9 !important; /* Change the color of "Forgot password" */
 }
 

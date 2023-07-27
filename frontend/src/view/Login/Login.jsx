@@ -36,13 +36,13 @@ const Login = () => {
   return (
     <div className="login-container">
       <div className="login-content">
-        <h1 className="login-title">BusyBuddy</h1>
         <Form
           name="normal_login"
           className="login-form"
           initialValues={{ remember: true }}
           onFinish={onFinish}
         >
+        <h1 className="login-title">BusyBuddy</h1>
         <Form.Item
           name="username"
           rules={[{ required: true, message: "Please input your Username!" }]}
@@ -85,18 +85,20 @@ const Login = () => {
         </Form.Item>
 
         <Form.Item>
-          <Button
-            type="primary"
-            htmlType="submit"
-            className="login-form-button"
-            style={{
-              fontSize: "18px", // Adjust the font size
-              border: "2px solid #DCD7C9", // Adjust the border size and color
-              borderRadius: "8px", // Add rounded corners to the button
-            }}
-          >
-            Log in
-          </Button>
+         <Button
+           type="primary"
+           htmlType="submit"
+           className="login-form-button"
+           style={{
+             fontSize: "18px",
+             border: "2px solid #DCD7C9",
+             backgroundColor: "#627B82",
+             borderRadius: "8px",
+           }}
+         >
+           Log in
+         </Button>
+
           <span className="login-form-or" style={{ color: "#DCD7C9", fontSize: "20px" }}>
             Or <Link to="/register" style={{ color: "#DCD7C9", fontSize: "18px" }}>register now!</Link>
           </span>

@@ -61,71 +61,19 @@ const UserPage = () => {
     setGender(value);
   };
 
-const savedPlacesData = [
-  {
-    id: 1,
-    title: "Place 1",
-    imageSrc: "img/place1.jpg",
-    description: "Description for Place 1",
-  },
-  {
-    id: 2,
-    title: "Place 2",
-    imageSrc: "img/place2.jpg",
-    description: "Description for Place 2",
-  },
-  {
-    id: 3,
-    title: "Place 3",
-    imageSrc: "img/place3.jpg",
-    description: "Description for Place 3",
-  },
-  {
-    id: 4,
-    title: "Place 4",
-    imageSrc: "img/place4.jpg",
-    description: "Description for Place 4",
-  },
-  {
-    id: 5,
-    title: "Place 5",
-    imageSrc: "img/place5.jpg",
-    description: "Description for Place 5",
-  },
-  {
-    id: 6,
-    title: "Place 6",
-    imageSrc: "img/place6.jpg",
-    description: "Description for Place 6",
-  },
-  {
-    id: 7,
-    title: "Place 7",
-    imageSrc: "img/place7.jpg",
-    description: "Description for Place 7",
-  },
-  {
-    id: 8,
-    title: "Place 8",
-    imageSrc: "img/place8.jpg",
-    description: "Description for Place 8",
-  },
-  {
-    id: 9,
-    title: "Place 9",
-    imageSrc: "img/place9.jpg",
-    description: "Description for Place 9",
-  },
-];
-
+const handleUpdateClick = () => {
+    // Handle update logic here
+    setIsEditing(false); // After update, set isEditing to false to disable editing mode
+  };
 
   return (
-    <section className="py-3 my-3" style={{ height: "100vh" }}>
-      <h1 className="mb-5">Account Settings</h1>
-      <div className="bg-white shadow rounded-lg d-block d-sm-flex" style={{ height: "100%" }}>
-        <div className="profile-tab-nav border-right" >
-          <div className="p-4">
-            <div className="img-circle text-center mb-3">
+<section class="user-profile-container" style={{ backgroundColor: "#2C3639", color: "#DCD7C9" }}>
+
+
+      <div className="row" style={{ backgroundColor: "#2C3639", color: "#DCD7C9" }}>
+        <div className="col-2 left-container">
+          <div className="p-5">
+            <div className="img-circle text-center mb-4">
               <Avatar size={100} src="img/user2.jpg" alt="Image" />
             </div>
             <h4 className="text-center">User Name</h4>
@@ -138,42 +86,34 @@ const savedPlacesData = [
                     tabBarStyle={{ borderRight: "none" }}
                     tabPosition="left" // Display tabs vertically on the left
                   >
-            <TabPane
-              tab={
-                <span>
-                  <i className="fa fa-home text-center mr-1"></i> User Profile
-                </span>
-              }
-              key="account"
-            >
-              {/* Account tab content */}
-              {/* Add the form elements and content related to the Account tab */}
-            </TabPane>
-            <TabPane
-              tab={
-                <span>
-                  <i className="fa fa-key text-center mr-1"></i> Reset Password
-                </span>
-              }
-              key="password"
-            >
-              {/* Password tab content */}
-              {/* Add the form elements and content related to the Password tab */}
-            </TabPane>
-            <TabPane
-              tab={
-                <span>
-                  <i className="fa fa-user text-center mr-1"></i> Saved Places
-                </span>
-              }
-              key="saved places"
-            >
-              {/* Saved Places tab content */}
-              {/* Add the form elements and content related to the Saved Places tab */}
-            </TabPane>
+         <TabPane
+           tab={
+             <span style={{ fontSize: "24px", color: "#DCD7C9" }}>
+               <i className="fa fa-home text-center mr-1"></i> User Profile
+             </span>
+           }
+           key="account"
+         >
+           {/* Account tab content */}
+           {/* Add the form elements and content related to the Account tab */}
+         </TabPane>
+         <TabPane
+           tab={
+             <span style={{ fontSize: "24px", color: "#DCD7C9" }}>
+               <i className="fa fa-key text-center mr-1"></i> Reset Password
+             </span>
+           }
+           key="password"
+         >
+           {/* Password tab content */}
+           {/* Add the form elements and content related to the Password tab */}
+         </TabPane>
+
+
           </Tabs>
         </div>
-        <div className="tab-content p-4 p-md-5" id="v-pills-tabContent">
+
+          <div className="col-8 right-container tab-content p-4 p-md-5" id="v-pills-tabContent" >
           <div
             className={`tab-pane fade ${
               activeTab === "account" ? "show active" : ""
@@ -182,79 +122,99 @@ const savedPlacesData = [
             role="tabpanel"
             aria-labelledby="account-tab"
           >
-            <h3 className="mb-4">User Profile</h3>
+            <h2 className="mb-4" >User Profile</h2>
             <div className="row">
-              <div className="col-md-6">
-                <div className="form-group">
-                  <label>First Name</label>
+             <div className="col-md-8 mx-auto">
+                         <div className="form-group" style={{ width: "100%", fontSize: "23px" }}>
+                  <label style={{ fontSize: "23px" }}>First Name</label>
                   <input
                     type="text"
                     className="form-control"
+
                     value={firstName}
                     onChange={handleFirstNameChange}
+                     style={{ fontSize: "23px", width: "100%" }}
                   />
                 </div>
               </div>
-              <div className="col-md-6">
-                <div className="form-group">
-                  <label>Last Name</label>
+              <div className="col-md-8 mx-auto">
+                          <div className="form-group" style={{ width: "100%", fontSize: "23px" }}>
+                  <label style={{ fontSize: "23px" }}>Last Name</label>
                   <input
                     type="text"
                     className="form-control"
                     value={lastName}
                     onChange={handleLastNameChange}
+                     style={{ fontSize: "23px", width: "100%" }}
                   />
                 </div>
               </div>
-              <div className="col-md-6">
-                <div className="form-group">
-                  <label>Email</label>
+              <div className="col-md-8 mx-auto">
+                          <div className="form-group" style={{ width: "100%", fontSize: "23px" }}>
+                  <label style={{ fontSize: "23px" }}>Email</label>
                   <input
                     type="text"
                     className="form-control"
                     value={email}
                     onChange={handleEmailChange}
+                     style={{ fontSize: "23px", width: "100%" }}
                   />
                 </div>
               </div>
-              <div className="col-md-6">
-                <div className="form-group">
-                  <label>Phone number</label>
+               <div className="col-md-8 mx-auto">
+                           <div className="form-group" style={{ width: "100%", fontSize: "23px" }}>
+                  <label style={{ fontSize: "23px" }}>Phone number</label>
                   <input
                     type="text"
                     className="form-control"
                     value={phoneNumber}
                     onChange={handlePhoneNumberChange}
+                     style={{ fontSize: "23px", width: "100%" }}
                   />
                 </div>
               </div>
-              <div className="col-md-6">
-                <div className="form-group">
-                  <label>Gender</label>
+               <div className="col-md-8 mx-auto">
+                           <div className="form-group" style={{ width: "100%", fontSize: "23px" }}>
+                  <label style={{ fontSize: "23px" }}>Gender</label>
                   <input
                     type="text"
                     className="form-control"
                     value={gender}
                     onChange={(e) => handleGenderChange(e.target.value)}
+                     style={{ fontSize: "23px", width: "100%" }}
                   />
                 </div>
               </div>
-              <div className="col-md-6">
-                <div className="form-group">
-                  <label>User name</label>
-                  <input
-                    type="text"
-                    className="form-control"
-                    value={username}
-                    onChange={handleUsernameChange}
-                  />
-                </div>
-              </div>
+           <div className="col-md-8 mx-auto">
+             <div className="form-group" style={{ width: "100%", fontSize: "23px" }}>
+               <label style={{ fontSize: "23px" }}>User name</label>
+               <input
+                 type="text"
+                 className="form-control"
+                 value={username}
+                 onChange={handleUsernameChange}
+                 style={{ fontSize: "23px", width: "100%" }}
+               />
+             </div>
+           </div>
+
             </div>
-            <div>
-              <button className="btn btn-primary">Update</button>
-              <button className="btn btn-light">Cancel</button>
-            </div>
+              <div className="text-center">
+                               {isEditing ? (
+                                 // If in editing mode, show update and cancel buttons
+                                <div>
+                                  <Button type="primary" size="large" onClick={handleUpdateClick} style={{ marginRight: "10px" }}>
+                                    Update
+                                  </Button>
+                                  <Button size="large" onClick={handleEditClick}>
+                                    Cancel
+                                  </Button>
+                                </div>
+                               ) : (
+                                 // If not in editing mode, show edit button
+                                 <Button size="large" onClick={handleEditClick}>Edit</Button>
+                               )}
+                             </div>
           </div>
           <div
             className={`tab-pane fade ${
@@ -264,64 +224,39 @@ const savedPlacesData = [
             role="tabpanel"
             aria-labelledby="password-tab"
           >
-            <h3 className="mb-4">Password Settings</h3>
+            <h2 className="mb-4">Password Settings</h2>
             <div className="row">
-              <div className="col-md-6">
-                <div className="form-group">
-                  <label>Old password</label>
+               <div className="col-md-8 mx-auto">
+                           <div className="form-group" style={{ width: "100%", fontSize: "23px" }}>
+                  <label style={{ fontSize: "23px" }}>Old password</label>
                   <input type="password" className="form-control" />
                 </div>
               </div>
             </div>
             <div className="row">
-              <div className="col-md-6">
-                <div className="form-group">
-                  <label>New password</label>
+              <div className="col-md-8 mx-auto" >
+                          <div className="form-group" style={{ width: "100%", fontSize: "23px" }}>
+                  <label style={{ fontSize: "23px" }}>New password</label>
                   <input type="password" className="form-control" />
                 </div>
               </div>
-              <div className="col-md-6">
-                <div className="form-group">
-                  <label>Confirm new password</label>
+              <div className="col-md-8 mx-auto">
+                          <div className="form-group" style={{ width: "100%", fontSize: "23px" }}>
+                  <label style={{ fontSize: "23px" }}>Confirm new password</label>
                   <input type="password" className="form-control" />
                 </div>
               </div>
             </div>
-            <div>
-              <button className="btn btn-primary">Update</button>
-              <button className="btn btn-light">Cancel</button>
-            </div>
+          <div className="d-flex justify-content-center">
+            <button className="btn btn-primary btn-lg me-2">Update</button>
+            <button className="btn btn-light btn-lg">Cancel</button>
           </div>
-          <div
-            className={`tab-pane fade ${
-              activeTab === "saved places" ? "show active" : ""
-            }`}
-            id="saved places"
-            role="tabpanel"
-            aria-labelledby="saved places-tab"
-          >
-          <h3 className="mb-4">Saved Places Settings</h3>
-                    <List
-                      grid={{ gutter: 9, column: 3 }} // Adjust the number of columns as needed
-                      dataSource={savedPlacesData}
-                      renderItem={(item) => (
-                      <List.Item>
-                                       <Card
-                                         cover={<img alt={item.title} src={item.imageSrc} />}
-                                         actions={[
-                                           // Use Link instead of Button for navigation
-                                           <Link to={`/edit/${item.id}`}><Button type="primary">Navigation </Button></Link>,
-                                           <Button danger>Delete</Button>,
-                                         ]}
-                                       >
-                                         <Card.Meta title={item.title} description={item.description} />
-                                       </Card>
-                                     </List.Item>
-                      )}
-                    />
+
+
           </div>
         </div>
-      </div>
+        </div>
+
     </section>
   );
 };

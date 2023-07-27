@@ -74,4 +74,8 @@ $background-color: #2C3639;
       margin-top: 40px;
     }
   }
+
+  @media screen and (max-width: 577px) {
+    height: 125vh;
+  }
 }

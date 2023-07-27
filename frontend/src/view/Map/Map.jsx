@@ -727,7 +727,7 @@ setSearchedPlaces(searchResults);
           </div>
         </div>
         <div className="search-button-container">
-          <Button type="primary" onClick={handleSearch}>
+          <Button type="primary" onClick={handleSearch} style={{ backgroundColor: "#627B82" }}>
             Search
           </Button>
         </div>
