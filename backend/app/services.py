@@ -123,7 +123,6 @@ def get_venues(request):
     
     venue_search_response = requests.post(url, params=params)
     meta_data = venue_search_response.json()
-    print(meta_data)
     search_progress_link = meta_data["_links"]["venue_search_progress"]
     search_progress_response = requests.get(search_progress_link)
     search_progress_response_json = search_progress_response.json()
