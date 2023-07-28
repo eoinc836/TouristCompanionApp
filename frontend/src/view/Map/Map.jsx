@@ -11,6 +11,7 @@ import moment from "moment";
 import Itinerary from './Itinerary';
 
 import WeatherForecast from './WeatherForecast';
+
 const { Option } = Select;
 
 // Top 20 attractions Markers
@@ -135,31 +136,31 @@ const BusyLegend = () => {
 
   return (
     <div
-    className="busy-legend"
-    style={{
-      position: "absolute",
-      top: "60px", // Change this value to 110px to move the legend 100px lower
-      left: "10px",
-      backgroundColor: "rgba(255, 255, 255, 0.8)",
-      padding: "15px",
-      borderRadius: "8px",
-      color: "#333",
-      boxShadow: '0px 0px 10px rgba(0, 0, 0, 0.2)',
-      border: '1px solid rgba(0, 0, 0, 0.1)',
-      fontFamily: '"Arial", sans-serif',
-    }}
+      className="busy-legend"
+      style={{
+        position: "absolute",
+        top: "60px", // Change this value to 110px to move the legend 100px lower
+        left: "10px",
+        backgroundColor: "rgba(255, 255, 255, 0.8)",
+        padding: "15px",
+        borderRadius: "8px",
+        color: "#333",
+        boxShadow: '0px 0px 10px rgba(0, 0, 0, 0.2)',
+        border: '1px solid rgba(0, 0, 0, 0.1)',
+        fontFamily: '"Arial", sans-serif',
+      }}
     >
-      <div style={{marginBottom: "15px", fontWeight: "bold", fontSize: "18px"}}>
-        Area Busyness    
+      <div style={{ marginBottom: "15px", fontWeight: "bold", fontSize: "18px" }}>
+        Area Busyness
       </div>
       {[
-        { busyness: 28, label: 'Very Low'},
-        { busyness: 138, label: 'Low'},
-        { busyness: 536, label: 'Medium'},
-        { busyness: 8000, label: 'High'},
-        { busyness: 15001, label: 'Very High'},
-      ].map(({busyness, label}) => (
-        <div style={{display: "flex",  alignItems: "center", marginBottom: "10px"}} key={label}>
+        { busyness: 28, label: 'Very Low' },
+        { busyness: 138, label: 'Low' },
+        { busyness: 536, label: 'Medium' },
+        { busyness: 8000, label: 'High' },
+        { busyness: 15001, label: 'Very High' },
+      ].map(({ busyness, label }) => (
+        <div style={{ display: "flex", alignItems: "center", marginBottom: "10px" }} key={label}>
           <div
             className="legend-color"
             style={{
@@ -195,32 +196,32 @@ const Map = () => {
   const [mapCenter, setMapCenter] = useState(center); // define a new state variable
 
   // Define new state for user geolocation
-const [userGeoLocation, setUserGeoLocation] = useState(null);
+  const [userGeoLocation, setUserGeoLocation] = useState(null);
 
-// New function to get user's geolocation
-const getUserGeoLocation = () => {
+  // New function to get user's geolocation
+  const getUserGeoLocation = () => {
     if (navigator.geolocation) {
-        navigator.geolocation.getCurrentPosition((position) => {
-            const { latitude: lat, longitude: lng } = position.coords;
-            setUserGeoLocation({ lat, lng });
-            setUserMarkers([{ lat, lng }]);
-            setMapCenter({ lat, lng });
-        });
+      navigator.geolocation.getCurrentPosition((position) => {
+        const { latitude: lat, longitude: lng } = position.coords;
+        setUserGeoLocation({ lat, lng });
+        setUserMarkers([{ lat, lng }]);
+        setMapCenter({ lat, lng });
+      });
     } else {
-        alert("Geolocation is not supported by this browser.");
+      alert("Geolocation is not supported by this browser.");
     }
-};
+  };
 
-// Function to handle user geolocation marker click
-const handleUserGeoMarkerClick = () => {
+  // Function to handle user geolocation marker click
+  const handleUserGeoMarkerClick = () => {
     setUserGeoLocation(null);
     setUserMarkers(userMarkers.filter(marker => marker.lat !== userGeoLocation.lat && marker.lng !== userGeoLocation.lng));
-};
+  };
 
   useEffect(() => {
     // update the map center only during the initial rendering
     setMapCenter(center);
-}, []);
+  }, []);
 
   const zoom = 14;
 
@@ -249,13 +250,13 @@ const handleUserGeoMarkerClick = () => {
   const [isMapClicked, setIsMapClicked] = useState(false);
   const [newMarkers, setNewMarkers] = useState([]);
 
-const [directions, setDirections] = useState(null);
-const [error, setError] = useState(null);
-// Add a new state for route visibility
-const [isRoutingOn, setIsRoutingOn] = useState(false);
-// Add a new state for the directions renderer instance
-const [directionsRenderer, setDirectionsRenderer] = useState(null);
-const [itinerary, setItinerary] = useState(""); // add this line to initialize itinerary state
+  const [directions, setDirections] = useState(null);
+  const [error, setError] = useState(null);
+  // Add a new state for route visibility
+  const [isRoutingOn, setIsRoutingOn] = useState(false);
+  // Add a new state for the directions renderer instance
+  const [directionsRenderer, setDirectionsRenderer] = useState(null);
+  const [itinerary, setItinerary] = useState(""); // add this line to initialize itinerary state
 
   const mapRef = useRef(null);
 
@@ -266,7 +267,7 @@ const [itinerary, setItinerary] = useState(""); // add this line to initialize i
         alert("Both the user and the destination need to be defined for routing.");
       } else {
         const DirectionsService = new window.google.maps.DirectionsService();
-    
+
         DirectionsService.route({
           origin: new window.google.maps.LatLng(userMarkers[0].lat, userMarkers[0].lng),
           destination: new window.google.maps.LatLng(newMarkers[0].position.lat, newMarkers[0].position.lng),
@@ -282,19 +283,16 @@ const [itinerary, setItinerary] = useState(""); // add this line to initialize i
     } else {
       setDirectionsRenderer(null); // Remove the route by setting the directions renderer to null
     }
-  
+
     setIsRoutingOn(!isRoutingOn); // Toggle the routing state
 
-  const mapRef = useRef(null);
-
+  };
   const [weatherDataFromAPI, setWeatherDataFromAPI] = useState(null);
-
   const handleWeatherDataReceived = (data) => {
     setWeatherDataFromAPI(data);
-
   };
 
-// Best Times filters
+  // Best Times filters
   const options = [
     {
       label: "Place Type",
@@ -416,54 +414,54 @@ const [itinerary, setItinerary] = useState(""); // add this line to initialize i
 
   function handlePredictionToggle(checked) {
     setShowPrediction(checked);
-  
+
     // Only set to the current time and trigger the API request on the first switch to "Manhattan Zones".
     if (checked && firstSwitch) {
       setDate(moment());
       handleApiRequest(moment());
       setFirstSwitch(false);
     }
-  
+
     if (dataLayerRef.current) {
       // If we're switching back to the Basic Map, clear the zones from the map.
       // If we're switching to the "Manhattan Zones", show the zones on the map.
       dataLayerRef.current.setMap(checked ? mapRef.current : null);
     }
   }
-  
-// User marker behavior 
-const handleMapClick = (event) => {
-  const { latLng } = event;
-  const lat = latLng.lat();
-  const lng = latLng.lng();
-  const position = { lat, lng };
 
-  // If the user clicks on their geolocation marker, handle it separately
-  if (userGeoLocation && userGeoLocation.lat === lat && userGeoLocation.lng === lng) {
-    handleUserGeoMarkerClick();
-  } else if (userMarkers.length === 0) {
-    // If there are no user markers, add the new user marker
-    setUserMarkers([position]);
-    setIsMapClicked(true);
-  } else {
-    const [existingMarker] = userMarkers;
-    // If the user clicks on the existing user marker, remove it
-    if (existingMarker.lat === lat && existingMarker.lng === lng) {
-      setUserMarkers([]);
-    } else {
-      // If the user clicks somewhere else, remove the old marker and create a new one
+  // User marker behavior 
+  const handleMapClick = (event) => {
+    const { latLng } = event;
+    const lat = latLng.lat();
+    const lng = latLng.lng();
+    const position = { lat, lng };
+
+    // If the user clicks on their geolocation marker, handle it separately
+    if (userGeoLocation && userGeoLocation.lat === lat && userGeoLocation.lng === lng) {
+      handleUserGeoMarkerClick();
+    } else if (userMarkers.length === 0) {
+      // If there are no user markers, add the new user marker
       setUserMarkers([position]);
+      setIsMapClicked(true);
+    } else {
+      const [existingMarker] = userMarkers;
+      // If the user clicks on the existing user marker, remove it
+      if (existingMarker.lat === lat && existingMarker.lng === lng) {
+        setUserMarkers([]);
+      } else {
+        // If the user clicks somewhere else, remove the old marker and create a new one
+        setUserMarkers([position]);
+      }
     }
-  }
-};
+  };
 
 
 
-const handleUserMarkerClick = (index) => {
-  setUserMarkers((prevMarkers) => {
+  const handleUserMarkerClick = (index) => {
+    setUserMarkers((prevMarkers) => {
       return prevMarkers.filter((_, i) => i !== index);
-  });
-};
+    });
+  };
 
 
   const userMarkerIcons = {
@@ -482,47 +480,47 @@ const handleUserMarkerClick = (index) => {
   };
 
   // Prediction variables 
-const format = 'HH'; // The format for time (e.g., "HH:mm")
-const map = useRef(null); // Reference to the Google Maps instance
-const validZones = [  262, 261, 249, 246, 244, 243, 263, 238, 237, 236, 234, 233, 232, 239, 231,
-  230, 229, 224, 211, 209, 202, 194, 186, 166, 170, 164, 163, 162, 161, 158,
-  153, 148, 144, 143, 152, 142, 141, 137, 140, 151, 128, 127, 120, 116, 114,
-  113, 107, 103, 100, 125, 90, 88, 87, 75, 74, 79, 68, 50, 48, 43, 42, 45, 41,
-  13, 12, 24, 4 ];
+  const format = 'HH'; // The format for time (e.g., "HH:mm")
+  const map = useRef(null); // Reference to the Google Maps instance
+  const validZones = [262, 261, 249, 246, 244, 243, 263, 238, 237, 236, 234, 233, 232, 239, 231,
+    230, 229, 224, 211, 209, 202, 194, 186, 166, 170, 164, 163, 162, 161, 158,
+    153, 148, 144, 143, 152, 142, 141, 137, 140, 151, 128, 127, 120, 116, 114,
+    113, 107, 103, 100, 125, 90, 88, 87, 75, 74, 79, 68, 50, 48, 43, 42, 45, 41,
+    13, 12, 24, 4];
 
-// Busyness Coloration 
-const getZoneColor = (busyness) => {
-  console.log("Busyness Level:", busyness);
-  const opacity = 1; // Set your desired opacity here
+  // Busyness Coloration 
+  const getZoneColor = (busyness) => {
+    console.log("Busyness Level:", busyness);
+    const opacity = 1; // Set your desired opacity here
 
-  if (busyness === 0 || isNaN(busyness)) {
-    return `rgba(248, 248, 248, ${opacity})`; // Transparent color for no data or invalid busyness value
-  } else if (busyness <= 28) {
-    return `rgba(0, 128, 0, ${opacity})`; // Deep Green for very low busyness
-  } else if (busyness <= 138) {
-    return `rgba(144, 238, 144, ${opacity})`; // Green Yellow for low busyness
-  } else if (busyness <= 536) {
-    return `rgba(255, 255, 0, ${opacity})`; // Yellow for medium busyness
-  } else if (busyness <= 8000) {
-    return `rgba(255, 165, 0, ${opacity})`; // Orange for high busyness
-  } else {
-    return `rgba(255, 0, 0, ${opacity})`; // Deep Red for very high busyness
-  }
-};
+    if (busyness === 0 || isNaN(busyness)) {
+      return `rgba(248, 248, 248, ${opacity})`; // Transparent color for no data or invalid busyness value
+    } else if (busyness <= 28) {
+      return `rgba(0, 128, 0, ${opacity})`; // Deep Green for very low busyness
+    } else if (busyness <= 138) {
+      return `rgba(144, 238, 144, ${opacity})`; // Green Yellow for low busyness
+    } else if (busyness <= 536) {
+      return `rgba(255, 255, 0, ${opacity})`; // Yellow for medium busyness
+    } else if (busyness <= 8000) {
+      return `rgba(255, 165, 0, ${opacity})`; // Orange for high busyness
+    } else {
+      return `rgba(255, 0, 0, ${opacity})`; // Deep Red for very high busyness
+    }
+  };
 
-// Handle time change event
-const handleTimeChange = (time, timeString) => {
-  setSelectedTime(time);
-  setShowPrediction(true);
-  console.log(time, timeString);
-};
+  // Handle time change event
+  const handleTimeChange = (time, timeString) => {
+    setSelectedTime(time);
+    setShowPrediction(true);
+    console.log(time, timeString);
+  };
 
-// Handle date change event
-const handleDateChange = (date, dateString) => {
-  setDate(date);
-  setShowPrediction(true);
-  console.log(date, dateString);
-};
+  // Handle date change event
+  const handleDateChange = (date, dateString) => {
+    setDate(date);
+    setShowPrediction(true);
+    console.log(date, dateString);
+  };
 
 
   // Fetch GeoJSON data and update the map
@@ -543,32 +541,27 @@ const handleDateChange = (date, dateString) => {
         // Update the state with the fetched data
         setJsonData(data);
 
-
       } catch (error) {
         console.error('Error fetching JSON data:', error);
       }
     };
+    fetchData();
+  }, []); // Assuming you only want to fetch data on initial render
 
+  const dataLayerRef = useRef(null);
+  const [hoveredZone, setHoveredZone] = useState(null);
+  const getPixelPositionOffset = (width, height) => ({
+    x: -(width / 2),
+    y: -(height / 2),
+  });
 
-const dataLayerRef = useRef(null);
-const [hoveredZone, setHoveredZone] = useState(null);
-const getPixelPositionOffset = (width, height) => ({
-  x: -(width / 2),
-  y: -(height / 2),
-})
-
-// Geojson and Busyness coloration logic 
-useEffect(() => {
-  if (!showPrediction) return;
-  if (mapRef.current && jsonData) {
-    const dataLayer = new window.google.maps.Data({
-      clickable: true,
-    });
-
-
+  // Geojson and Busyness coloration logic 
   useEffect(() => {
+    if (!showPrediction) return;
     if (mapRef.current && jsonData) {
-      const dataLayer = new window.google.maps.Data();
+      const dataLayer = new window.google.maps.Data({
+        clickable: true,
+      });
 
       const filteredData = {
         ...jsonData,
@@ -590,31 +583,18 @@ useEffect(() => {
         };
       });
 
+      dataLayer.addListener('mouseover', (event) => {
+        const zone = event.feature.getProperty('zone');
+        const location_id = event.feature.getProperty('location_id');
+        const busyness = predictions[location_id.toString()] || 0;
+        setHoveredZone({ id: zone, location_id: location_id, busyness: busyness, position: event.latLng });
+      });
 
-    dataLayer.setStyle(feature => {
-      const zoneId = parseInt(feature.getProperty('location_id'), 10);
-      const busyness = predictions[zoneId.toString()] || 0;
-      const fillColor = getZoneColor(busyness);
-      return {
-        fillColor: fillColor,
-        strokeColor: "#000000",
-        strokeWeight: 1,
-      };
-    });
-    
-    dataLayer.addListener('mouseover', (event) => {
-      const zone = event.feature.getProperty('zone');
-      const location_id = event.feature.getProperty('location_id');
-      const busyness = predictions[location_id.toString()] || 0;
-      setHoveredZone({ id: zone, location_id: location_id, busyness: busyness, position: event.latLng });
-    });
-    
-    
-    dataLayer.addListener('mouseout', () => {
-      setHoveredZone(null);
-    });
-    
-    dataLayer.addListener('click', handleMapClick);
+      dataLayer.addListener('mouseout', () => {
+        setHoveredZone(null);
+      });
+
+      dataLayer.addListener('click', handleMapClick);
 
       if (dataLayerRef.current) {
         dataLayerRef.current.setMap(null);
@@ -623,41 +603,37 @@ useEffect(() => {
       dataLayerRef.current = dataLayer;
       dataLayer.setMap(mapRef.current);
     }
+  }, [jsonData, predictions, showPrediction]);
 
+  const getBusynessDescription = (busyness) => {
+    if (busyness === 0 || isNaN(busyness)) {
+      return "No data";
+    } else if (busyness <= 28) {
+      return "Very Low";
+    } else if (busyness <= 138) {
+      return "Low";
+    } else if (busyness <= 536) {
+      return "Medium";
+    } else if (busyness <= 8000) {
+      return "High";
+    } else {
+      return "Very High";
+    }
+  };
 
-    dataLayerRef.current = dataLayer;
-    dataLayer.setMap(mapRef.current);
-  }
-}, [jsonData, predictions, showPrediction]);
-
-const getBusynessDescription = (busyness) => {
-  if (busyness === 0 || isNaN(busyness)) {
-    return "No data";
-  } else if (busyness <= 28) {
-    return "Very Low";
-  } else if (busyness <= 138) {
-    return "Low";
-  } else if (busyness <= 536) {
-    return "Medium";
-  } else if (busyness <= 8000) {
-    return "High";
-  } else {
-    return "Very High";
-  }
-};
 
 
   // Declare the new state variable
   const [previousDate, setPreviousDate] = useState(null);
 
 
-// Handle API request to get predictions
-const handleApiRequest = useCallback(() => {
-  if (!showPrediction) return;
-  if (date) {
-    const hour = date.format(format);
-    const month = date.format('MM');
-    const dayOfMonth = date.format('DD');
+  // Handle API request to get predictions
+  const handleApiRequest = useCallback(() => {
+    if (!showPrediction) return;
+    if (date) {
+      const hour = date.format(format);
+      const month = date.format('MM');
+      const dayOfMonth = date.format('DD');
 
 
       const url = `http://localhost:8000/api/predict?hour=${hour}&month=${month}&day_of_month=${dayOfMonth}`;
@@ -724,14 +700,14 @@ const handleApiRequest = useCallback(() => {
   }, [map, getZoneColor]); // Add map and getZoneColor as dependencies
 
 
-useEffect(() => {
-  // Only perform an API request if the selected date has actually changed
-  if (date && (!previousDate || !date.isSame(previousDate))) {
+  useEffect(() => {
+    // Only perform an API request if the selected date has actually changed
+    if (date && (!previousDate || !date.isSame(previousDate))) {
 
-    handleApiRequest();
-    setPreviousDate(date);
-  }
-}, [date, previousDate, handleApiRequest]);
+      handleApiRequest();
+      setPreviousDate(date);
+    }
+  }, [date, previousDate, handleApiRequest]);
 
 
   const handlePlaceSelected = (place) => {
@@ -743,7 +719,7 @@ useEffect(() => {
     setDrawerVisible(true);
     setIsSearchButtonClicked(true);
     setSelectedMarker(null);
-  
+
     const searchResults = [
       { position: { lat: 40.7831, lng: -73.9712 }, title: "Central Park" },
       { position: { lat: 40.7589, lng: -73.9851 }, title: "Times Square" },
@@ -768,7 +744,13 @@ useEffect(() => {
       }))
 
     );
-  
+
+    // Add this part
+    let searchResult = searchResults.find(
+      (place) =>
+        place.title.toLowerCase() === destination.toLowerCase()
+    );
+
     if (searchResult) {
       // If the place was found in the predefined places, add a marker for it
       setNewMarkers([
@@ -783,7 +765,7 @@ useEffect(() => {
     } else {
       // If the place was not found in the predefined places, use the Places API to search for it
       const service = new window.google.maps.places.PlacesService(mapRef.current);
-  
+
       service.findPlaceFromQuery(
         {
           query: destination,
@@ -820,7 +802,7 @@ useEffect(() => {
   const handlePlaceChanged = () => {
     if (autocompleteRef.current !== null) {
       const place = autocompleteRef.current.getPlace();
-  
+
       // Set the center of the map to the coordinates of the selected place
       if (place.geometry && place.geometry.location) {
         setMapCenter({
@@ -843,59 +825,55 @@ useEffect(() => {
           },
         ]);
       }
-  
+
       console.log(place);
 
-      setDestination(place.name);
-      setNewMarkers([...newMarkers, newMarker]);
-      setSelectedMarker(newMarker)
-      setDrawerVisible(true)
 
     }
   };
 
-// Info window when hovering on zone
-const HoveredZoneInfo = ({ hoveredZone, getBusynessDescription }) => {
-  return (
-    <div
-      className="hovered-zone-info"
-      style={{
-        position: "absolute",
-        top: "5px", // Reduce the top padding
-        left: "200px",
-        backgroundColor: "rgba(255, 255, 255, 0.8)",
-        padding: "10px 15px", // Reduce the top and bottom padding, keep the left and right padding
-        borderRadius: "8px",
-        color: "#333",
-        boxShadow: "0px 0px 10px rgba(0, 0, 0, 0.2)",
-        border: "1px solid rgba(0, 0, 0, 0.1)",
-        fontFamily: '"Arial", sans-serif',
-        display: hoveredZone ? "block" : "none", // Hide the Info Window if no zone is hovered
-      }}
-    >
-      {hoveredZone && (
-        <>
-          <div>
-            <span style={{ fontWeight: "bold" }}>Zone:</span>{" "}
-            {hoveredZone.id}
-          </div>
-          <div>
-            <span style={{ fontWeight: "bold" }}>Busyness:</span>{" "}
-            {getBusynessDescription(hoveredZone.busyness)}
-          </div>
-        </>
-      )}
-    </div>
-  );
-};
+  // Info window when hovering on zone
+  const HoveredZoneInfo = ({ hoveredZone, getBusynessDescription }) => {
+    return (
+      <div
+        className="hovered-zone-info"
+        style={{
+          position: "absolute",
+          top: "5px", // Reduce the top padding
+          left: "200px",
+          backgroundColor: "rgba(255, 255, 255, 0.8)",
+          padding: "10px 15px", // Reduce the top and bottom padding, keep the left and right padding
+          borderRadius: "8px",
+          color: "#333",
+          boxShadow: "0px 0px 10px rgba(0, 0, 0, 0.2)",
+          border: "1px solid rgba(0, 0, 0, 0.1)",
+          fontFamily: '"Arial", sans-serif',
+          display: hoveredZone ? "block" : "none", // Hide the Info Window if no zone is hovered
+        }}
+      >
+        {hoveredZone && (
+          <>
+            <div>
+              <span style={{ fontWeight: "bold" }}>Zone:</span>{" "}
+              {hoveredZone.id}
+            </div>
+            <div>
+              <span style={{ fontWeight: "bold" }}>Busyness:</span>{" "}
+              {getBusynessDescription(hoveredZone.busyness)}
+            </div>
+          </>
+        )}
+      </div>
+    );
+  };
 
-// Add this to your state variable declarations
-const [showTourStops, setShowTourStops] = useState(true);
+  // Add this to your state variable declarations
+  const [showTourStops, setShowTourStops] = useState(true);
 
-// Add this function to handle the switch's change event
-const handleTourStopsToggle = () => {
-  setShowTourStops(!showTourStops);
-};
+  // Add this function to handle the switch's change event
+  const handleTourStopsToggle = () => {
+    setShowTourStops(!showTourStops);
+  };
 
 
   if (loadError) return "Error loading maps";
@@ -946,93 +924,94 @@ const handleTourStopsToggle = () => {
           </div>
         </div>
         <Button type="primary" onClick={handleSearch} className="button search-button">
-    Search
-</Button>
-<Button type="primary" onClick={getUserGeoLocation} className="button geo-button">
-    Locate Me
-</Button>
-<div className="routing-button-container">
-    <Button type="primary" onClick={handleRouting} className="button routing-button">
-        {isRoutingOn ? "Remove Route" : "Show Route"}
-    </Button>
-</div>
-<Itinerary setItinerary={setItinerary} />  {/* Here we are using Itinerary component */}
+          Search
+        </Button>
+        <Button type="primary" onClick={getUserGeoLocation} className="button geo-button">
+          Locate Me
+        </Button>
+        <div className="routing-button-container">
+          <Button type="primary" onClick={handleRouting} className="button routing-button">
+            {isRoutingOn ? "Remove Route" : "Show Route"}
+          </Button>
+        </div>
+        <Itinerary setItinerary={setItinerary} />  {/* Here we are using Itinerary component */}
       </div>
 
 
       <div className="map">
 
-      <GoogleMap 
-    mapContainerStyle={mapContainerStyle} 
-    zoom={zoom} 
-    center={mapCenter} // use mapCenter instead of center
-    onClick={handleMapClick}
-    onLoad={map => {
-        mapRef.current = map;
-        setMapCenter({lat: map.getCenter().lat(), lng: map.getCenter().lng()});
-    }}
-    ref={mapRef}>
-      {directionsRenderer && <DirectionsRenderer directions={directionsRenderer} />}
-      {hoveredZone && (
-  <HoveredZoneInfo hoveredZone={hoveredZone} getBusynessDescription={getBusynessDescription} />
-)}
+        <GoogleMap
+          mapContainerStyle={mapContainerStyle}
+          zoom={zoom}
+          center={mapCenter} // use mapCenter instead of center
+          onClick={handleMapClick}
+          onLoad={map => {
+            mapRef.current = map;
+            setMapCenter({ lat: map.getCenter().lat(), lng: map.getCenter().lng() });
+          }}
+          ref={mapRef}>
+          {directionsRenderer && <DirectionsRenderer directions={directionsRenderer} />}
+          {hoveredZone && (
+            <HoveredZoneInfo hoveredZone={hoveredZone} getBusynessDescription={getBusynessDescription} />
+          )}
           {currentWeather && (
-  <div
-    className="weather-legend"
-    style={{
-      position: "absolute",
-      bottom: "10px",
-      left: "10px",
-      backgroundColor: "rgba(255, 255, 255, 0.8)",
-      padding: "15px",
-      borderRadius: "8px",
-      color: "#333",
-      boxShadow: '0px 0px 10px rgba(0, 0, 0, 0.2)',
-      border: '1px solid rgba(0, 0, 0, 0.1)',
-      fontFamily: '"Arial", sans-serif',
-    }}
-  >
-    <div style={{marginBottom: "15px", fontWeight: "bold", fontSize: "18px"}}>
-      Current Weather
-    </div>
-    <p><strong>Temperature:</strong> {currentWeather.main.temp}°C</p>
-        <p><strong>Condition:</strong> {currentWeather.weather[0].description}</p>
-    {currentWeather.weather[0].icon && (
-      <div style={{display: "flex", alignItems: "center", marginBottom: "10px"}}>
-        <img
-          src={`http://openweathermap.org/img/wn/${currentWeather.weather[0].icon}.png`}
-          alt="Weather Icon"
-          style={{
-            width: "20px",
-            height: "20px",
-            marginRight: "10px",
-            boxShadow: '0px 0px 5px rgba(0, 0, 0, 0.3)',
-            border: '1px solid rgba(0, 0, 0, 0.2)',
-          }}
-        />
-      </div>
-    )}
-  </div>
-)}
-<div
-          style={{
-            position: "absolute",
-            top: "55px",
-            right: "100px",
-          }}
-        >
-          <Switch
+            <div
+              className="weather-legend"
+              style={{
+                position: "absolute",
+                bottom: "10px",
+                left: "10px",
+                backgroundColor: "rgba(255, 255, 255, 0.8)",
+                padding: "15px",
+                borderRadius: "8px",
+                color: "#333",
+                boxShadow: '0px 0px 10px rgba(0, 0, 0, 0.2)',
+                border: '1px solid rgba(0, 0, 0, 0.1)',
+                fontFamily: '"Arial", sans-serif',
+              }}
+            >
+              <div style={{ marginBottom: "15px", fontWeight: "bold", fontSize: "18px" }}>
+                Current Weather
+              </div>
+              <p><strong>Temperature:</strong> {currentWeather.main.temp}°C</p>
+              <p><strong>Condition:</strong> {currentWeather.weather[0].description}</p>
+              {currentWeather.weather[0].icon && (
+                <div style={{ display: "flex", alignItems: "center", marginBottom: "10px" }}>
+                  <img
+                    src={`http://openweathermap.org/img/wn/${currentWeather.weather[0].icon}.png`}
+                    alt="Weather Icon"
+                    style={{
+                      width: "20px",
+                      height: "20px",
+                      marginRight: "10px",
+                      boxShadow: '0px 0px 5px rgba(0, 0, 0, 0.3)',
+                      border: '1px solid rgba(0, 0, 0, 0.2)',
+                    }}
+                  />
+                </div>
+              )}
+            </div>
+          )}
+          <div
+            style={{
+              position: "absolute",
+              top: "55px",
+              right: "100px",
+            }}
+          >
+            <Switch
 
-style={{ 
-  width: "200px", //2x wider
-  height: "40px" //2x taller
-}}
-            checkedChildren={<div style={{ fontSize: "16px" }}>Top 20 Attractions</div>}
-            unCheckedChildren={<div style={{ fontSize: "16px" }}>Top 20 Attractions</div>}
-            onChange={handleTourStopsToggle}
-            checked={showTourStops}
-          />
-        </div>
+              style={{
+                width: "200px", //2x wider
+                height: "40px" //2x taller
+              }}
+              checkedChildren={<div style={{ fontSize: "16px" }}>Top 20 Attractions</div>}
+              unCheckedChildren={<div style={{ fontSize: "16px" }}>Top 20 Attractions</div>}
+              onChange={handleTourStopsToggle}
+              checked={showTourStops}
+            />
+          </div>
+
 
           <WeatherForecast onWeatherDataReceived={handleWeatherDataReceived} />
           {weatherDataFromAPI && (
@@ -1043,33 +1022,34 @@ style={{
           )}
 
 
-        {showTourStops && tourStops.map(({ position, title, placeId }) => (
-              <Marker
-                key={`${position.lat}-${position.lng}`}
-                position={position}
-                onClick={() => handleMarkerClick({ position, title, placeId })}
-                onMouseOver={() =>
-                  handleMarkerMouseOver({ position, title, placeId })
-                }
-                onMouseOut={handleMarkerMouseOut}
-              >
-                {isMarkerHovered === `${position.lat}-${position.lng}` && (
-                  <InfoWindow zIndex={10} onCloseClick={handleMarkerClose}>
-                    <div>
-                      <h3>{title}</h3>
-                    </div>
-                  </InfoWindow>
-                )}
-              </Marker>
-            ))}
-    {userMarkers.map((marker, index) => (
-      <Marker
-          key={`user-marker-${index}`}
-          position={marker}
-          icon={userMarkerIcons.purple}
-          onClick={() => marker.lat === userGeoLocation?.lat && marker.lng === userGeoLocation?.lng ? handleUserGeoMarkerClick() : handleUserMarkerClick(index)}
-      />
-  ))}
+
+          {showTourStops && tourStops.map(({ position, title, placeId }) => (
+            <Marker
+              key={`${position.lat}-${position.lng}`}
+              position={position}
+              onClick={() => handleMarkerClick({ position, title, placeId })}
+              onMouseOver={() =>
+                handleMarkerMouseOver({ position, title, placeId })
+              }
+              onMouseOut={handleMarkerMouseOut}
+            >
+              {isMarkerHovered === `${position.lat}-${position.lng}` && (
+                <InfoWindow zIndex={10} onCloseClick={handleMarkerClose}>
+                  <div>
+                    <h3>{title}</h3>
+                  </div>
+                </InfoWindow>
+              )}
+            </Marker>
+          ))}
+          {userMarkers.map((marker, index) => (
+            <Marker
+              key={`user-marker-${index}`}
+              position={marker}
+              icon={userMarkerIcons.purple}
+              onClick={() => marker.lat === userGeoLocation?.lat && marker.lng === userGeoLocation?.lng ? handleUserGeoMarkerClick() : handleUserMarkerClick(index)}
+            />
+          ))}
           {newMarkers.map((marker, index) => (
             <Marker
               key={`new-marker-${index}`}
@@ -1078,24 +1058,24 @@ style={{
               icon={marker.icon}
             />
           ))}
-        <div
-    style={{
-        position: "absolute",
-        top: "10px",
-        right: "100px",
-    }}
->
-    <Switch
-        style={{ 
-            width: "200px", //2x wider
-            height: "40px" //2x taller
-        }}
-        checkedChildren={<div style={{fontSize: "16px"}}>Manhattan Zones</div>} //increased font size
-        unCheckedChildren={<div style={{fontSize: "16px"}}>Basic Map</div>} //increased font size
-        onChange={handlePredictionToggle}
-        checked={showPrediction}
-    />
-</div>
+          <div
+            style={{
+              position: "absolute",
+              top: "10px",
+              right: "100px",
+            }}
+          >
+            <Switch
+              style={{
+                width: "200px", //2x wider
+                height: "40px" //2x taller
+              }}
+              checkedChildren={<div style={{ fontSize: "16px" }}>Manhattan Zones</div>} //increased font size
+              unCheckedChildren={<div style={{ fontSize: "16px" }}>Basic Map</div>} //increased font size
+              onChange={handlePredictionToggle}
+              checked={showPrediction}
+            />
+          </div>
           <BusyLegend />
         </GoogleMap>
       </div>
