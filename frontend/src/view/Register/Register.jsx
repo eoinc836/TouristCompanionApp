@@ -49,7 +49,7 @@ const App = () => {
   const onFinish = (values) => {
     console.log("Received values of form: ", values);
     const csrftoken = getCookie("csrftoken");
-    fetch("/api/register", {
+    fetch("http://localhost:8000/api/register", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -62,7 +62,7 @@ const App = () => {
         // Handle response data if needed
         console.log("Response:", data);
 
-        navigate("../view/home/Home");
+        navigate("/login");
       })
       .catch((error) => {
         // Handle error if needed
