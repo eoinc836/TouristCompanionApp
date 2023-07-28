@@ -5,6 +5,8 @@ import Login from "../view/Login/Login";
 import Map from '../view/Map/Map';
 import Register from '../view/Register/Register';
 import TopAttractions from '../view/TopAttractions/TopAttractions';
+import SignUp from '../view/SignUp/SignUp';
+
 
 
 const Routes = [
@@ -21,6 +23,7 @@ const Routes = [
   { path: "/map", element: <Map /> },
   { path: "/register", element: <Register />},
   { path: "/topattractions", element: <TopAttractions /> },
+  { path: "/signup", element: <SignUp /> },
   
 ];
 

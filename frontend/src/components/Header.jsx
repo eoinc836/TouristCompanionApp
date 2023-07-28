@@ -1,16 +1,20 @@
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import React, { useState } from "react";
 import "./header.scss";
+import { useLocation } from "react-router-dom";
 
 export default function Header() {
-  const [isLoggedIn, setIsLoggedIn] = useState(false); // Default user is not logged in
+  const navigate = useNavigate();
+  var [isLoggedIn, setIsLoggedIn] = useState(false); // Default user is not logged in
+  var location = useLocation();
+  isLoggedIn = new URLSearchParams(location.search).get("loggedIn");
 
-  // Handle the event when the user clicks the "Logout" button
+  // Convert the string "true" or "false" to a boolean value
+  const isLoggedInBool = isLoggedIn === "true";
+
   const handleLogout = () => {
-    // Perform your logout operation, such as clearing user credentials, etc.
-
-    // Update the login status to false
     setIsLoggedIn(false);
+    navigate("/signup");
   };
 
   return (
@@ -40,7 +44,7 @@ export default function Header() {
 
             <li className="nav-item">
               <Link to="/map" className="nav-link">
-                Map Page
+                Map 
               </Link>
             </li>
           </ul>
@@ -67,17 +71,14 @@ export default function Header() {
             </Link>
 
             {/* Display "Login" or "Logout" button based on the login status */}
-            {isLoggedIn ? (
-              <button onClick={handleLogout} className="btn btn-primary me-2">
+            {isLoggedInBool ? (
+              <button onClick={handleLogout}  className="btn btn-primary me-2">
                 Logout
               </button>
             ) : (
               <>
-                <Link to="/login" className="btn btn-outline-primary me-2">
-                  Login
-                </Link>
-                <Link to="/register" className="btn btn-primary">
-                  Sign up
+                <Link to="/signup" className="btn btn-primary">
+                  Login or Register
                 </Link>
               </>
             )}

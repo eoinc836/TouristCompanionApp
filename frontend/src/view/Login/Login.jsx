@@ -14,16 +14,22 @@ const Login = () => {
     console.log("Received values of form: ", values);
 
     // Send login request to the backend
+    const csrftoken = getCookie("csrftoken");
     axios
-      .post("/api/login", {
-        username: values.username,
-        password: values.password,
-      })
+  .post("/api/login", {
+    username: values.username,
+    password: values.password,
+  }, {
+    headers: {
+      "Content-Type": "application/json",
+      "X-CSRFToken": csrftoken,
+    },
+  })
       .then((response) => {
         // Handle successful response
         console.log("Response:", response.data);
         // Perform appropriate actions, such as setting user identity information, redirecting to other pages, etc.
-        navigate("../view/home/Home"); // Redirect to '/home' page after successful login
+        navigate("/home"); // Redirect to '/home' page after successful login
       })
       .catch((error) => {
         // Handle error response
@@ -92,5 +98,21 @@ const Login = () => {
     </div>
   );
 };
+
+function getCookie(name) {
+  let cookieValue = null;
+  if (document.cookie && document.cookie !== "") {
+    const cookies = document.cookie.split(";");
+    for (let i = 0; i < cookies.length; i++) {
+      const cookie = cookies[i].trim();
+      // Does this cookie string begin with the name we want?
+      if (cookie.substring(0, name.length + 1) === name + "=") {
+        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+        break;
+      }
+    }
+  }
+  return cookieValue;
+}
 
 export default Login;

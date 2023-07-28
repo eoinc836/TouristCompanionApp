@@ -4,7 +4,12 @@ from django.contrib.auth import authenticate, logout
 from django.http import JsonResponse
 from .utils import is_us_holiday, model, zones, geo_json_data
 import json, datetime, os, pandas as pd
+from django.views.decorators.csrf import csrf_exempt
+from rest_framework_simplejwt.tokens import RefreshToken
+from rest_framework.decorators import api_view, permission_classes
+from rest_framework.permissions import IsAuthenticated
 
+@csrf_exempt
 def register(request):
     if request.method == 'POST':
         data = json.loads(request.body)
@@ -23,6 +28,7 @@ def register(request):
         else:
             return JsonResponse({'message': 'Passwords do not match!'}, status=400)
 
+@csrf_exempt
 def login(request):
     if request.method == 'POST':
         data = json.loads(request.body)
@@ -30,15 +36,23 @@ def login(request):
         password = data.get('password')
         user = authenticate(request, username=username, password=password)
         if user is not None:
-            return JsonResponse({'message': 'Logged in successfully!'})
+            refresh = RefreshToken.for_user(user)
+            access_token = str(refresh.access_token)
+            return JsonResponse({'access_token': access_token})
         else:
-            return JsonResponse({'message': 'Invalid credentials!'})
+            return JsonResponse({'error': 'Invalid credentials'}, status=401)
     else:
-        return JsonResponse({'message': 'Invalid request method!'})
-        
-def logout(request):
-    logout(request)
-    return JsonResponse({'message': 'Logout successful!'})
+        return JsonResponse({'error': 'Invalid request method'}, status=400)
+
+
+@api_view(['POST'])       
+@permission_classes([IsAuthenticated])
+def logout_view(request):
+    if request.method == 'POST':
+        logout(request)
+        return JsonResponse({'message': 'Logout successful!'})
+    else:
+        return JsonResponse({'error': 'Invalid request method'}, status=400)
 
 def predict(request):
     hour = request.GET['hour']
