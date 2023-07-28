@@ -149,7 +149,7 @@ const Home = () => (
               />
             </svg>
             <Link to= "/topattractions">
-            <h2>Top Attraction</h2>
+            <h2>Top Attractions</h2>
           </Link> 
           <p>Explore Top Attaractions in Manhattan</p>
           </div>
@@ -163,7 +163,7 @@ const Home = () => (
               Explore Manhattan: Discover Endless Scenery and Surprises
             </h2>
             <p className="lead">
-              Stroll through the streets and alleys of Manhattan, exploring the
+              Stroll through the streets and avenues of Manhattan, exploring the
               essence of this city. Discover unique architecture, breathtaking
               views, and rich historical landmarks that make Manhattan your
               adventure paradise.
