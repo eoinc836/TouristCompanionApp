@@ -10,6 +10,7 @@ import "./Map.scss";
 import moment from "moment";
 import Itinerary from './Itinerary';
 
+import WeatherForecast from './WeatherForecast';
 const { Option } = Select;
 
 // Top 20 attractions Markers
@@ -226,27 +227,28 @@ const handleUserGeoMarkerClick = () => {
   // Google Map API
   const { isLoaded, loadError } = useLoadScript({
     googleMapsApiKey: "AIzaSyA-vxxFyGSdqhaGkOwnfGhp-klnkMLRQJA",
-     libraries: libraries,
+    libraries: libraries,
   });
 
   const [selectedMarker, setSelectedMarker] = useState(null);
   const [drawerVisible, setDrawerVisible] = useState(false);
   const [placeDetails, setPlaceDetails] = useState([]);
   const [currentWeather, setCurrentWeather] = useState(null);
- const [predictions, setPredictions] = useState({});
-   const [showPrediction, setShowPrediction] = useState(false);
+  const [predictions, setPredictions] = useState({});
+  const [showPrediction, setShowPrediction] = useState(false);
   const [isMarkerHovered, setMarkerHovered] = useState(null);
   const [userMarkers, setUserMarkers] = useState([]);
   const [shouldRemoveMarkers, setShouldRemoveMarkers] = useState(false);
   const [destination, setDestination] = useState("");
   const [selectedFilters, setSelectedFilters] = useState([]);
   const [selectedTime, setSelectedTime] = useState(null);
- const [date, setDate] = useState(false);
+  const [date, setDate] = useState(false);
   const [jsonData, setJsonData] = useState(null);
   const [searchedPlaces, setSearchedPlaces] = useState([]);
   const [isSearchButtonClicked, setIsSearchButtonClicked] = useState(false);
   const [isMapClicked, setIsMapClicked] = useState(false);
   const [newMarkers, setNewMarkers] = useState([]);
+
 const [directions, setDirections] = useState(null);
 const [error, setError] = useState(null);
 // Add a new state for route visibility
@@ -282,6 +284,14 @@ const [itinerary, setItinerary] = useState(""); // add this line to initialize i
     }
   
     setIsRoutingOn(!isRoutingOn); // Toggle the routing state
+
+  const mapRef = useRef(null);
+
+  const [weatherDataFromAPI, setWeatherDataFromAPI] = useState(null);
+
+  const handleWeatherDataReceived = (data) => {
+    setWeatherDataFromAPI(data);
+
   };
 
 // Best Times filters
@@ -379,25 +389,6 @@ const [itinerary, setItinerary] = useState(""); // add this line to initialize i
     }
   }, [selectedMarker]);
 
-  // Weather API
-  useEffect(() => {
-    const getWeather = async (lat, lng) => {
-      try {
-        const response = await axios.get(
-          `https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lng}&appid=8c3cf13f8484456f6ede3a06d0a7d674&units=metric`
-        );
-        const weatherData = response.data;
-        setCurrentWeather(weatherData);
-      } catch (error) {
-        console.error(error);
-      }
-    };
-
-    const { lat, lng } = center;
-    getWeather(lat, lng);
-  }, []);
-
-  // Marker behavior
   const handleMarkerClick = (marker) => {
     setSelectedMarker(marker);
     setDrawerVisible(true);
@@ -467,11 +458,13 @@ const handleMapClick = (event) => {
 };
 
 
+
 const handleUserMarkerClick = (index) => {
   setUserMarkers((prevMarkers) => {
       return prevMarkers.filter((_, i) => i !== index);
   });
 };
+
 
   const userMarkerIcons = {
     purple: {
@@ -531,32 +524,31 @@ const handleDateChange = (date, dateString) => {
   console.log(date, dateString);
 };
 
-// Fetch GeoJSON data and update the map
-useEffect(() => {
-  const fetchData = async () => {
-    try {
-      const response = await fetch('http://localhost:8000/api/geoJson');
-      const data = await response.json();
 
-      // Log response details (optional)
-      console.log(response.status);
-      console.log(response.statusText);
-      console.log(response.headers);
+  // Fetch GeoJSON data and update the map
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const response = await fetch('http://localhost:8000/api/geoJson');
+        const data = await response.json();
 
-      // Log one feature to see its structure (optional)
-      console.log(data.features[0]);
+        // Log response details (optional)
+        console.log(response.status);
+        console.log(response.statusText);
+        console.log(response.headers);
 
-      // Update the state with the fetched data
-      setJsonData(data);
+        // Log one feature to see its structure (optional)
+        console.log(data.features[0]);
 
-      
-    } catch (error) {
-      console.error('Error fetching JSON data:', error);
-    }
-  };
+        // Update the state with the fetched data
+        setJsonData(data);
 
-  fetchData();
-}, []);
+
+      } catch (error) {
+        console.error('Error fetching JSON data:', error);
+      }
+    };
+
 
 const dataLayerRef = useRef(null);
 const [hoveredZone, setHoveredZone] = useState(null);
@@ -573,14 +565,31 @@ useEffect(() => {
       clickable: true,
     });
 
-    const filteredData = {
-      ...jsonData,
-      features: jsonData.features.filter(feature =>
-        validZones.includes(parseInt(feature.properties.location_id))
-      )
-    };
 
-    dataLayer.addGeoJson(filteredData);
+  useEffect(() => {
+    if (mapRef.current && jsonData) {
+      const dataLayer = new window.google.maps.Data();
+
+      const filteredData = {
+        ...jsonData,
+        features: jsonData.features.filter(feature =>
+          validZones.includes(parseInt(feature.properties.location_id))
+        )
+      };
+
+      dataLayer.addGeoJson(filteredData);
+
+      dataLayer.setStyle(feature => {
+        const zoneId = parseInt(feature.getProperty('location_id'), 10);
+        const busyness = predictions[zoneId.toString()] || 0;
+        const fillColor = getZoneColor(busyness);
+        return {
+          fillColor: fillColor,
+          strokeColor: "#000000",
+          strokeWeight: 1,
+        };
+      });
+
 
     dataLayer.setStyle(feature => {
       const zoneId = parseInt(feature.getProperty('location_id'), 10);
@@ -607,9 +616,14 @@ useEffect(() => {
     
     dataLayer.addListener('click', handleMapClick);
 
-    if (dataLayerRef.current) {
-      dataLayerRef.current.setMap(null);
+      if (dataLayerRef.current) {
+        dataLayerRef.current.setMap(null);
+      }
+
+      dataLayerRef.current = dataLayer;
+      dataLayer.setMap(mapRef.current);
     }
+
 
     dataLayerRef.current = dataLayer;
     dataLayer.setMap(mapRef.current);
@@ -632,8 +646,10 @@ const getBusynessDescription = (busyness) => {
   }
 };
 
-// Declare the new state variable
-const [previousDate, setPreviousDate] = useState(null);
+
+  // Declare the new state variable
+  const [previousDate, setPreviousDate] = useState(null);
+
 
 // Handle API request to get predictions
 const handleApiRequest = useCallback(() => {
@@ -643,68 +659,70 @@ const handleApiRequest = useCallback(() => {
     const month = date.format('MM');
     const dayOfMonth = date.format('DD');
 
-    const url = `http://localhost:8000/api/predict?hour=${hour}&month=${month}&day_of_month=${dayOfMonth}`;
 
-    axios
-      .get(url)
-      .then((response) => {
-        const data = response.data;
-        setPredictions(data);
+      const url = `http://localhost:8000/api/predict?hour=${hour}&month=${month}&day_of_month=${dayOfMonth}`;
 
-        // Update the map with predictions
-        if (mapRef.current && jsonData) {
-          // Before you add a new dataLayer, remove the old one from the map
-          if (dataLayerRef.current) {
-            dataLayerRef.current.setMap(null);
-          }
+      axios
+        .get(url)
+        .then((response) => {
+          const data = response.data;
+          setPredictions(data);
 
-          const dataLayer = new window.google.maps.Data();
-          const filteredData = {
-            ...jsonData,
-            features: jsonData.features.filter(feature =>
-              validZones.includes(parseInt(feature.properties.location_id))
-            )
-          };
-          
-          dataLayer.addGeoJson(filteredData);
-          dataLayer.setStyle(feature => {
-            const zoneId = parseInt(feature.getProperty('location_id'), 10);
-            const busyness = predictions[zoneId.toString()] || 0;
-            const fillColor = getZoneColor(busyness);
-            return {
-              fillColor: fillColor,
-              strokeColor: "#000000",
-              strokeWeight: 1,
+          // Update the map with predictions
+          if (mapRef.current && jsonData) {
+            // Before you add a new dataLayer, remove the old one from the map
+            if (dataLayerRef.current) {
+              dataLayerRef.current.setMap(null);
+            }
+
+            const dataLayer = new window.google.maps.Data();
+            const filteredData = {
+              ...jsonData,
+              features: jsonData.features.filter(feature =>
+                validZones.includes(parseInt(feature.properties.location_id))
+              )
             };
-          });
-          dataLayerRef.current = dataLayer;
-          dataLayer.setMap(mapRef.current);
-        }
-      })
-      .catch((error) => {
-        console.error(error);
+
+            dataLayer.addGeoJson(filteredData);
+            dataLayer.setStyle(feature => {
+              const zoneId = parseInt(feature.getProperty('location_id'), 10);
+              const busyness = predictions[zoneId.toString()] || 0;
+              const fillColor = getZoneColor(busyness);
+              return {
+                fillColor: fillColor,
+                strokeColor: "#000000",
+                strokeWeight: 1,
+              };
+            });
+            dataLayerRef.current = dataLayer;
+            dataLayer.setMap(mapRef.current);
+          }
+        })
+        .catch((error) => {
+          console.error(error);
+        });
+    } else {
+      console.log('Please select a date');
+    }
+  }, [date, jsonData, predictions]); // Add jsonData and predictions as dependencies
+
+
+  // Update the map with busyness levels
+  const updateMap = useCallback((predictionsData) => {
+    if (map.current && map.current.data) {
+      map.current.data.setStyle((feature) => {
+        const zoneId = parseInt(feature.getProperty('location_id'), 10);
+        const busyness = predictionsData[zoneId.toString()] || 0;
+        const fillColor = getZoneColor(busyness);
+        return {
+          fillColor: fillColor,
+          strokeColor: "#000000",
+          strokeWeight: 1,
+        };
       });
-  } else {
-    console.log('Please select a date');
-  }
-}, [date, jsonData, predictions]); // Add jsonData and predictions as dependencies
+    }
+  }, [map, getZoneColor]); // Add map and getZoneColor as dependencies
 
-
-// Update the map with busyness levels
-const updateMap = useCallback((predictionsData) => {
-  if (map.current && map.current.data) {
-    map.current.data.setStyle((feature) => {
-      const zoneId = parseInt(feature.getProperty('location_id'), 10);
-      const busyness = predictionsData[zoneId.toString()] || 0;
-      const fillColor = getZoneColor(busyness);
-      return {
-        fillColor: fillColor,
-        strokeColor: "#000000",
-        strokeWeight: 1,
-      };
-    });
-  }
-}, [map, getZoneColor]); // Add map and getZoneColor as dependencies
 
 useEffect(() => {
   // Only perform an API request if the selected date has actually changed
@@ -714,7 +732,6 @@ useEffect(() => {
     setPreviousDate(date);
   }
 }, [date, previousDate, handleApiRequest]);
-
 
 
   const handlePlaceSelected = (place) => {
@@ -739,11 +756,17 @@ useEffect(() => {
         title: "The Metropolitan Museum of Art",
       },
     ];
-  
+
     setSearchedPlaces(searchResults);
-  
-    const searchResult = searchResults.find(
-      (place) => place.title.toLowerCase() === destination.toLowerCase()
+    setNewMarkers(
+      searchResults.map((marker) => ({
+        ...marker,
+        icon: {
+          url: "https://maps.google.com/mapfiles/ms/icons/yellow-dot.png",
+          scaledSize: new window.google.maps.Size(40, 40),
+        },
+      }))
+
     );
   
     if (searchResult) {
@@ -822,7 +845,12 @@ useEffect(() => {
       }
   
       console.log(place);
+
       setDestination(place.name);
+      setNewMarkers([...newMarkers, newMarker]);
+      setSelectedMarker(newMarker)
+      setDrawerVisible(true)
+
     }
   };
 
@@ -893,17 +921,17 @@ const handleTourStopsToggle = () => {
           )}
 
         </div>
-       <div className="time-configuration">
-         <h5>Busyness Forecast Calendar</h5> {/* Display a heading for the time configuration */}
-         <DatePicker
-           value={date} // Set the selected date for the DatePicker
-           onChange={handleDateChange} // Handle the date change event with the specified function
-           onOk={handleApiRequest} // Handle the "OK" button click event with the specified function
-           showTime={{ format: format }} // Display time selector with the specified time format
-           format={`YYYY-MM-DD ${format}`} // Format for displaying the date and time in the DatePicker
-           style={{ width: "100%" }} // Set the width of the DatePicker
-         />
-       </div>
+        <div className="time-configuration">
+          <h5>Busyness Forecast Calendar</h5> {/* Display a heading for the time configuration */}
+          <DatePicker
+            value={date} // Set the selected date for the DatePicker
+            onChange={handleDateChange} // Handle the date change event with the specified function
+            onOk={handleApiRequest} // Handle the "OK" button click event with the specified function
+            showTime={{ format: format }} // Display time selector with the specified time format
+            format={`YYYY-MM-DD ${format}`} // Format for displaying the date and time in the DatePicker
+            style={{ width: "100%" }} // Set the width of the DatePicker
+          />
+        </div>
 
         <div className="filter-section">
           <div className="filter-section">
@@ -931,7 +959,9 @@ const handleTourStopsToggle = () => {
 <Itinerary setItinerary={setItinerary} />  {/* Here we are using Itinerary component */}
       </div>
 
+
       <div className="map">
+
       <GoogleMap 
     mapContainerStyle={mapContainerStyle} 
     zoom={zoom} 
@@ -1004,6 +1034,15 @@ style={{
           />
         </div>
 
+          <WeatherForecast onWeatherDataReceived={handleWeatherDataReceived} />
+          {weatherDataFromAPI && (
+            <div>
+              <table>
+              </table>
+            </div>
+          )}
+
+
         {showTourStops && tourStops.map(({ position, title, placeId }) => (
               <Marker
                 key={`${position.lat}-${position.lng}`}
@@ -1018,7 +1057,6 @@ style={{
                   <InfoWindow zIndex={10} onCloseClick={handleMarkerClose}>
                     <div>
                       <h3>{title}</h3>
-                      {/* Other information */}
                     </div>
                   </InfoWindow>
                 )}
