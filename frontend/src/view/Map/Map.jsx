@@ -744,6 +744,7 @@ const Map = () => {
       }))
 
     );
+   
 
     // Add this part
     let searchResult = searchResults.find(
@@ -773,6 +774,7 @@ const Map = () => {
         },
         (results, status) => {
           if (status === window.google.maps.places.PlacesServiceStatus.OK) {
+   
             setNewMarkers([
               {
                 position: {
@@ -800,6 +802,7 @@ const Map = () => {
   };
 
   const handlePlaceChanged = () => {
+    console.log('j')
     if (autocompleteRef.current !== null) {
       const place = autocompleteRef.current.getPlace();
 
@@ -811,19 +814,26 @@ const Map = () => {
         });
 
         // Add a new marker at the selected place
-        setNewMarkers([
-          {
-            position: {
-              lat: place.geometry.location.lat(),
-              lng: place.geometry.location.lng(),
-            },
+        let bestTimeMarker;
+
+        bestTimeMarker = {
+          position: {
+            lat: place.geometry.location.lat(),
+            lng: place.geometry.location.lng(),
+                    },
             title: place.name,
             icon: {
               url: "https://maps.google.com/mapfiles/ms/icons/yellow-dot.png",
               scaledSize: new window.google.maps.Size(40, 40),
             },
-          },
+        }
+
+        setNewMarkers([
+          bestTimeMarker,
         ]);
+
+        setSelectedMarker(bestTimeMarker)
+        setDrawerVisible(true)
       }
 
       console.log(place);
