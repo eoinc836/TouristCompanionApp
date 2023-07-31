@@ -59,32 +59,15 @@ const App = () => {
     })
       .then((response) => response.json())
       .then((data) => {
-        // Handle response data if needed
+
         console.log("Response:", data);
 
         navigate("/login");
       })
       .catch((error) => {
-        // Handle error if needed
         console.error("Error:", error);
       });
   };
-
-  const prefixSelector = (
-    <Form.Item name="prefix" noStyle>
-      <Select style={{ width: 70 }}>
-        <Option value="1">+1</Option>
-        <Option value="86">+86</Option>
-        <Option value="353">+353</Option>
-        <Option value="44">+44</Option>
-        <Option value="61">+61</Option>
-        <Option value="49">+49</Option>
-        <Option value="33">+33</Option>
-        <Option value="34">+343</Option>
-        <Option value="39">+39</Option>
-      </Select>
-    </Form.Item>
-  );
 
   const [autoCompleteResult, setAutoCompleteResult] = useState([]);
 
@@ -101,32 +84,6 @@ const App = () => {
           scrollToFirstError
         >
           <Form.Item
-            name="fname"
-            label="First Name"
-            rules={[
-              {
-                required: true,
-                message: "Please input your first name!",
-              },
-            ]}
-          >
-            <Input />
-          </Form.Item>
-
-          <Form.Item
-            name="lname"
-            label="Last Name"
-            rules={[
-              {
-                required: true,
-                message: "Please input your last name!",
-              },
-            ]}
-          >
-            <Input />
-          </Form.Item>
-
-          <Form.Item
             name="email"
             label="E-mail"
             rules={[
@@ -137,6 +94,21 @@ const App = () => {
               {
                 required: true,
                 message: "Please input your E-mail!",
+              },
+            ]}
+          >
+            <Input />
+          </Form.Item>
+
+          <Form.Item
+            name="username"
+            label="Username"
+            tooltip="What do you want others to call you?"
+            rules={[
+              {
+                required: true,
+                message: "Please input your username!",
+                whitespace: true,
               },
             ]}
           >
@@ -182,52 +154,14 @@ const App = () => {
             <Input.Password />
           </Form.Item>
 
-          <Form.Item
-            name="username"
-            label="Username"
-            tooltip="What do you want others to call you?"
-            rules={[
-              {
-                required: true,
-                message: "Please input your username!",
-                whitespace: true,
-              },
-            ]}
-          >
-            <Input />
-          </Form.Item>
 
-          <Form.Item name="phone" label="Phone Number">
-            <Input addonBefore={prefixSelector} style={{ width: "100%" }} />
-          </Form.Item>
 
-          <Form.Item
-            name="gender"
-            label="Gender"
-            rules={[{ required: true, message: "Please select gender!" }]}
-          >
-            <Select placeholder="Select your gender">
-              <Option value="male">Male</Option>
-              <Option value="female">Female</Option>
-              <Option value="prefer not to say">Prefer not to say</Option>
-              <Option value="assigned Sex at Birth">
-                Assigned Sex at Birth
-              </Option>
-              <Option value="non-Binaryr">Non-Binary</Option>
-              <Option value="transgender">Transgender</Option>
-              <Option value="agender">Agender</Option>
-              <Option value="bigender">Bigender</Option>
-              <Option value="questioning">Questioning</Option>
-              <Option value="unspecified">Unspecified</Option>
-              <Option value="custom Gender">Custom Gender</Option>
-              <Option value="other">Other</Option>
-            </Select>
+
+          <Form.Item {...tailFormItemLayout} style={{ display: "flex", justifyContent: "center", alignItems: "center" }}>
+            <Button type="primary" htmlType="submit" style={{ backgroundColor: "#627B82" }}>
+              Sign up
+            </Button>
           </Form.Item>
-<Form.Item {...tailFormItemLayout} style={{ display: "flex", justifyContent: "center", alignItems: "center" }}>
-  <Button type="primary" htmlType="submit" style={{ backgroundColor: "#627B82" }}>
-    Sign up
-  </Button>
-</Form.Item>
 
 
         </Form>
