@@ -250,6 +250,20 @@ const Map = () => {
   const [isMapClicked, setIsMapClicked] = useState(false);
   const [newMarkers, setNewMarkers] = useState([]);
 
+  // BestTime Drawer Variables
+  const [drawerTitle, setDrawerTitle] = useState(null)
+  const [drawerOpening, setDrawerOpening] = useState(null)
+  const [drawerAddress, setDrawerAddress] = useState(null)
+  const [drawerRating, setDrawerRating] = useState(null)
+  const [bestTimeUsed,setBestTimeUsed] = useState(false) 
+
+  // BestTime Filter Variables
+  const [busynessLevels, setBusynessLevels] = useState([])
+  const[attractionTypes, setAttractionTypes] = useState([])
+  const[nearBy,setNearBy] = useState(false)
+  const[user_lat,setUser_lat] = useState(false)
+  const[user_lng,setUser_lng] = useState(false)
+
   const [directions, setDirections] = useState(null);
   const [error, setError] = useState(null);
   // Add a new state for route visibility
@@ -365,8 +379,24 @@ const Map = () => {
   ];
 
   const onChange = (value) => {
-    console.log(value);
+    // console.log(options.value)
+    // console.log(value[0][1]);
+    // console.log(value.length)
+    let busyness = []
+    let types = []
+
+    for(let i = 0; i < value.length; i++){
+      if(value[i][0] == 'placeType'){types.push(value[i][1])}
+      else if(value[i][0] == 'busynessLevel'){busyness.push(value[i][1])}
+    }
+
+    setAttractionTypes(types)
+    setBusynessLevels(busyness)
+    
   };
+  useEffect(() => {
+    console.log(busynessLevels); // This will show the updated state value after each render
+  }, [busynessLevels]);
 
   // Google Maps API
   useEffect(() => {
@@ -408,6 +438,9 @@ const Map = () => {
   const handleDrawerClose = () => {
     setSelectedMarker(null);
     setDrawerVisible(false);
+    if (bestTimeUsed == true){
+      setBestTimeUsed(false)
+    }
   };
 
   const [firstSwitch, setFirstSwitch] = useState(true);
@@ -720,6 +753,7 @@ const Map = () => {
     setIsSearchButtonClicked(true);
     setSelectedMarker(null);
 
+  
     const searchResults = [
       { position: { lat: 40.7831, lng: -73.9712 }, title: "Central Park" },
       { position: { lat: 40.7589, lng: -73.9851 }, title: "Times Square" },
@@ -744,6 +778,7 @@ const Map = () => {
       }))
 
     );
+   
 
     // Add this part
     let searchResult = searchResults.find(
@@ -773,6 +808,7 @@ const Map = () => {
         },
         (results, status) => {
           if (status === window.google.maps.places.PlacesServiceStatus.OK) {
+   
             setNewMarkers([
               {
                 position: {
@@ -811,25 +847,51 @@ const Map = () => {
         });
 
         // Add a new marker at the selected place
-        setNewMarkers([
-          {
-            position: {
-              lat: place.geometry.location.lat(),
-              lng: place.geometry.location.lng(),
-            },
+        let bestTimeMarker;
+
+        bestTimeMarker = {
+          position: {
+            lat: place.geometry.location.lat(),
+            lng: place.geometry.location.lng(),
+                    },
             title: place.name,
             icon: {
               url: "https://maps.google.com/mapfiles/ms/icons/yellow-dot.png",
               scaledSize: new window.google.maps.Size(40, 40),
             },
-          },
+        }
+
+        setNewMarkers([
+          bestTimeMarker,
         ]);
+
+        setSelectedMarker(bestTimeMarker)
+       
       }
 
-      console.log(place);
 
+      const queryParams = `?venue_name=${place.name}&venue_address=${place.formatted_address}&venue_rating=${place.rating}`;
 
+      axios.get(`api/get_forecast${queryParams}`)
+        .then((response) => {
+          console.log('API Response:', response.data);
+
+          setDrawerTitle(response['data'].venue_name)
+          setDrawerAddress(response['data'].venue_address)
+          setDrawerOpening(response['data'].venue_opening_hours)
+          setDrawerRating(response['data'].rating)
+          setBestTimeUsed(true)
+        })
+        .catch((error) => {
+          console.error('Error fetching data:', error);
+        });
+
+        
+        
     }
+
+    
+    setDrawerVisible(true)
   };
 
   // Info window when hovering on zone
@@ -1085,7 +1147,7 @@ const Map = () => {
         width={400}
         placement="right"
       >
-        {selectedMarker ? (
+        {selectedMarker && !bestTimeUsed ? (
           <div>
             <img src={selectedMarker.image} alt="Location Image" />
             <h3>{selectedMarker.title}</h3>
@@ -1097,9 +1159,20 @@ const Map = () => {
             <p>Address: {placeDetails.formatted_address}</p>
             <p>Reviews: {placeDetails.reviews?.length}</p>
           </div>
-        ) : (
+           ) : selectedMarker && bestTimeUsed ?( 
           <div>
-
+            <img src={selectedMarker.image} alt="Location Image" />
+            <h3>{drawerTitle}</h3>
+            <p>Rating: {drawerRating}</p>
+            <p>
+              Opening Hours:{drawerOpening}
+            </p>
+            <p>Address: {drawerAddress}</p>
+            <p>Reviews: {}</p>
+          </div>
+        )
+        :(
+          <div>
             {isSearchButtonClicked &&
               searchedPlaces.map((place) => (
                 <div key={place.placeId} className="searched-place">
