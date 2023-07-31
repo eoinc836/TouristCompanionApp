@@ -272,11 +272,14 @@ const Map = () => {
   const[nearBy,setNearBy] = useState(false)
   const[user_lat,setUser_lat] = useState(false)
   const[user_lng,setUser_lng] = useState(false)
+  
 
   const [directions, setDirections] = useState(null);
   const [error, setError] = useState(null);
+
   // Add a new state for route visibility
   const [isRoutingOn, setIsRoutingOn] = useState(false);
+
   // Add a new state for the directions renderer instance
   const [directionsRenderer, setDirectionsRenderer] = useState(null);
   const [itinerary, setItinerary] = useState(""); // add this line to initialize itinerary state
@@ -471,6 +474,10 @@ const handleNearbyAreaChange = (event) => {
 
 
 
+
+
+
+
   const onChange = (value) => {
     // console.log(options.value)
     // console.log(value[0][1]);
@@ -488,8 +495,8 @@ const handleNearbyAreaChange = (event) => {
     
   };
   useEffect(() => {
-    console.log(busynessLevels); // This will show the updated state value after each render
-  }, [busynessLevels]);
+
+  }, [busynessLevels,attractionTypes,date]);
 
   // Google Maps API
   useEffect(() => {
@@ -841,28 +848,42 @@ const handleNearbyAreaChange = (event) => {
     console.log(place);
     setDestination(place.name);
   };
+
+  function getDay(d,m,y){
+    const date = new Date(y, m - 1, d);
+    const dayOfWeek = date.getDay();
+    const daysOfWeek = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+  return daysOfWeek[dayOfWeek];
+  }
+
   const handleSearch = () => {
     setShouldRemoveMarkers(true);
-    setDrawerVisible(true);
     setIsSearchButtonClicked(true);
     setSelectedMarker(null);
+    let venue_ids;
+    const searchResults = []
+    if (!date)
+    {console.log('Please Select A Date and Time')}
+    else{
+      console.log(date)
+    let queryParamsFilter;
+    // {date.format('DD')
+    queryParamsFilter =`?busyness=${busynessLevels}&attraction_type=${attractionTypes}&time=${date.format(format)}&day=${getDay(date.format('DD'),date.format('MM'),date.format('YYYY'))}`;
+    
+    axios.get(`api/get_venues${queryParamsFilter}`)
+    .then((response) => {
+      
+      console.log(response.data)
+      venue_ids =  Object.keys(response.data)
+      venue_ids.forEach(id => {
+        
+      let resultMarker = {position: {lat:response.data[id].latitude, lng:response.data[id].longitude}, title: response.data[id].venue_name}
+      searchResults.push(resultMarker)
 
-  
-    const searchResults = [
-      { position: { lat: 40.7831, lng: -73.9712 }, title: "Central Park" },
-      { position: { lat: 40.7589, lng: -73.9851 }, title: "Times Square" },
-      {
-        position: { lat: 40.7488, lng: -73.9854 },
-        title: "Empire State Building",
-      },
-      {
-        position: { lat: 40.7794, lng: -73.9632 },
-        title: "The Metropolitan Museum of Art",
-      },
-    ];
+      });
 
-    setSearchedPlaces(searchResults);
-    setNewMarkers(
+      setSearchedPlaces(searchResults);
+      setNewMarkers(
       searchResults.map((marker) => ({
         ...marker,
         icon: {
@@ -872,7 +893,13 @@ const handleNearbyAreaChange = (event) => {
       }))
 
     );
-   
+
+      
+    })
+    .catch((error) => {
+      console.error('Error fetching data:', error);
+    });
+  }
 
     // Add this part
     let searchResult = searchResults.find(
