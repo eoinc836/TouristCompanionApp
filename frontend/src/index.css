@@ -15,3 +15,6 @@ code {
     monospace;
 }
 
+.highlighted {
+  outline: 2px solid #007bff;
+}

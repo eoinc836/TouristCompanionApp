@@ -1,28 +1,28 @@
 import React, { useEffect, useState } from "react";
-import { useRoutes } from "react-router-dom";
+import { useRoutes, useLocation } from "react-router-dom";
 import Routes from "./router/indexRouter";
 import Header from "./components/Header";
 import Footer from "./components/Footer";
-import StartUpGuide from "./components/StartUpGuide";
+import OnboardingModal from "./components/OnboardingModal";
 
 function App() {
-  const [showGuide, setShowGuide] = useState(false);
+  const location = useLocation();
+  const [showOnboarding, setShowOnboarding] = useState(true);
 
-  useEffect(() => {
-    const hasSeenGuide = localStorage.getItem("hasSeenGuide");
-    if (!hasSeenGuide) {
-      setShowGuide(true);
-      localStorage.setItem("hasSeenGuide", "true");
-    }
-  }, []);
+  const handleOnboardingClose = () => {
+    setShowOnboarding(false);
+  };
 
+  const isMapPage = location.pathname === "/map"
   return (
     <div>
       <Header></Header>
       {useRoutes(Routes)}
       <Footer></Footer>
 
-      {showGuide && <StartUpGuide />} 
+      {isMapPage && (
+        <OnboardingModal show={showOnboarding} onClose={handleOnboardingClose} />
+        )}
     </div>
   );
 }

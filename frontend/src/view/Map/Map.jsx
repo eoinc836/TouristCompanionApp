@@ -9,7 +9,7 @@ import "antd/dist/antd.css";
 import "./Map.scss";
 import moment from "moment";
 import Itinerary from './Itinerary';
-
+import OnboardingModal from "../../components/OnboardingModal";
 import WeatherForecast from './WeatherForecast';
 
 const { Option } = Select;
@@ -183,6 +183,14 @@ const libraries = ["places"];
 
 // Map 
 const Map = () => {
+  // References for highlighting elements in the onboarding guide feature
+  const mapRef = useRef(null);
+  const searchBarRef = useRef(null);
+  const calendarRef = useRef(null);
+  const filterRef = useRef(null);
+  const searchButtonRef = useRef(null);
+  const geoButtonRef = useRef(null);
+  const routingButtonRef = useRef(null);
   const mapContainerStyle = {
     width: "100%",
     height: "100vh",
@@ -257,8 +265,6 @@ const Map = () => {
   // Add a new state for the directions renderer instance
   const [directionsRenderer, setDirectionsRenderer] = useState(null);
   const [itinerary, setItinerary] = useState(""); // add this line to initialize itinerary state
-
-  const mapRef = useRef(null);
 
   // Routing 
   const handleRouting = () => {
@@ -883,7 +889,7 @@ const Map = () => {
   return (
     <div className="map-container">
       <div className="sidebar">
-        <div className="search-bar">
+        <div ref={searchBarRef} className="search-bar">
           {isLoaded && (
             <Autocomplete
               onLoad={handleLoad}
@@ -899,8 +905,8 @@ const Map = () => {
           )}
 
         </div>
-        <div className="time-configuration">
-          <h5>Busyness Forecast Calendar</h5> {/* Display a heading for the time configuration */}
+        <div ref={calendarRef} className="time-configuration">
+          <h5> Busyness Forecast Calendar</h5> {/* Display a heading for the time configuration */}
           <DatePicker
             value={date} // Set the selected date for the DatePicker
             onChange={handleDateChange} // Handle the date change event with the specified function
@@ -911,7 +917,7 @@ const Map = () => {
           />
         </div>
 
-        <div className="filter-section">
+        <div ref={filterRef} className="filter-section">
           <div className="filter-section">
             <Cascader
               style={{ width: "100%" }}
@@ -923,14 +929,14 @@ const Map = () => {
             />
           </div>
         </div>
-        <Button type="primary" onClick={handleSearch} className="button search-button">
+        <Button ref={searchButtonRef} type="primary" onClick={handleSearch} className="button search-button">
           Search
         </Button>
-        <Button type="primary" onClick={getUserGeoLocation} className="button geo-button">
+        <Button ref={geoButtonRef} type="primary" onClick={getUserGeoLocation} className="button geo-button">
           Locate Me
         </Button>
         <div className="routing-button-container">
-          <Button type="primary" onClick={handleRouting} className="button routing-button">
+          <Button ref={routingButtonRef} type="primary" onClick={handleRouting} className="button routing-button">
             {isRoutingOn ? "Remove Route" : "Show Route"}
           </Button>
         </div>
