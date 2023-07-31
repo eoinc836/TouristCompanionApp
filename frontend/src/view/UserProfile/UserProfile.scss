@@ -1,8 +1,8 @@
 $primary-color: #DCD7C9;
-$background-color: #2C3639;
+$background-color: #2b3345;
 
 .user-page {
-  background-color: #2C3639;
+  background-color: #2b3345;
   color: #DCD7C9;
   height: 100vh;
 
@@ -43,14 +43,14 @@ $background-color: #2C3639;
   .ant-tabs {
     &.ant-tabs-left {
       .ant-tabs-nav {
-        background-color: #2C3639;
+        background-color: #2b3345;
 
         .ant-tabs-tab {
           color: #DCD7C9;
 
           &.ant-tabs-tab-active {
             color: #DCD7C9;
-            background-color: #333C3F;
+            background-color: #2b3345;
           }
         }
       }
@@ -58,7 +58,7 @@ $background-color: #2C3639;
   }
 
   .ant-tabs-content {
-    background-color: #333C3F;
+    background-color: #2b3345;
 
     .tab-content {
       display: flex;

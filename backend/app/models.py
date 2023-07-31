@@ -26,3 +26,27 @@ class VenueData(models.Model):
 
     class Meta:
         db_table = "VenueData"
+
+
+class User(models.Model):
+    email = models.EmailField(primary_key=True, max_length=20)
+    username = models.CharField(max_length=20)
+    password = models.CharField(max_length=20)
+
+    class Meta:
+        db_table = "User"
+    
+class SavedPlace(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    place1 = models.CharField(max_length=100)
+    place2 = models.CharField(max_length=100)
+    place3 = models.CharField(max_length=100)
+    place4 = models.CharField(max_length=100)
+    place5 = models.CharField(max_length=100)
+    place6 = models.CharField(max_length=100)
+    place7 = models.CharField(max_length=100)
+    place8 = models.CharField(max_length=100)
+    place9 = models.CharField(max_length=100)
+    
+    class Meta:
+        db_table = "SavedPlace"

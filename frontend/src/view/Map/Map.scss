@@ -2,7 +2,7 @@
 .map-container {
   display: flex;
   height: 100vh;
-  background-color: #2C3639;
+  background-color: #2b3345;
   color: #DCD7C9;
 }
 
@@ -12,7 +12,7 @@
   padding: 12px;
   border: 1px solid #ccc;
   box-sizing: border-box;
-  background-color: #2C3639;
+  background-color: #2b3345;
   color: #DCD7C9;
   overflow-y: auto; /* Enable vertical scroll when the content overflows the height */
   transition: width 0.3s;
@@ -38,7 +38,7 @@
   padding: 0px;
   border: none;
   font-weight: bold;
-  font-family: Cambria;
+  font-family: 'Roboto', sans-serif;
 }
 
 .tr{
@@ -58,7 +58,7 @@
   position: absolute;
   background-color: white;
   width: 35%;
-  left:40%;
+  left:30%;
   top:1%;
   border-radius: 20px; /* Add border-radius to make the box rounded */
   z-index: 1;
@@ -72,7 +72,7 @@
 
 .weather-font{
   color: black;
-  font-family: cambria;
+  font-family: 'Roboto', sans-serif;
   font-weight: bold;
 }
 
@@ -109,16 +109,58 @@
   }
 
   .search-button-container {
-    // Increase search button font size
-    button {
-      font-size: 18px;
-
-    }
+    display: flex;
+    justify-content: space-around; /* Adds space between buttons */
+    margin-bottom: 20px; /* Adds some margin to the bottom of the button container */
   }
+  
+
+
+/* Modify the Switch's handle size and position */
+.ant-switch-handle {
+  width: 25px !important;
+  height: 25px !important;
+  top: 7px !important;
+}
+
+/* Position when the switch is checked */
+.ant-switch-checked .ant-switch-handle {
+  left: auto !important;
+  right: 3px !important; /* adjust as needed */
+}
+
+/* Center the Switch's text vertically */
+.ant-switch-checked .ant-switch-inner, .ant-switch .ant-switch-inner {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  
+}
 
 
 
 
+.button:hover {
+  transform: scale(1.05); /* Makes the button slightly bigger when hovered */
+}
+
+/* Individual styles for the search button */
+.search-button {
+  background-color: #fefefe; /* Light blue */
+  color: rgb(0, 0, 0); /* White text */
+}
+
+/* Individual styles for the geo button */
+.geo-button {
+  background-color: #ffffff; /* Lime green */
+  color: rgb(0, 0, 0); /* White text */
+}
+
+/* Individual styles for the geo button */
+.routing-button {
+  background-color: #ffffff; /* Lime green */
+  color: rgb(0, 0, 0); /* White text */
+}
 
 .map {
   flex: 1;

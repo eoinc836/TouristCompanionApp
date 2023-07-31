@@ -14,7 +14,7 @@ export default function Header() {
 
   const handleLogout = () => {
     setIsLoggedIn(false);
-    navigate("/signup");
+    navigate("/login");
   };
 
   return (
@@ -77,8 +77,11 @@ export default function Header() {
               </button>
             ) : (
               <>
-                <Link to="/signup" className="btn btn-primary">
-                  Login or Register
+                <Link to="/login" className="btn btn-outline-primary me-2">
+                  Login
+                </Link>
+                <Link to="/register" className="btn btn-primary">
+                  Sign up
                 </Link>
               </>
             )}

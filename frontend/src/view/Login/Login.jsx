@@ -16,7 +16,7 @@ const Login = () => {
     // Send login request to the backend
     const csrftoken = getCookie("csrftoken");
     axios
-  .post("/api/login", {
+  .post("http://localhost:8000/api/login", {
     username: values.username,
     password: values.password,
   }, {
