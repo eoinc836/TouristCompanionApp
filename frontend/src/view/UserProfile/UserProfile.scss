@@ -1,120 +1,127 @@
-$primary-color: #DCD7C9;
-$background-color: #2b3345;
 
-.user-page {
-  background-color: #2b3345;
-  color: #DCD7C9;
-  height: 100vh;
 
-  .ant-card {
-    height: 100%;
-    background-color: $background-color;
-    color: $primary-color;
+@import url("https://fonts.googleapis.com/css?family=Roboto:300,400,500,700&display=swap");
+
+$primary: #007bff;
+$success: #28a745;
+$danger: #dc3545;
+$warning: #ffc107;
+
+body {
+  background: #f9f9f9;
+  font-family: "Roboto", sans-serif;
+
+}
+
+.shadow {
+
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1) !important;
+}
+
+.custom-tabs {
+  height: 100%;
+}
+
+.custom-tabs .ant-tabs-tab {
+  font-size: 18px; /* You can adjust the font size here */
+  padding: 30px 40px; /* You can adjust the padding here */
+}
+.custom-container {
+  padding-left: 0;
+  padding-right: 0;
+}
+
+
+  .tab-content {
+    flex: 1;
     display: flex;
     flex-direction: column;
     justify-content: space-between;
+  }
 
-    // User Information
-    .user-information {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      text-align: center;
-      flex-grow: 1;
+.form-group {
+  margin-bottom: 1.5rem;
+}
 
-      .ant-avatar {
-        margin-bottom: 16px;
-      }
-
-      .user-details {
-        color: $primary-color;
-      }
+.nav-pills {
+  a.nav-link {
+    padding: 15px 20px;
+    border-bottom: 1px solid #ddd;
+    border-radius: 0;
+    color: #333;
+    i {
+      width: 20px;
     }
+  }
+}
 
-    // Saved Places & Browsing History
-    .saved-places,
-    .browsing-history {
-      .ant-list-item {
-        color: $primary-color;
-      }
+.img-circle {
+  img {
+    height: 100px;
+    width: 100px;
+    border-radius: 100%;
+    border: 5px solid #fff;
+  }
+}
+@media (max-width: 576px) {
+  .profile-tab-nav {
+    min-width: 100%;
+  }
+  .tab-content {
+    flex: initial;
+  }
+  .nav-pills {
+    a.nav-link {
+      padding: 10px 15px;
+      font-size: 14px;
+    }
+  }
+}
+
+/* For screens between 576px and 768px (e.g., tablets) */
+@media (min-width: 576px) and (max-width: 767px) {
+  .profile-tab-nav {
+    min-width: 100%;
+  }
+  .nav-pills {
+    a.nav-link {
+      padding: 12px 15px;
+      font-size: 16px;
+    }
+  }
+}
+
+/* For screens larger than 768px */
+@media (min-width: 768px) {
+  .profile-tab-nav {
+    min-width: 250px;
+  }
+  .tab-content {
+    flex: 1;
+  }
+  .nav-pills {
+    a.nav-link {
+      padding: 15px 20px;
+      font-size: 18px;
+    }
+  }
+}
+
+.left-container {
+    @media (max-width: 775px) {
+        width: 100% !important;
     }
   }
 
-  .ant-tabs {
-    &.ant-tabs-left {
-      .ant-tabs-nav {
-        background-color: #2b3345;
-
-        .ant-tabs-tab {
-          color: #DCD7C9;
-
-          &.ant-tabs-tab-active {
-            color: #DCD7C9;
-            background-color: #2b3345;
-          }
-        }
-      }
+.right-container {
+    @media (max-width: 775px) {
+        width: 100% !important;
     }
-  }
+}
 
-  .ant-tabs-content {
-    background-color: #2b3345;
-
-    .tab-content {
-      display: flex;
-      flex-direction: column;
-      height: 100%;
-
-      .user-information {
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        flex-direction: column;
-        margin-bottom: 16px;
-
-        .user-details {
-          margin-top: 16px;
-        }
-
-        .edit-button-container {
-          margin-top: 16px;
-        }
-      }
-
-      .card-container {
-        flex: 1;
-        padding: 16px;
-        display: flex;
-        flex-direction: column;
-        justify-content: space-between;
-      }
-
-      .saved-places,
-      .browsing-history {
-        flex-grow: 1;
-        padding: 16px;
-
-        .ant-list {
-          height: 100%;
-
-          .ant-list-item {
-            color: $primary-color;
-            height: 100%;
-            display: flex;
-            align-items: center;
-          }
-        }
-      }
+.user-profile-container {
+    height: 100vh;
+    @media (max-width: 775px) {
+       height: 100%;
     }
-  }
-
-  @media (max-width: 576px) {
-    .ant-tabs.ant-tabs-left {
-      .ant-tabs-nav {
-        .ant-tabs-tab {
-          padding: 8px;
-        }
-      }
-    }
-  }
 }

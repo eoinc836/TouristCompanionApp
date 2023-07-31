@@ -1,6 +1,27 @@
+// RegisterForm.scss
 
 $primary-color: #DCD7C9;
 $background-color: #2C3639;
+
+.ant-input,
+.ant-select-selector,
+.ant-btn {
+  border-radius: 6px; // Set the desired border radius for the input fields, select, and buttons
+  border: 1px solid #d9d9d9; // Add a border to the input fields, select, and buttons
+}
+
+.ant-form-item-label {
+  label {
+    font-weight: bold;
+    display: block;
+    margin-bottom: 8px;
+    color: $primary-color; // Set label font color
+  }
+}
+
+.ant-form-item-control-input-content {
+  color: $primary-color; // Set input content font color
+}
 
 .register {
   display: flex;
@@ -22,21 +43,7 @@ $background-color: #2C3639;
     }
 
     .ant-form {
-      font-family: 'Roboto', sans-serif;
-
-      .ant-form-item-label {
-        label {
-          font-weight: bold;
-          display: block;
-          margin-bottom: 8px;
-          color: $primary-color; // Set label font color
-        }
-      }
-
-      .ant-form-item-control-input-content {
-        color: $primary-color; // Set input content font color
-      }
-    }
+      font-family: Arial, sans-serif;
 
     .ant-form-item {
       margin-bottom: 24px;
@@ -55,8 +62,9 @@ $background-color: #2C3639;
     }
   }
 
-  .ant-btn-primary {
-    margin-top: 16px;
+    .ant-btn-primary {
+      margin-top: 16px;
+    }
   }
 
   @media screen and (max-width: 768px) {
@@ -65,5 +73,9 @@ $background-color: #2C3639;
     .form-container {
       margin-top: 40px;
     }
+  }
+
+  @media screen and (max-width: 577px) {
+    height: 125vh;
   }
 }

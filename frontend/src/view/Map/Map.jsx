@@ -241,7 +241,15 @@ const Map = () => {
   const [userMarkers, setUserMarkers] = useState([]);
   const [shouldRemoveMarkers, setShouldRemoveMarkers] = useState(false);
   const [destination, setDestination] = useState("");
-  const [selectedFilters, setSelectedFilters] = useState([]);
+  const [selectedFilters, setSelectedFilters] = useState({
+    busyness: "",
+    attraction_type: "",
+    day: "",
+    time: "",
+    nearbyArea: false,
+    latitude: null,
+    longitude: null,
+  });
   const [selectedTime, setSelectedTime] = useState(null);
   const [date, setDate] = useState(false);
   const [jsonData, setJsonData] = useState(null);
@@ -309,75 +317,159 @@ const Map = () => {
 
   // Best Times filters
   const options = [
-    {
-      label: "Place Type",
-      value: "placeType",
-      children: [
-        {
-          label: "Restaurant",
-          value: "restaurant",
-        },
-        {
-          label: "Cafe",
-          value: "cafe",
-        },
-        {
-          label: "Park",
-          value: "park",
-        },
-        {
-          label: "Museum",
-          value: "museum",
-        },
-        {
-          label: "Shopping Mall",
-          value: "shopping-mall",
-        },
-        {
-          label: "Theater",
-          value: "theater",
-        },
-        {
-          label: "Historical Site",
-          value: "historical-site",
-        },
-        {
-          label: "Art Gallery",
-          value: "art-gallery",
-        },
-        {
-          label: "Nightclub",
-          value: "nightclub",
-        },
-        {
-          label: "Sports Stadium",
-          value: "sports-stadium",
-        },
-      ],
-    },
-    {
-      label: "Busyness Level",
-      value: "busynessLevel",
-      children: [
-        {
-          label: "Busy",
-          value: "busy",
-        },
-        {
-          label: "Moderate",
-          value: "moderate",
-        },
-        {
-          label: "Quiet",
-          value: "quiet",
-        },
-      ],
-    },
-    {
-      label: "Nearby Area",
-      value: "nearbyArea",
-    },
-  ];
+  {
+    label: "Busyness Level",
+    value: "busyness",
+    children: [
+      {
+        label: "Quiet",
+        value: "quiet",
+      },
+      {
+        label: "Busy",
+        value: "busy",
+      },
+    ],
+  },
+  {
+    label: "Attraction Type",
+    value: "attraction_type",
+    children: [
+      {
+        label: "Restaurants",
+        value: "restaurants",
+      },
+      {
+        label: "Bars",
+        value: "bars",
+      },
+      {
+        label: "Shops",
+        value: "shops",
+      },
+      {
+        label: "Gyms",
+        value: "gyms",
+      },
+      {
+        label: "Museums",
+        value: "museums",
+      },
+      {
+        label: "Theatres",
+        value: "theatres",
+      },
+      {
+        label: "Malls",
+        value: "malls",
+      },
+      {
+        label: "Beaches",
+        value: "beaches",
+      },
+      {
+        label: "Supermarkets",
+        value: "supermarkets",
+      },
+      {
+        label: "Theme parks",
+        value: "theme_parks",
+      },
+    ],
+  },
+  {
+    label: "Day",
+    value: "day",
+    children: [
+      {
+        label: "Monday",
+        value: "monday",
+      },
+      {
+        label: "Tuesday",
+        value: "tuesday",
+      },
+      {
+        label: "Wednesday",
+        value: "wednesday",
+      },
+      {
+        label: "Thursday",
+        value: "thursday",
+      },
+      {
+        label: "Friday",
+        value: "friday",
+      },
+      {
+        label: "Saturday",
+        value: "saturday",
+      },
+      {
+        label: "Sunday",
+        value: "sunday",
+      },
+    ],
+  },
+  {
+    label: "Time of Day",
+    value: "time",
+    children: [
+      {
+        label: "Morning",
+        value: "morning",
+      },
+      {
+        label: "Afternoon",
+        value: "afternoon",
+      },
+      {
+        label: "Evening",
+        value: "evening",
+      },
+      {
+        label: "Night",
+        value: "night",
+      },
+    ],
+  },
+  {
+    label: "Nearby Area",
+    value: "nearbyArea",
+  },
+];
+// Function to handle the API call for nearby attractions based on user's latitude and longitude
+const handleNearbyAttractions = (latitude, longitude) => {
+  // Use fetch or any other suitable method to send a GET request to the API, passing the user's latitude and longitude as parameters
+  fetch(`/api/get_venues?latitude=${latitude}&longitude=${longitude}`)
+    .then((response) => response.json())
+    .then((data) => {
+      // Handle the response data here, you can update the markers on the map or perform other operations based on the returned data
+      console.log(data);
+    })
+    .catch((error) => {
+      // Handle errors if the API call fails
+      console.error(error);
+    });
+};
+
+// Function to handle the nearby area checkbox
+const handleNearbyAreaChange = (event) => {
+  setSelectedFilters((prevFilters) => ({
+    ...prevFilters,
+    nearbyArea: event.target.checked,
+  }));
+
+  
+  if (event.target.checked) {
+    handleNearbyAttractions(
+      selectedFilters.latitude,
+      selectedFilters.longitude
+    );
+  }
+};
+
+
 
   const onChange = (value) => {
     // console.log(options.value)
@@ -892,6 +984,12 @@ const Map = () => {
     
     setDrawerVisible(true)
   };
+  
+  const bounds = {
+      north: 40.915255,
+      south: 40.477398,
+      east: -73.700272,
+      west: -74.259090,}
 
   // Info window when hovering on zone
   const HoveredZoneInfo = ({ hoveredZone, getBusynessDescription }) => {
@@ -949,6 +1047,7 @@ const Map = () => {
             <Autocomplete
               onLoad={handleLoad}
               onPlaceChanged={handlePlaceChanged}
+              options={{ bounds: bounds }}
             >
               <input
                 type="text"
@@ -1141,7 +1240,7 @@ const Map = () => {
         </GoogleMap>
       </div>
       <Drawer
-        visible={drawerVisible}
+        open={drawerVisible}
         onClose={handleDrawerClose}
         width={400}
         placement="right"

@@ -228,7 +228,7 @@ return (
               placement="bottom"
               closable={false}
               onClose={() => setVisible(false)}
-              visible={visible}
+              open={visible}
               height={500}
           >
               <Collapse accordion>

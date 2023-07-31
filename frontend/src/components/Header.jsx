@@ -1,4 +1,4 @@
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, NavLink } from "react-router-dom";
 import React, { useState } from "react";
 import "./header.scss";
 import { useLocation } from "react-router-dom";
@@ -16,41 +16,59 @@ export default function Header() {
     setIsLoggedIn(false);
     navigate("/login");
   };
+  
+  // Custom function to determine if the "Home" link should be considered active
+  const isHomeLinkActive = (match, location) => {
+    return location.pathname === "/" || location.pathname === "/home";
+  };
 
   return (
-    <header className="py-3">
-      <div className="container d-flex flex-wrap justify-content-between align-items-center">
-        <div className="col-12 col-md-3 mb-2 mb-md-0">
+    <header className="py-3 text-center">
+      <div className="row header-style">
+        <div className="col d-flex logo-container-style align-items-center ">
           <Link
             to="/"
-            className="d-inline-flex link-body-emphasis text-decoration-none"
+            className="d-inline-flex justify-content-center align-items-center link-body-emphasis text-decoration-none fs-26 font-weight-bold logo-style"
           >
             <img
-              src={require("../assets/login.jpg")}
+              src={require("../assets/logo.jpg")}
               alt="Login"
-              width="50"
-              height="40"
+              width="66px"
+              height="68px"
+              className="img-style"
             />
+            BUSYBUDDY
           </Link>
         </div>
+<nav className="col d-flex align-items-center justify-content-center nav-style">
+  <ul className="nav justify-content-center">
+    <li className="nav-item">
+      <NavLink
+        exact
+        to="/"
+        className="nav-link link-secondary"
+        activeClassName="active"
+        isActive={isHomeLinkActive}
+        style={{ color: "#45656C" }} // ??????? #45656C
+      >
+        Home
+      </NavLink>
+    </li>
+    <li className="nav-item">
+      <NavLink
+        to="/map"
+        className="nav-link"
+        activeClassName="active"
+        style={{ color: "#45656C" }} // ??????? #45656C
+      >
+        Map
+      </NavLink>
+    </li>
+  </ul>
+</nav>
 
-        <nav className="col-12 col-md-auto mb-2">
-          <ul className="nav justify-content-center">
-            <li className="nav-item">
-              <Link to="/" className="nav-link link-secondary">
-                Home
-              </Link>
-            </li>
 
-            <li className="nav-item">
-              <Link to="/map" className="nav-link">
-                Map 
-              </Link>
-            </li>
-          </ul>
-        </nav>
-
-        <div className="col-12 col-md-3 text-md-end custom-buttons">
+        <div className="col d-flex justify-content-center align-items-center  custom-buttons">
           <div className="d-flex justify-content-md-end">
             <Link to="/Userprofile" className="btn btn-link me-2">
               {/* User profile icon */}
