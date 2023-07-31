@@ -646,6 +646,7 @@ const validZones = [  262, 261, 249, 246, 244, 243, 263, 238, 237, 236, 234, 233
   113, 107, 103, 100, 125, 90, 88, 87, 75, 74, 79, 68, 50, 48, 43, 42, 45, 41,
   13, 12, 24, 4 ];
 
+<<<<<<< Updated upstream
 // Busyness Coloration 
 const getZoneColor = (busyness) => {
   console.log("Busyness Level:", busyness);
@@ -665,6 +666,24 @@ const getZoneColor = (busyness) => {
     return `rgba(255, 0, 0, ${opacity})`; // Deep Red for very high busyness
   }
 };
+=======
+  const getZoneColor = (busyness) => {
+    console.log("Busyness Level:", busyness);
+    if (busyness === 0 || isNaN(busyness)) {
+      return "rgba(248, 248, 248, 0)"; // Fully transparent
+    } else if (busyness <= 28) {
+      return "#008000"; // Deep Green for very low busyness
+    } else if (busyness <= 138) {
+      return "#ADFF2F"; // Green Yellow for low busyness
+    } else if (busyness <= 536) {
+      return "#FFFF00"; // Yellow for medium busyness
+    } else if (busyness <= 15000) {
+      return "#FFA500"; // Orange for high busyness
+    } else {
+      return "#FF0000"; // Deep Red for very high busyness
+    }
+  };
+>>>>>>> Stashed changes
 
 // Handle time change event
 const handleTimeChange = (time, timeString) => {
