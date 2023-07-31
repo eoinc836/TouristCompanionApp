@@ -261,6 +261,8 @@ const Map = () => {
   const [busynessLevels, setBusynessLevels] = useState([])
   const[attractionTypes, setAttractionTypes] = useState([])
   const[nearBy,setNearBy] = useState(false)
+  const[user_lat,setUser_lat] = useState(false)
+  const[user_lng,setUser_lng] = useState(false)
 
   const [directions, setDirections] = useState(null);
   const [error, setError] = useState(null);
