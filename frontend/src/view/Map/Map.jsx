@@ -874,7 +874,7 @@ const Map = () => {
 
       const queryParams = `?venue_name=${place.name}&venue_address=${place.formatted_address}&venue_rating=${place.rating}`;
 
-      axios.get(`api/get_forecast${queryParams}`)
+      axios.get(`http://localhost:8000/api/get_forecast${queryParams}`)
         .then((response) => {
           console.log('API Response:', response.data);
 
