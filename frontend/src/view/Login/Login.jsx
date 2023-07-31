@@ -1,4 +1,4 @@
-import React from "react";
+import {React, useState } from "react";
 import { LockOutlined, UserOutlined } from "@ant-design/icons";
 import { Button, Checkbox, Form, Input } from "antd";
 import "./Login.scss";
@@ -9,32 +9,31 @@ import { Link, useNavigate } from "react-router-dom";
 
 const Login = () => {
   const navigate = useNavigate();
+  const [loading, setLoading] = useState(false); // State to track loading state
 
-  const onFinish = (values) => {
-    console.log("Received values of form: ", values);
+  const onFinish = async (values) => {
+    setLoading(true); // Set loading to true while waiting for the response
+    try {
+      const loginData = {
+        username: values.username,
+        password: values.password,
+      };
 
-    // Send login request to the backend
-    const csrftoken = getCookie("csrftoken");
-    axios
-  .post("http://localhost:8000/api/login", {
-    username: values.username,
-    password: values.password,
-  }, {
-    headers: {
-      "Content-Type": "application/json",
-      "X-CSRFToken": csrftoken,
-    },
-  })
-      .then((response) => {
-        // Handle successful response
-        console.log("Response:", response.data);
-        // Perform appropriate actions, such as setting user identity information, redirecting to other pages, etc.
-        navigate("/home"); // Redirect to '/home' page after successful login
-      })
-      .catch((error) => {
-        // Handle error response
-        console.error("Error:", error);
+      const csrftoken = getCookie('csrftoken');
+      const response = await axios.post('http://localhost:8000/api/login', loginData, {
+        headers: {
+          'Content-Type': 'application/json',
+          'X-CSRFToken': csrftoken,
+        },
       });
+
+      console.log('Login Response:', response.data);
+      navigate('/home?loggedIn=true'); // Redirect to '/home' page after successful login
+    } catch (error) {
+      console.error('Login Error:', error);
+    } finally {
+      setLoading(false); // Set loading back to false after the request is completed (whether successful or not)
+    }
   };
 
 
