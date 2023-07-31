@@ -16,4 +16,5 @@ urlpatterns = [
     path('token/', TokenObtainPairView.as_view(), name='token_obtain_pair'),
     path('token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
     path('logout/', views.logout_view, name='logout'),
+    path('get_top_attractions', services.get_top_attractions, name='get_top_attractions'),
 ]

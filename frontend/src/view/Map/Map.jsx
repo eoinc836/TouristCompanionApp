@@ -250,6 +250,7 @@ const Map = () => {
   const [isMapClicked, setIsMapClicked] = useState(false);
   const [newMarkers, setNewMarkers] = useState([]);
 
+
   // BestTime Drawer Variables
   const [drawerTitle, setDrawerTitle] = useState(null)
   const [drawerOpening, setDrawerOpening] = useState(null)
@@ -495,6 +496,7 @@ const Map = () => {
       return prevMarkers.filter((_, i) => i !== index);
     });
   };
+
 
 
   const userMarkerIcons = {
@@ -885,9 +887,6 @@ const Map = () => {
         .catch((error) => {
           console.error('Error fetching data:', error);
         });
-
-        
-        
     }
 
     
