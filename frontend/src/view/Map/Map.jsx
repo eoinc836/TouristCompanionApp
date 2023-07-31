@@ -250,12 +250,17 @@ const Map = () => {
   const [isMapClicked, setIsMapClicked] = useState(false);
   const [newMarkers, setNewMarkers] = useState([]);
 
-  // Drawer Variables
+  // BestTime Drawer Variables
   const [drawerTitle, setDrawerTitle] = useState(null)
   const [drawerOpening, setDrawerOpening] = useState(null)
   const [drawerAddress, setDrawerAddress] = useState(null)
   const [drawerRating, setDrawerRating] = useState(null)
   const [bestTimeUsed,setBestTimeUsed] = useState(false) 
+
+  // BestTime Filter Variables
+  const [busynessLevels, setBusynessLevels] = useState([])
+  const[attractionTypes, setAttractionTypes] = useState([])
+  const[nearBy,setNearBy] = useState(false)
 
   const [directions, setDirections] = useState(null);
   const [error, setError] = useState(null);
@@ -372,8 +377,24 @@ const Map = () => {
   ];
 
   const onChange = (value) => {
-    console.log(value);
+    // console.log(options.value)
+    // console.log(value[0][1]);
+    // console.log(value.length)
+    let busyness = []
+    let types = []
+
+    for(let i = 0; i < value.length; i++){
+      if(value[i][0] == 'placeType'){types.push(value[i][1])}
+      else if(value[i][0] == 'busynessLevel'){busyness.push(value[i][1])}
+    }
+
+    setAttractionTypes(types)
+    setBusynessLevels(busyness)
+    
   };
+  useEffect(() => {
+    console.log(busynessLevels); // This will show the updated state value after each render
+  }, [busynessLevels]);
 
   // Google Maps API
   useEffect(() => {
@@ -730,6 +751,7 @@ const Map = () => {
     setIsSearchButtonClicked(true);
     setSelectedMarker(null);
 
+  
     const searchResults = [
       { position: { lat: 40.7831, lng: -73.9712 }, title: "Central Park" },
       { position: { lat: 40.7589, lng: -73.9851 }, title: "Times Square" },
