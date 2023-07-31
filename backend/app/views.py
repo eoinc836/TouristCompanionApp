@@ -3,7 +3,7 @@ from django.contrib.auth.models import User
 from django.contrib.auth import authenticate, logout
 from django.http import JsonResponse
 from .utils import is_us_holiday, model, zones, geo_json_data
-import json, datetime, os, pandas as pd
+import json, datetime, pandas as pd
 from django.views.decorators.csrf import csrf_exempt
 from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework.decorators import api_view, permission_classes

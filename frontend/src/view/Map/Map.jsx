@@ -274,6 +274,7 @@ const Map = () => {
   const [isSearchButtonClicked, setIsSearchButtonClicked] = useState(false);
   const [isMapClicked, setIsMapClicked] = useState(false);
   const [newMarkers, setNewMarkers] = useState([]);
+
   const mapRef = useRef(null);
 
   const [weatherDataFromAPI, setWeatherDataFromAPI] = useState(null);
@@ -409,6 +410,7 @@ const Map = () => {
     setUserMarkers([...userMarkers, position]);
     setIsMapClicked(true);
   };
+
 
 
   const userMarkerIcons = {
@@ -654,22 +656,18 @@ const Map = () => {
     if (autocompleteRef.current !== null) {
       const place = autocompleteRef.current.getPlace();
 
-      // const queryParams = `?venue_name=${place.name}&venue_address=${place.formatted_address}&venue_rating=${place.rating}`;
-      // console.log(queryParams)
-      // axios.get(`api/get_forecast${queryParams}`)
-      //   .then((response) => {
-      //     console.log('API Response:', response.data);
-      //   })
-      //   .catch((error) => {
-      //     console.error('Error fetching data:', error);
-      //   });
+      const queryParams = `?venue_name=${place.name}&venue_address=${place.formatted_address}&venue_rating=${place.rating}`;
+      console.log(queryParams)
+      axios.get(`api/get_forecast${queryParams}`)
+        .then((response) => {
+          console.log('API Response:', response.data);
+        })
+        .catch((error) => {
+          console.error('Error fetching data:', error);
+        });
 
-      const newMarker = { position: { lat: place.geometry.location.lat(), lng: place.geometry.location.lng()}, title: place.name }
+      console.log(place);
       setDestination(place.name);
-      setNewMarkers([...newMarkers, newMarker]);
-      setSelectedMarker(newMarker)
-      setDrawerVisible(true)
-
     }
   };
 
