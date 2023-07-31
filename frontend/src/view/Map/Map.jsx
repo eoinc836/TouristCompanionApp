@@ -250,6 +250,13 @@ const Map = () => {
   const [isMapClicked, setIsMapClicked] = useState(false);
   const [newMarkers, setNewMarkers] = useState([]);
 
+  // Drawer Variables
+  const [drawerTitle, setDrawerTitle] = useState(null)
+  const [drawerOpening, setDrawerOpening] = useState(null)
+  const [drawerAddress, setDrawerAddress] = useState(null)
+  const [drawerRating, setDrawerRating] = useState(null)
+  const [bestTimeUsed,setBestTimeUsed] = useState(false) 
+
   const [directions, setDirections] = useState(null);
   const [error, setError] = useState(null);
   // Add a new state for route visibility
@@ -408,6 +415,9 @@ const Map = () => {
   const handleDrawerClose = () => {
     setSelectedMarker(null);
     setDrawerVisible(false);
+    if (bestTimeUsed == true){
+      setBestTimeUsed(false)
+    }
   };
 
   const [firstSwitch, setFirstSwitch] = useState(true);
@@ -802,7 +812,6 @@ const Map = () => {
   };
 
   const handlePlaceChanged = () => {
-    console.log('j')
     if (autocompleteRef.current !== null) {
       const place = autocompleteRef.current.getPlace();
 
@@ -833,13 +842,32 @@ const Map = () => {
         ]);
 
         setSelectedMarker(bestTimeMarker)
-        setDrawerVisible(true)
+       
       }
 
-      console.log(place);
 
+      const queryParams = `?venue_name=${place.name}&venue_address=${place.formatted_address}&venue_rating=${place.rating}`;
 
+      axios.get(`api/get_forecast${queryParams}`)
+        .then((response) => {
+          console.log('API Response:', response.data);
+
+          setDrawerTitle(response['data'].venue_name)
+          setDrawerAddress(response['data'].venue_address)
+          setDrawerOpening(response['data'].venue_opening_hours)
+          setDrawerRating(response['data'].rating)
+          setBestTimeUsed(true)
+        })
+        .catch((error) => {
+          console.error('Error fetching data:', error);
+        });
+
+        
+        
     }
+
+    
+    setDrawerVisible(true)
   };
 
   // Info window when hovering on zone
@@ -1095,7 +1123,7 @@ const Map = () => {
         width={400}
         placement="right"
       >
-        {selectedMarker ? (
+        {selectedMarker && !bestTimeUsed ? (
           <div>
             <img src={selectedMarker.image} alt="Location Image" />
             <h3>{selectedMarker.title}</h3>
@@ -1107,9 +1135,20 @@ const Map = () => {
             <p>Address: {placeDetails.formatted_address}</p>
             <p>Reviews: {placeDetails.reviews?.length}</p>
           </div>
-        ) : (
+           ) : selectedMarker && bestTimeUsed ?( 
           <div>
-
+            <img src={selectedMarker.image} alt="Location Image" />
+            <h3>{drawerTitle}</h3>
+            <p>Rating: {drawerRating}</p>
+            <p>
+              Opening Hours:{drawerOpening}
+            </p>
+            <p>Address: {drawerAddress}</p>
+            <p>Reviews: {}</p>
+          </div>
+        )
+        :(
+          <div>
             {isSearchButtonClicked &&
               searchedPlaces.map((place) => (
                 <div key={place.placeId} className="searched-place">
