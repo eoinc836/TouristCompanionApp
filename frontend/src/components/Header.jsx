@@ -14,6 +14,7 @@ export default function Header() {
 
   const handleLogout = () => {
     setIsLoggedIn(false);
+    localStorage.removeItem('accessToken');
     navigate("/login");
   };
   

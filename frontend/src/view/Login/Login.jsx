@@ -26,8 +26,9 @@ const Login = () => {
           'X-CSRFToken': csrftoken,
         },
       });
-
       console.log('Login Response:', response.data);
+      const accessToken = response.data.access_token;
+      localStorage.setItem('accessToken', accessToken);
       navigate('/home?loggedIn=true');
     } catch (error) {
       console.error('Login Error:', error);
