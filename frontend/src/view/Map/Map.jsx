@@ -444,7 +444,7 @@ const Map = () => {
 // Function to handle the API call for nearby attractions based on user's latitude and longitude
 const handleNearbyAttractions = (latitude, longitude) => {
   // Use fetch or any other suitable method to send a GET request to the API, passing the user's latitude and longitude as parameters
-  fetch(`/api/get_venues?latitude=${latitude}&longitude=${longitude}`)
+  fetch(`http://localhost:8000/api/get_venues?latitude=${latitude}&longitude=${longitude}`)
     .then((response) => response.json())
     .then((data) => {
       // Handle the response data here, you can update the markers on the map or perform other operations based on the returned data
@@ -506,6 +506,7 @@ const handleNearbyAreaChange = (event) => {
           `https://maps.googleapis.com/maps/api/place/details/json?key=AIzaSyA-vxxFyGSdqhaGkOwnfGhp-klnkMLRQJA&place_id=${placeId}&fields=name,rating,formatted_address,opening_hours`
         );
         const result = response.data;
+        console.log(result)
         setPlaceDetails(result.result);
       } catch (error) {
         console.error(error);

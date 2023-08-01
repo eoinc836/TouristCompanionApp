@@ -47,6 +47,9 @@ def get_forecast(request):
     venue_name = request.GET['venue_name']
     venue_address = request.GET['venue_address'].replace(", USA", "")
     venue_rating = request.GET.get('venue_rating')
+    
+    if venue_rating == 'undefined':
+        venue_rating = None
 
     if Venue.objects.filter(venue_address=venue_address, venue_name=venue_name).exists():
         venue_static = Venue.objects.get(venue_address=venue_address)
@@ -80,9 +83,11 @@ def get_forecast(request):
     response = requests.post(url, params=params)
     data = response.json()
 
+    # to handle venues not found in best time
     if response.status_code != 200 and "Could not find venue." in data["message"]:
         return HttpResponse("Could not find venue. Please check the name and address again or pick a different venue.")
     
+    # to handle venues found in best time but without forecasts
     elif response.status_code != 200 and "Venue found," in data["message"]:
         venue_static = Venue.objects.create(
             venue_id = data["venue_info"]["venue_id"],
@@ -95,6 +100,7 @@ def get_forecast(request):
             scrape_date = int(time.time())
         )
     
+    # for successful predictions
     else:
         venue_static = Venue.objects.create(
             venue_id = data["venue_info"]["venue_id"],
