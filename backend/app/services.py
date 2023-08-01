@@ -1,10 +1,13 @@
 from django.http import JsonResponse
 from django.shortcuts import HttpResponse
 from django.views.decorators.http import require_http_methods
+from django.views.decorators.csrf import csrf_exempt
+from django.contrib.auth.decorators import login_required
 from .models import *
 from django.core.cache import cache
 from .utils import is_forecast_available, find_zone, is_in_manhattan, top_attractions
 import time, environ, requests
+import json
 
 env = environ.Env()
 environ.Env.read_env("../backend/.env")
@@ -242,4 +245,29 @@ def get_venues(request):
             }
 
     return JsonResponse(venue_details, safe=False)
+
+@csrf_exempt
+def saved_place(request):
+    if request.method == 'POST':
+        data = json.loads(request.body)
+        print('data in services are:', data)
+        username = data.get('username') 
+        print('username in services are:', username)
+
+        # Get the user object of the provided username
+        user = User.objects.get(username=username)
+        print('user is:', user)
+         
+        saved_place = data.get('saved_place') 
+        print('saved place in services are:', saved_place)
+        if username and saved_place:
+            try:
+                SavedPlace.objects.create(username=user, saved_place=saved_place)
+                return JsonResponse({'message': 'Saved successfully'})
+            except Exception as e:
+                return JsonResponse({'error': str(e)})
+
+    return JsonResponse({'error': 'Invalid request method'})
+    
+
 
