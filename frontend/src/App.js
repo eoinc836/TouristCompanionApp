@@ -3,7 +3,8 @@ import { useRoutes, useLocation } from "react-router-dom";
 import Routes from "./router/indexRouter";
 import Header from "./components/Header";
 import Footer from "./components/Footer";
-import OnboardingModal from "./components/OnboardingModal";
+import { Intro, Steps } from "intro.js-react";
+import "intro.js/introjs.css"
 
 function App() {
   const location = useLocation();
