@@ -914,7 +914,7 @@ const handleNearbyAreaChange = (event) => {
     // {date.format('DD')
     queryParamsFilter =`?busyness=${busynessLevels}&attraction_type=${attractionTypes}&time=${date.format(format)}&day=${getDay(date.format('DD'),date.format('MM'),date.format('YYYY'))}`;
     
-    axios.get(`api/get_venues${queryParamsFilter}`)
+    axios.get(`http://localhost:8000/api/get_venues${queryParamsFilter}`)
     .then((response) => {
       
       console.log(response.data)
