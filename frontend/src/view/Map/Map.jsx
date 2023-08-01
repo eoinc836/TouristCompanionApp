@@ -829,6 +829,16 @@ const Map = () => {
   return daysOfWeek[dayOfWeek];
   }
 
+  function translateTimes(time){
+    let timeVar;
+    if (6<=time<=11){timeVar = 'morning'}
+    if (12<=time<=17){timeVar = 'afternoon'}
+    if (18<=time<=0){timeVar = 'evening'}
+    if (21<=time<=5){timeVar = 'night'}
+
+    return timeVar
+  }
+
   const handleSearch = () => {
     setShouldRemoveMarkers(true);
     setIsSearchButtonClicked(true);
@@ -845,7 +855,7 @@ const Map = () => {
       console.log(userlat,userlng)
       //CODE TO IMPLEMENT NEAR BY SEARCH
       let queryParamsFilter;
-      queryParamsFilter =`?busyness=${busynessLevels}&attraction_type=${attractionTypes}&time=${date.format(format)}&day=${getDay(date.format('DD'),date.format('MM'),date.format('YYYY'))}&latitude=${userlat}&longitude=${userlng}`;
+      queryParamsFilter =`?busyness=${busynessLevels}&attraction_type=${attractionTypes}&time=${translateTimes(date.format(format))}&day=${getDay(date.format('DD'),date.format('MM'),date.format('YYYY'))}&latitude=${userlat}&longitude=${userlng}`;
       axios.get(`api/get_venues${queryParamsFilter}`)
       .then((response) => {
         
@@ -879,7 +889,7 @@ const Map = () => {
     }
     else if (date && !nearBy){
     let queryParamsFilter;
-    queryParamsFilter =`?busyness=${busynessLevels}&attraction_type=${attractionTypes}&time=${date.format(format)}&day=${getDay(date.format('DD'),date.format('MM'),date.format('YYYY'))}`;
+    queryParamsFilter =`?busyness=${busynessLevels}&attraction_type=${attractionTypes}&time=${translateTimes(date.format(format))}&day=${getDay(date.format('DD'),date.format('MM'),date.format('YYYY'))}`;
     
     axios.get(`api/get_venues${queryParamsFilter}`)
     .then((response) => {
