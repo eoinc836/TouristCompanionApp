@@ -5,23 +5,27 @@ import { useLocation } from "react-router-dom";
 
 export default function Header() {
   const navigate = useNavigate();
-  var [isLoggedIn, setIsLoggedIn] = useState(false); // Default user is not logged in
+  var [isLoggedIn, setIsLoggedIn] = useState(false); 
   var location = useLocation();
   isLoggedIn = new URLSearchParams(location.search).get("loggedIn");
 
-  // Convert the string "true" or "false" to a boolean value
-  const isLoggedInBool = isLoggedIn === "true";
+  const accessToken = sessionStorage.getItem("accessToken"); 
+  const isLoggedInBool = !!accessToken; // Set to true if accessToken exists, otherwise false
+  console.log('is logged in value in header file: ', isLoggedInBool);
 
   const handleLogout = () => {
     setIsLoggedIn(false);
-    localStorage.removeItem('accessToken');
+    sessionStorage.removeItem('accessToken'); 
+    sessionStorage.removeItem('username'); 
     navigate("/login");
   };
   
   // Custom function to determine if the "Home" link should be considered active
   const isHomeLinkActive = (match, location) => {
-    return location.pathname === "/" || location.pathname === "/home";
+    return location.pathname === "/" || (location.pathname === "/home" && isLoggedInBool);
   };
+
+
 
   return (
     <header className="py-3 text-center">
@@ -55,6 +59,7 @@ export default function Header() {
         Home
       </NavLink>
     </li>
+    {isLoggedInBool ? (
     <li className="nav-item">
       <NavLink
         to="/map"
@@ -64,31 +69,16 @@ export default function Header() {
       >
         Map
       </NavLink>
-    </li>
+    </li>) : (
+              <>
+              </>
+            )}
   </ul>
 </nav>
 
 
         <div className="col d-flex justify-content-center align-items-center  custom-buttons">
           <div className="d-flex justify-content-md-end">
-            <Link to="/Userprofile" className="btn btn-link me-2">
-              {/* User profile icon */}
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                width="35"
-                height="35"
-                fill="currentColor"
-                className="bi bi-person-circle"
-                viewBox="0 0 16 16"
-              >
-                <path d="M11 6a3 3 0 1 1-6 0 3 3 0 0 1 6 0z" />
-                <path
-                  fillRule="evenodd"
-                  d="M0 8a8 8 0 1 1 16 0A8 8 0 0 1 0 8zm8-7a7 7 0 0 0-5.468 11.37C3.242 11.226 4.805 10 8 10s4.757 1.225 5.468 2.37A7 7 0 0 0 8 1z"
-                />
-              </svg>
-            </Link>
-
             {/* Display "Login" or "Logout" button based on the login status */}
             {isLoggedInBool ? (
               <button onClick={handleLogout}  className="btn btn-primary me-2">

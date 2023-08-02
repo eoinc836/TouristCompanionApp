@@ -268,6 +268,24 @@ def saved_place(request):
                 return JsonResponse({'error': str(e)})
 
     return JsonResponse({'error': 'Invalid request method'})
+
+@csrf_exempt
+def delete_saved_place(request):
+    if request.method == 'POST':
+        data = json.loads(request.body)
+        username = data.get('username')
+        saved_place = data.get('saved_place')
+        if username and saved_place:
+            try:
+                user = User.objects.get(username=username)
+                SavedPlace.objects.filter(username=user, saved_place=saved_place).delete()
+                return JsonResponse({'message': 'Deleted successfully'})
+            except User.DoesNotExist:
+                return JsonResponse({'error': 'User not found'})
+            except Exception as e:
+                return JsonResponse({'error': str(e)})
+
+    return JsonResponse({'error': 'Invalid request method'})
     
 
 
