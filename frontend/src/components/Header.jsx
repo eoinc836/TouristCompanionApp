@@ -5,11 +5,11 @@ import { useLocation } from "react-router-dom";
 
 export default function Header() {
   const navigate = useNavigate();
-  var [isLoggedIn, setIsLoggedIn] = useState(false); // Default user is not logged in
+  var [isLoggedIn, setIsLoggedIn] = useState(false); 
   var location = useLocation();
   isLoggedIn = new URLSearchParams(location.search).get("loggedIn");
 
-  const accessToken = sessionStorage.getItem("accessToken"); // Use sessionStorage here
+  const accessToken = sessionStorage.getItem("accessToken"); 
   const isLoggedInBool = !!accessToken; // Set to true if accessToken exists, otherwise false
   console.log('is logged in value in header file: ', isLoggedInBool);
 

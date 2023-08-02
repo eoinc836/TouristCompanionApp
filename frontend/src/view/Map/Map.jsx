@@ -286,41 +286,49 @@ const Map = () => {
   const [itinerary, setItinerary] = useState(""); // add this line to initialize itinerary state
 
   // saved places toggle button
-const [isActive, setIsActive] = useState(false);
-const [username, setUsername] = useState("");
-useEffect(() => {
-    setIsActive(false);
-  }, [selectedMarker, placeDetails]);
+  const [isActive, setIsActive] = useState(false);
+  const [username, setUsername] = useState("");
+  const [placeToggleStatus, setPlaceToggleStatus] = useState({}); 
+
   useEffect(() => {
+    // Set isActive based on previous toggle state
+    setIsActive(placeToggleStatus[selectedMarker?.title] || false); 
     const storedUsername = sessionStorage.getItem("username");
-    setUsername(storedUsername || ""); 
-  }, []);
-  console.log('username is:', username);
+    setUsername(storedUsername || "");
+  }, [selectedMarker]);
+
   const handleToggle = () => {
     setIsActive((prevIsActive) => !prevIsActive);
+    // Update the toggle status for the selectedMarker's title
+    setPlaceToggleStatus((prevStatus) => ({
+      ...prevStatus,
+      [selectedMarker.title]: !isActive,
+    }));
+
     if (!isActive) {
       const data = {
         username: username,
-        saved_place: selectedMarker.title
+        saved_place: selectedMarker.title,
       };
-      
-      fetch('http://localhost:8000/api/saved_place', {
-        method: 'POST',
-        headers: { 
-          'Content-Type': 'application/json',
-          'X-CSRFToken': getCookie('csrftoken'),
+
+      fetch("http://localhost:8000/api/saved_place", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "X-CSRFToken": getCookie("csrftoken"),
         },
         body: JSON.stringify(data),
       })
         .then((response) => response.json())
         .then((data) => {
-          console.log('Saved successfully:', data);
+          console.log("Saved successfully:", data);
         })
         .catch((error) => {
-          console.error('Error is:', error);
+          console.error("Error is:", error);
         });
     }
   };
+  
 
   function getCookie(name) {
     let cookieValue = null;
