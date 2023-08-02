@@ -326,6 +326,28 @@ const Map = () => {
         .catch((error) => {
           console.error("Error is:", error);
         });
+    }else {
+      // If the toggle is disabled, remove the username and place detail from the database
+      const data = {
+        username: username,
+        saved_place: selectedMarker.title,
+      };
+
+      fetch("http://localhost:8000/api/delete_saved_place", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "X-CSRFToken": getCookie("csrftoken"),
+        },
+        body: JSON.stringify(data),
+      })
+        .then((response) => response.json())
+        .then((data) => {
+          console.log("Deleted successfully:", data);
+        })
+        .catch((error) => {
+          console.error("Error is:", error);
+        });
     }
   };
   
