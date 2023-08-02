@@ -8,6 +8,7 @@ import { Link, useNavigate } from "react-router-dom";
 
 
 const Login = () => {
+  var accessToken = " ";
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
 
@@ -27,9 +28,9 @@ const Login = () => {
         },
       });
       console.log('Login Response:', response.data);
-      const accessToken = response.data.access_token;
+      accessToken = response.data.access_token;
       localStorage.setItem('accessToken', accessToken);
-      navigate('/home?loggedIn=true');
+      navigate(`/home?loggedIn=${!!accessToken}`);
     } catch (error) {
       console.error('Login Error:', error);
     } finally {

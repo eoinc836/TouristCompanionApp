@@ -8,9 +8,9 @@ export default function Header() {
   var [isLoggedIn, setIsLoggedIn] = useState(false); // Default user is not logged in
   var location = useLocation();
   isLoggedIn = new URLSearchParams(location.search).get("loggedIn");
-
-  // Convert the string "true" or "false" to a boolean value
-  const isLoggedInBool = isLoggedIn === "true";
+  const accessToken = localStorage.getItem("accessToken");
+  const isLoggedInBool = !!accessToken; // Set to true if accessToken exists, otherwise false
+  console.log('is logged in value in header file: ', isLoggedInBool);
 
   const handleLogout = () => {
     setIsLoggedIn(false);
@@ -20,7 +20,7 @@ export default function Header() {
   
   // Custom function to determine if the "Home" link should be considered active
   const isHomeLinkActive = (match, location) => {
-    return location.pathname === "/" || location.pathname === "/home";
+    return location.pathname === "/" || (location.pathname === "/home" && isLoggedInBool);
   };
 
   return (
@@ -55,6 +55,7 @@ export default function Header() {
         Home
       </NavLink>
     </li>
+    {isLoggedInBool ? (
     <li className="nav-item">
       <NavLink
         to="/map"
@@ -64,7 +65,10 @@ export default function Header() {
       >
         Map
       </NavLink>
-    </li>
+    </li>) : (
+              <>
+              </>
+            )}
   </ul>
 </nav>
 
