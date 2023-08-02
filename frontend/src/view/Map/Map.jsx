@@ -287,11 +287,15 @@ const Map = () => {
 
   // saved places toggle button
 const [isActive, setIsActive] = useState(false);
+const [username, setUsername] = useState("");
 useEffect(() => {
     setIsActive(false);
   }, [selectedMarker, placeDetails]);
-const username = localStorage.getItem('username');
-console.log('username is:', username)
+  useEffect(() => {
+    const storedUsername = sessionStorage.getItem("username");
+    setUsername(storedUsername || ""); 
+  }, []);
+  console.log('username is:', username);
   const handleToggle = () => {
     setIsActive((prevIsActive) => !prevIsActive);
     if (!isActive) {
@@ -299,10 +303,10 @@ console.log('username is:', username)
         username: username,
         saved_place: selectedMarker.title
       };
-      //const csrftoken = getCookie('csrftoken');
+      
       fetch('http://localhost:8000/api/saved_place', {
         method: 'POST',
-        headers: {
+        headers: { 
           'Content-Type': 'application/json',
           'X-CSRFToken': getCookie('csrftoken'),
         },

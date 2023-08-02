@@ -29,7 +29,8 @@ const Login = () => {
       });
       console.log('Login Response:', response.data);
       accessToken = response.data.access_token;
-      localStorage.setItem('accessToken', accessToken);
+      sessionStorage.setItem('accessToken', accessToken);
+      sessionStorage.setItem('username', values.username);
       navigate(`/home?loggedIn=${!!accessToken}`);
     } catch (error) {
       console.error('Login Error:', error);

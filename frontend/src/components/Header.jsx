@@ -8,13 +8,15 @@ export default function Header() {
   var [isLoggedIn, setIsLoggedIn] = useState(false); // Default user is not logged in
   var location = useLocation();
   isLoggedIn = new URLSearchParams(location.search).get("loggedIn");
-  const accessToken = localStorage.getItem("accessToken");
+
+  const accessToken = sessionStorage.getItem("accessToken"); // Use sessionStorage here
   const isLoggedInBool = !!accessToken; // Set to true if accessToken exists, otherwise false
   console.log('is logged in value in header file: ', isLoggedInBool);
 
   const handleLogout = () => {
     setIsLoggedIn(false);
-    localStorage.removeItem('accessToken');
+    sessionStorage.removeItem('accessToken'); 
+    sessionStorage.removeItem('username'); 
     navigate("/login");
   };
   
@@ -22,6 +24,8 @@ export default function Header() {
   const isHomeLinkActive = (match, location) => {
     return location.pathname === "/" || (location.pathname === "/home" && isLoggedInBool);
   };
+
+
 
   return (
     <header className="py-3 text-center">
