@@ -285,6 +285,55 @@ const Map = () => {
   const [directionsRenderer, setDirectionsRenderer] = useState(null);
   const [itinerary, setItinerary] = useState(""); // add this line to initialize itinerary state
 
+  // saved places toggle button
+const [isActive, setIsActive] = useState(false);
+useEffect(() => {
+    setIsActive(false);
+  }, [selectedMarker, placeDetails]);
+const username = localStorage.getItem('username');
+console.log('username is:', username)
+  const handleToggle = () => {
+    setIsActive((prevIsActive) => !prevIsActive);
+    if (!isActive) {
+      const data = {
+        username: username,
+        saved_place: selectedMarker.title
+      };
+      //const csrftoken = getCookie('csrftoken');
+      fetch('http://localhost:8000/api/saved_place', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'X-CSRFToken': getCookie('csrftoken'),
+        },
+        body: JSON.stringify(data),
+      })
+        .then((response) => response.json())
+        .then((data) => {
+          console.log('Saved successfully:', data);
+        })
+        .catch((error) => {
+          console.error('Error is:', error);
+        });
+    }
+  };
+
+  function getCookie(name) {
+    let cookieValue = null;
+    if (document.cookie && document.cookie !== "") {
+      const cookies = document.cookie.split(";");
+      for (let i = 0; i < cookies.length; i++) {
+        const cookie = cookies[i].trim();
+        // Does this cookie string begin with the name we want?
+        if (cookie.substring(0, name.length + 1) === name + "=") {
+          cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+          break;
+        }
+      }
+    }
+    return cookieValue;
+  }
+
   const mapRef = useRef(null);
 
   // Routing 
@@ -443,8 +492,6 @@ const Map = () => {
   },
 ];
 
-
-
   const onChange = (value) => {
     // console.log(options.value)
     // console.log(value[0][1]);
@@ -479,6 +526,7 @@ const Map = () => {
           `https://maps.googleapis.com/maps/api/place/details/json?key=AIzaSyA-vxxFyGSdqhaGkOwnfGhp-klnkMLRQJA&place_id=${placeId}&fields=name,rating,formatted_address,opening_hours`
         );
         const result = response.data;
+        console.log(result)
         setPlaceDetails(result.result);
       } catch (error) {
         console.error(error);
@@ -891,7 +939,7 @@ const Map = () => {
     let queryParamsFilter;
     queryParamsFilter =`?busyness=${busynessLevels}&attraction_type=${attractionTypes}&time=${translateTimes(date.format(format))}&day=${getDay(date.format('DD'),date.format('MM'),date.format('YYYY'))}`;
     
-    axios.get(`api/get_venues${queryParamsFilter}`)
+    axios.get(`http://localhost:8000/api/get_venues${queryParamsFilter}`)
     .then((response) => {
       
       console.log(response.data)
@@ -1304,6 +1352,10 @@ const Map = () => {
             </p>
             <p>Address: {placeDetails.formatted_address}</p>
             <p>Reviews: {placeDetails.reviews?.length}</p>
+            <div className={`toggle-btn ${isActive ? 'active' : ''}`} onClick={handleToggle}>
+                    <div className="toggle-label">
+                    </div>
+                  </div>
           </div>
            ) : selectedMarker && bestTimeUsed ?( 
           <div>
@@ -1315,6 +1367,10 @@ const Map = () => {
             </p>
             <p>Address: {drawerAddress}</p>
             <p>Reviews: {}</p>
+            <div className={`toggle-btn ${isActive ? 'active' : ''}`} onClick={handleToggle}>
+                    <div className="toggle-label">
+                    </div>
+                  </div>
           </div>
         )
         :(
@@ -1329,6 +1385,10 @@ const Map = () => {
                   <p>Opening Hours: {place.openingHours}</p>
                   <p>General Info: {place.generalInfo}</p>
                   <p>Rating: {place.rating}</p>
+                  <div className={`toggle-btn ${isActive ? 'active' : ''}`} onClick={handleToggle}>
+                    <div className="toggle-label">
+                    </div>
+                  </div>
                 </div>
               ))}
           </div>

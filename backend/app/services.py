@@ -1,10 +1,13 @@
 from django.http import JsonResponse
 from django.shortcuts import HttpResponse
 from django.views.decorators.http import require_http_methods
+from django.views.decorators.csrf import csrf_exempt
+from django.contrib.auth.decorators import login_required
 from .models import *
 from django.core.cache import cache
 from .utils import is_forecast_available, find_zone, is_in_manhattan, top_attractions
 import time, environ, requests
+import json
 
 env = environ.Env()
 environ.Env.read_env("../backend/.env")
@@ -47,6 +50,9 @@ def get_forecast(request):
     venue_name = request.GET['venue_name']
     venue_address = request.GET['venue_address'].replace(", USA", "")
     venue_rating = request.GET.get('venue_rating')
+    
+    if venue_rating == 'undefined':
+        venue_rating = None
 
     if Venue.objects.filter(venue_address=venue_address, venue_name=venue_name).exists():
         venue_static = Venue.objects.get(venue_address=venue_address)
@@ -80,9 +86,11 @@ def get_forecast(request):
     response = requests.post(url, params=params)
     data = response.json()
 
+    # to handle venues not found in best time
     if response.status_code != 200 and "Could not find venue." in data["message"]:
         return HttpResponse("Could not find venue. Please check the name and address again or pick a different venue.")
     
+    # to handle venues found in best time but without forecasts
     elif response.status_code != 200 and "Venue found," in data["message"]:
         venue_static = Venue.objects.create(
             venue_id = data["venue_info"]["venue_id"],
@@ -95,6 +103,7 @@ def get_forecast(request):
             scrape_date = int(time.time())
         )
     
+    # for successful predictions
     else:
         venue_static = Venue.objects.create(
             venue_id = data["venue_info"]["venue_id"],
@@ -152,7 +161,7 @@ def get_venues(request):
     user_lng = request.GET.get('longitude')
     if not user_lat and not user_lng:
         params = {
-            'api_key_private': 'pri_516e2b7a8e794fb9a8a4aad46661b961',
+            'api_key_private': env('BESTTIME_API_KEY'),
             'q': f"{request.GET.get('busyness','')} {request.GET.get('attraction_type','')} in Manhattan New York {request.GET.get('day','')} {request.GET.get('time','')}",
             'num': 10,
             'fast': False,
@@ -236,4 +245,29 @@ def get_venues(request):
             }
 
     return JsonResponse(venue_details, safe=False)
+
+@csrf_exempt
+def saved_place(request):
+    if request.method == 'POST':
+        data = json.loads(request.body)
+        print('data in services are:', data)
+        username = data.get('username') 
+        print('username in services are:', username)
+
+        # Get the user object of the provided username
+        user = User.objects.get(username=username)
+        print('user is:', user)
+         
+        saved_place = data.get('saved_place') 
+        print('saved place in services are:', saved_place)
+        if username and saved_place:
+            try:
+                SavedPlace.objects.create(username=user, saved_place=saved_place)
+                return JsonResponse({'message': 'Saved successfully'})
+            except Exception as e:
+                return JsonResponse({'error': str(e)})
+
+    return JsonResponse({'error': 'Invalid request method'})
+    
+
 
