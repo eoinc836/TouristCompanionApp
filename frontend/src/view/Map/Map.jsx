@@ -272,7 +272,8 @@ const Map = () => {
   const[nearBy,setNearBy] = useState(false)
   const[user_lat,setUser_lat] = useState(false)
   const[user_lng,setUser_lng] = useState(false)
-  
+
+
 
   const [directions, setDirections] = useState(null);
   const [error, setError] = useState(null);
@@ -490,36 +491,6 @@ console.log('username is:', username)
     value: "nearbyArea",
   },
 ];
-// Function to handle the API call for nearby attractions based on user's latitude and longitude
-const handleNearbyAttractions = (latitude, longitude) => {
-  // Use fetch or any other suitable method to send a GET request to the API, passing the user's latitude and longitude as parameters
-  fetch(`http://localhost:8000/api/get_venues?latitude=${latitude}&longitude=${longitude}`)
-    .then((response) => response.json())
-    .then((data) => {
-      // Handle the response data here, you can update the markers on the map or perform other operations based on the returned data
-      console.log(data);
-    })
-    .catch((error) => {
-      // Handle errors if the API call fails
-      console.error(error);
-    });
-};
-
-// Function to handle the nearby area checkbox
-const handleNearbyAreaChange = (event) => {
-  setSelectedFilters((prevFilters) => ({
-    ...prevFilters,
-    nearbyArea: event.target.checked,
-  }));
-
-  
-  if (event.target.checked) {
-    handleNearbyAttractions(
-      selectedFilters.latitude,
-      selectedFilters.longitude
-    );
-  }
-};
 
   const onChange = (value) => {
     // console.log(options.value)
@@ -527,18 +498,24 @@ const handleNearbyAreaChange = (event) => {
     // console.log(value.length)
     let busyness = []
     let types = []
-
+    console.log(value)
     for(let i = 0; i < value.length; i++){
-      if(value[i][0] == 'placeType'){types.push(value[i][1])}
-      else if(value[i][0] == 'busynessLevel'){busyness.push(value[i][1])}
+      if(value[i][0] == 'attraction_type'){types.push(value[i][1])}
+      else if(value[i][0] == 'busyness'){busyness.push(value[i][1])}
+      else if(value[i]=='nearbyArea' ) {
+        setNearBy(true)
+      }
+      
     }
+
+
 
     setAttractionTypes(types)
     setBusynessLevels(busyness)
     
   };
   useEffect(() => {
-
+    console.log(busynessLevels,attractionTypes)
   }, [busynessLevels,attractionTypes,date]);
 
   // Google Maps API
@@ -900,6 +877,16 @@ const handleNearbyAreaChange = (event) => {
   return daysOfWeek[dayOfWeek];
   }
 
+  function translateTimes(time){
+    let timeVar;
+    if (6<=time<=11){timeVar = 'morning'}
+    if (12<=time<=17){timeVar = 'afternoon'}
+    if (18<=time<=0){timeVar = 'evening'}
+    if (21<=time<=5){timeVar = 'night'}
+
+    return timeVar
+  }
+
   const handleSearch = () => {
     setShouldRemoveMarkers(true);
     setIsSearchButtonClicked(true);
@@ -908,11 +895,49 @@ const handleNearbyAreaChange = (event) => {
     const searchResults = []
     if (!date)
     {console.log('Please Select A Date and Time')}
-    else{
-      console.log(date)
+
+    else if(nearBy && userMarkers[0]){
+      let userlat = userMarkers[0].lat
+      let userlng = userMarkers[0].lng
+      setNearBy(false)
+      console.log(userlat,userlng)
+      //CODE TO IMPLEMENT NEAR BY SEARCH
+      let queryParamsFilter;
+      queryParamsFilter =`?busyness=${busynessLevels}&attraction_type=${attractionTypes}&time=${translateTimes(date.format(format))}&day=${getDay(date.format('DD'),date.format('MM'),date.format('YYYY'))}&latitude=${userlat}&longitude=${userlng}`;
+      axios.get(`api/get_venues${queryParamsFilter}`)
+      .then((response) => {
+        
+        console.log(response.data)
+        venue_ids =  Object.keys(response.data)
+        venue_ids.forEach(id => {
+          
+        let resultMarker = {position: {lat:response.data[id].latitude, lng:response.data[id].longitude}, title: response.data[id].venue_name}
+        searchResults.push(resultMarker)
+  
+        });
+  
+        setSearchedPlaces(searchResults);
+        setNewMarkers(
+        searchResults.map((marker) => ({
+          ...marker,
+          icon: {
+            url: "https://maps.google.com/mapfiles/ms/icons/yellow-dot.png",
+            scaledSize: new window.google.maps.Size(40, 40),
+          },
+        }))
+      );       
+      })
+      .catch((error) => {
+        console.error('Error fetching data:', error);
+      });
+    }
+
+    else if(nearBy && !userMarkers[0]){
+      console.log('Please set user location to use NearBy Search')
+    }
+    else if (date && !nearBy){
     let queryParamsFilter;
-    // {date.format('DD')
-    queryParamsFilter =`?busyness=${busynessLevels}&attraction_type=${attractionTypes}&time=${date.format(format)}&day=${getDay(date.format('DD'),date.format('MM'),date.format('YYYY'))}`;
+    queryParamsFilter =`?busyness=${busynessLevels}&attraction_type=${attractionTypes}&time=${translateTimes(date.format(format))}&day=${getDay(date.format('DD'),date.format('MM'),date.format('YYYY'))}`;
     
     axios.get(`http://localhost:8000/api/get_venues${queryParamsFilter}`)
     .then((response) => {
