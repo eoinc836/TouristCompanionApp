@@ -533,6 +533,7 @@ const Map = () => {
     let busyness = []
     let types = []
     console.log(value)
+    setNearBy(false)
     for(let i = 0; i < value.length; i++){
       if(value[i][0] == 'attraction_type'){types.push(value[i][1])}
       else if(value[i][0] == 'busyness'){busyness.push(value[i][1])}
