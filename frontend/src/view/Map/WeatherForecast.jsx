@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-
+import { Collapse } from 'antd';
 const WeatherForecast = ({ onWeatherDataReceived }) => {
   const [weatherData, setWeatherData] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
-
+  const { Panel } = Collapse;
   const getWeatherData = async () => {
     // Check if already loading data
     if (isLoading) {
@@ -149,10 +149,14 @@ const WeatherForecast = ({ onWeatherDataReceived }) => {
 
   return (
     <div className="weather-forecast">
-      <div>{renderWeatherTable()}</div>
-    </div>
-  );
-};
+         <Collapse defaultActiveKey={['1']}>
+           <Panel header="Weather Forecast" key="1">
+             {renderWeatherTable()}
+           </Panel>
+         </Collapse>
+       </div>
+     );
+   };
 
 
 export default WeatherForecast;

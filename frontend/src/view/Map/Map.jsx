@@ -1,7 +1,7 @@
 import React, { useEffect, useState, useRef, useCallback } from "react";
 import { GoogleMap, Marker, InfoWindow, DirectionsService, DirectionsRenderer } from "@react-google-maps/api";
 import { useLoadScript } from "@react-google-maps/api";
-import { Drawer, Switch, Button, Card, TreeSelect, DatePicker, Select, Tooltip, Radio, Checkbox } from "antd";
+import { Switch, Button, Card, TreeSelect, DatePicker, Select, Tooltip, Radio, Checkbox, Spin } from "antd";
 import { Sidebar, Menu, MenuItem, SubMenu } from 'react-pro-sidebar';
 import axios from "axios";
 import { Autocomplete } from "@react-google-maps/api";
@@ -9,7 +9,10 @@ import "antd/dist/antd.css";
 import "./Map.scss";
 import moment from "moment";
 import Itinerary from './Itinerary';
-
+// import component 👇
+import Drawer from 'react-modern-drawer'
+//import styles 👇
+import 'react-modern-drawer/dist/index.css'
 import WeatherForecast from './WeatherForecast';
 
 const { Option } = Select;
@@ -908,8 +911,15 @@ const [selectedOptions, setSelectedOptions] = useState([]);
 
     return timeVar
   }
-
+const [loading, setLoading] = useState(false);
   const handleSearch = () => {
+   setLoading(true);
+
+
+      setTimeout(() => {
+
+        setLoading(false);
+      }, 2000);
     setShouldRemoveMarkers(true);
     setIsSearchButtonClicked(true);
     setSelectedMarker(null);
@@ -1433,6 +1443,7 @@ const [selectedOptions, setSelectedOptions] = useState([]);
                         className="button search-button"
                         size="small"
                         style={{ backgroundColor: "#45656C", color: "#FFFFFF" }}
+                        loading={loading}
                       >
                         Search
                       </Button>
@@ -1536,19 +1547,36 @@ const [selectedOptions, setSelectedOptions] = useState([]);
             }}
           >
             <Switch
-
+ size="small"
               style={{
-                width: "200px", //2x wider
-                height: "40px" //2x taller
+                width: "150px", //2x wider
+                height: "35px" //2x taller
               }}
-              checkedChildren={<div style={{ fontSize: "16px" }}>Top 20 Attractions</div>}
-              unCheckedChildren={<div style={{ fontSize: "16px" }}>Top 20 Attractions</div>}
+              checkedChildren={<div style={{ fontSize: "12px" }}>Top 20 Attractions</div>}
+              unCheckedChildren={<div style={{ fontSize: "12px" }}>Top 20 Attractions</div>}
               onChange={handleTourStopsToggle}
               checked={showTourStops}
             />
           </div>
 
-
+     {loading && (
+            <div
+              style={{
+                position: "absolute",
+                top: 0,
+                left: 0,
+                width: "100%",
+                height: "100%",
+                backgroundColor: "rgba(255, 255, 255, 0.7)",
+                display: "flex",
+                justifyContent: "center",
+                alignItems: "center",
+                zIndex: 1000,
+              }}
+            >
+              <Spin size="large" />
+            </div>
+          )}
           <WeatherForecast onWeatherDataReceived={handleWeatherDataReceived} />
           {weatherDataFromAPI && (
             <div>
@@ -1602,12 +1630,13 @@ const [selectedOptions, setSelectedOptions] = useState([]);
             }}
           >
             <Switch
+            size="small"
               style={{
-                width: "200px", //2x wider
-                height: "40px" //2x taller
+                width: "150px", //2x wider
+                height: "35px" //2x taller
               }}
-              checkedChildren={<div style={{ fontSize: "16px" }}>Manhattan Zones</div>} //increased font size
-              unCheckedChildren={<div style={{ fontSize: "16px" }}>Basic Map</div>} //increased font size
+              checkedChildren={<div style={{ fontSize: "12px" }}>Manhattan Zones</div>} //increased font size
+              unCheckedChildren={<div style={{ fontSize: "12px" }}>Basic Map</div>} //increased font size
               onChange={handlePredictionToggle}
               checked={showPrediction}
             />
@@ -1615,65 +1644,72 @@ const [selectedOptions, setSelectedOptions] = useState([]);
           <BusyLegend />
         </GoogleMap>
       </div>
-      <Drawer
-        open={drawerVisible}
-        onClose={handleDrawerClose}
-        width={400}
-        placement="right"
+   <Drawer
+     open={drawerVisible}
+     onClose={handleDrawerClose}
+     direction="right"
+     width={400}
+     disableOverlay={true}
+   >
+     {selectedMarker && !bestTimeUsed ? (
+    <Card
+        title={selectedMarker.title} // Use selectedMarker.title as the Card title
+        bordered={false}
+        style={{
+          width: 300,
+        }}
       >
-        {selectedMarker && !bestTimeUsed ? (
-          <div>
-            <img src={selectedMarker.image} alt="Location Image" />
-            <h3>{selectedMarker.title}</h3>
-            <p>Rating: {placeDetails.rating}</p>
-            <p>
-              Opening Hours:{" "}
-              {placeDetails.opening_hours?.weekday_text?.join(", ")}
-            </p>
-            <p>Address: {placeDetails.formatted_address}</p>
-            <p>Reviews: {placeDetails.reviews?.length}</p>
-            <div className={`toggle-btn ${isActive ? 'active' : ''}`} onClick={handleToggle}>
-                    <div className="toggle-label">
-                    </div>
-                  </div>
-          </div>
-           ) : selectedMarker && bestTimeUsed ?( 
-          <div>
-            <img src={selectedMarker.image} alt="Location Image" />
-            <h3>{drawerTitle}</h3>
-            <p>Rating: {drawerRating}</p>
-            <p>
-              Opening Hours:{drawerOpening}
-            </p>
-            <p>Address: {drawerAddress}</p>
-            <p>Reviews: {}</p>
-            <div className={`toggle-btn ${isActive ? 'active' : ''}`} onClick={handleToggle}>
-                    <div className="toggle-label">
-                    </div>
-                  </div>
-          </div>
-        )
-        :(
-          <div>
-            {isSearchButtonClicked &&
-              searchedPlaces.map((place) => (
-                <div key={place.placeId} className="searched-place">
-                  <h4>{place.title}</h4>
-                  <p>{place.address}</p>
+        <p>Rating: {placeDetails.rating}</p>
+        <p>
+          Opening Hours: {placeDetails.opening_hours?.weekday_text?.join(', ')}
+        </p>
+        <p>Address: {placeDetails.formatted_address}</p>
+        <p>Busyness: {placeDetails.reviews?.length}</p>
+        <div
+          className={`toggle-btn ${isActive ? 'active' : ''}`}
+          onClick={handleToggle}
+        >
+          <div className="toggle-label"></div>
+        </div>
+      </Card>
+     ) : selectedMarker && bestTimeUsed ? (
+       <div>
 
-                  <p>Busyness: {place.busyness}</p>
-                  <p>Opening Hours: {place.openingHours}</p>
-                  <p>General Info: {place.generalInfo}</p>
-                  <p>Rating: {place.rating}</p>
-                  <div className={`toggle-btn ${isActive ? 'active' : ''}`} onClick={handleToggle}>
-                    <div className="toggle-label">
-                    </div>
-                  </div>
-                </div>
-              ))}
-          </div>
-        )}
-      </Drawer>
+         <h3>{drawerTitle}</h3>
+         <p>Rating: {drawerRating}</p>
+         <p>Opening Hours: {drawerOpening}</p>
+         <p>Address: {drawerAddress}</p>
+         <p>Busyness: {}</p>
+         <div
+           className={`toggle-btn ${isActive ? 'active' : ''}`}
+           onClick={handleToggle}
+         >
+           <div className="toggle-label"></div>
+         </div>
+       </div>
+     ) : (
+       <div>
+         {isSearchButtonClicked &&
+           searchedPlaces.map((place) => (
+             <div key={place.placeId} className="searched-place">
+               <h4>{place.title}</h4>
+               <p>{place.address}</p>
+               <p>Busyness: {place.busyness}</p>
+               <p>Opening Hours: {place.openingHours}</p>
+               <p>General Info: {place.generalInfo}</p>
+               <p>Rating: {place.rating}</p>
+               <div
+                 className={`toggle-btn ${isActive ? 'active' : ''}`}
+                 onClick={handleToggle}
+               >
+                 <div className="toggle-label"></div>
+               </div>
+             </div>
+           ))}
+       </div>
+     )}
+   </Drawer>
+
     </div>
   );
 };
