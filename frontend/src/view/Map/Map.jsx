@@ -1,8 +1,8 @@
 import React, { useEffect, useState, useRef, useCallback } from "react";
 import { GoogleMap, Marker, InfoWindow, DirectionsService, DirectionsRenderer } from "@react-google-maps/api";
 import { useLoadScript } from "@react-google-maps/api";
-import { Drawer, Switch, Button, Cascader, DatePicker, Select, Tooltip } from "antd";
-
+import { Drawer, Switch, Button, Card, TreeSelect, DatePicker, Select, Tooltip, Radio, Checkbox } from "antd";
+import { Sidebar, Menu, MenuItem, SubMenu } from 'react-pro-sidebar';
 import axios from "axios";
 import { Autocomplete } from "@react-google-maps/api";
 import "antd/dist/antd.css";
@@ -257,6 +257,36 @@ const Map = () => {
   const [isSearchButtonClicked, setIsSearchButtonClicked] = useState(false);
   const [isMapClicked, setIsMapClicked] = useState(false);
   const [newMarkers, setNewMarkers] = useState([]);
+const [menuCollapse, setMenuCollapse] = useState(false);
+
+//create a custom function that will change menucollapse state from false to true and true to false
+const menuIconClick = () => {
+  //condition checking to change state from true to false and vice versa
+  menuCollapse ? setMenuCollapse(false) : setMenuCollapse(true);
+};
+const [showBestTime, setShowBestTime] = useState(false);
+const [showOtherContent, setShowOtherContent] = useState(false);
+
+const handleBestTimeClick = () => {
+  setShowBestTime(!showBestTime);
+};
+
+const handleNext = () => {
+  setShowOtherContent(true);
+};
+const handleBusynessPredictionClick = () => {
+  setShowTimeConfig(!showTimeConfig); // Toggle the visibility of the time configuration
+};
+const [showTimeConfig, setShowTimeConfig] = useState(false);
+const [showItinerary, setShowItinerary] = useState(false);
+
+const handleItineraryRouteClick = () => {
+  setShowItinerary(!showItinerary); // Toggle the visibility of the Itinerary component
+};
+const [destinationKnown, setDestinationKnown] = useState(null);
+const handleDestinationKnownChange = (event) => {
+  setDestinationKnown(event.target.value);
+};
 
 
   // BestTime Drawer Variables
@@ -273,7 +303,11 @@ const Map = () => {
   const[user_lat,setUser_lat] = useState(false)
   const[user_lng,setUser_lng] = useState(false)
 
+const [selectedOptions, setSelectedOptions] = useState([]);
 
+  const handleOptionChange = (checkedValues) => {
+    setSelectedOptions(checkedValues);
+  };
 
   const [directions, setDirections] = useState(null);
   const [error, setError] = useState(null);
@@ -403,26 +437,19 @@ const Map = () => {
   };
 
   // Best Times filters
-  const options = [
-  {
-    label: "Busyness Level",
-    value: "busyness",
-    children: [
-      {
-        label: "Quiet",
-        value: "quiet",
-      },
-      {
-        label: "Busy",
-        value: "busy",
-      },
-    ],
-  },
-  {
-    label: "Attraction Type",
-    value: "attraction_type",
-    children: [
-      {
+  const busynessOptions = [
+    {
+      label: 'Quiet',
+      value: 'quiet',
+    },
+    {
+      label: 'Busy',
+      value: 'busy',
+    },
+  ];
+
+  const attractionTypeOptions = [
+    {
         label: "Restaurants",
         value: "restaurants",
       },
@@ -462,71 +489,31 @@ const Map = () => {
         label: "Theme parks",
         value: "theme_parks",
       },
-    ],
-  },
-  {
-    label: "Day",
-    value: "day",
-    children: [
-      {
-        label: "Monday",
-        value: "monday",
-      },
-      {
-        label: "Tuesday",
-        value: "tuesday",
-      },
-      {
-        label: "Wednesday",
-        value: "wednesday",
-      },
-      {
-        label: "Thursday",
-        value: "thursday",
-      },
-      {
-        label: "Friday",
-        value: "friday",
-      },
-      {
-        label: "Saturday",
-        value: "saturday",
-      },
-      {
-        label: "Sunday",
-        value: "sunday",
-      },
-    ],
-  },
-  {
-    label: "Time of Day",
-    value: "time",
-    children: [
-      {
-        label: "Morning",
-        value: "morning",
-      },
-      {
-        label: "Afternoon",
-        value: "afternoon",
-      },
-      {
-        label: "Evening",
-        value: "evening",
-      },
-      {
-        label: "Night",
-        value: "night",
-      },
-    ],
-  },
-  {
-    label: "Nearby Area",
-    value: "nearbyArea",
-  },
-];
+    ];
 
-  const onChange = (value) => {
+
+  const nearbyAreaOptions = [
+    {
+      label: 'Nearby Area',
+      value: 'nearbyArea',
+    },
+  ];
+   const [busynessValue, setBusynessValue] = useState();
+    const [attractionTypeValue, setAttractionTypeValue] = useState();
+    const [nearbyAreaValue, setNearbyAreaValue] = useState();
+
+    const handleBusynessSelect = (newValue) => {
+      setBusynessValue(newValue);
+    };
+
+    const handleAttractionTypeSelect = (newValue) => {
+      setAttractionTypeValue(newValue);
+    };
+
+    const handleNearbyAreaSelect = (newValue) => {
+      setNearbyAreaValue(newValue);
+    };
+ const onChange = (value) => {
     // console.log(options.value)
     // console.log(value[0][1]);
     // console.log(value.length)
@@ -1157,7 +1144,7 @@ const Map = () => {
     );
   };
 
-  // Add this to your state variable declarations
+
   const [showTourStops, setShowTourStops] = useState(true);
 
   // Add this function to handle the switch's change event
@@ -1171,62 +1158,320 @@ const Map = () => {
 
   // React Components Logic 
   return (
-    <div className="map-container">
-      <div className="sidebar">
-        <div className="search-bar">
-          {isLoaded && (
-            <Autocomplete
-              onLoad={handleLoad}
-              onPlaceChanged={handlePlaceChanged}
-              options={{ bounds: bounds }}
+   <div className="map-container" style={{ backgroundColor: '#2b3345' }}>
+    <div style={{ backgroundColor: "#2b3345" }}>
+      <Sidebar collapsed={menuCollapse}>
+        <div
+          className="closemenu"
+          onClick={menuIconClick}
+          style={{
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+            margin: "15px",
+          }}
+        >
+          {/* changing menu collapse icon on click */}
+          {menuCollapse ? (
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="16"
+              height="16"
+              fill="currentColor"
+              className="bi bi-arrow-right-circle"
+              viewBox="0 0 16 16"
             >
-              <input
-                type="text"
-                value={destination}
-                onChange={handleDestinationChange}
-                placeholder="Enter your destination"
+              <path
+                fillRule="evenodd"
+                d="M1 8a7 7 0 1 0 14 0A7 7 0 0 0 1 8zm15 0A8 8 0 1 1 0 8a8 8 0 0 1 16 0zM4.5 7.5a.5.5 0 0 0 0 1h5.793l-2.147 2.146a.5.5 0 0 0 .708.708l3-3a.5.5 0 0 0 0-.708l-3-3a.5.5 0 1 0-.708.708L10.293 7.5H4.5z"
               />
-            </Autocomplete>
+            </svg>
+          ) : (
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="16"
+              height="16"
+              fill="currentColor"
+              className="bi bi-arrow-left-circle"
+              viewBox="0 0 16 16"
+            >
+              <path
+                fillRule="evenodd"
+                d="M1 8a7 7 0 1 0 14 0A7 7 0 0 0 1 8zm15 0A8 8 0 1 1 0 8a8 8 0 0 1 16 0zm-4.5-.5a.5.5 0 0 1 0 1H5.707l2.147 2.146a.5.5 0 0 1-.708.708l-3-3a.5.5 0 0 1 0-.708l3-3a.5.5 0 1 1 .708.708L5.707 7.5H11.5z"
+              />
+            </svg>
+          )}
+        </div>
+
+        <Menu iconShape="square" style={{ backgroundColor: "#2b3345" }}>
+          <MenuItem
+            icon={
+              <Tooltip
+                title={menuCollapse ? "Busyness Prediction" : ""}
+                placement="right"
+              >
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="16"
+                  height="16"
+                  fill="currentColor"
+                  className="bi bi-bar-chart-line"
+                  viewBox="0 0 16 16"
+                >
+                  <path d="M11 2a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1v12h.5a.5.5 0 0 1 0 1H.5a.5.5 0 0 1 0-1H1v-3a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1v3h1V7a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1v7h1V2zm1 12h2V2h-2v12zm-3 0V7H7v7h2zm-5 0v-3H2v3h2z" />
+                </svg>
+              </Tooltip>
+            }
+            style={{ backgroundColor: "#2b3345" }}
+            onClick={handleBusynessPredictionClick}
+          >
+            Busyness Prediction
+          </MenuItem>
+
+          {showTimeConfig && (
+            <div className="time-configuration" style={{ padding: "15px" }}>
+              {/* Display a heading for the time configuration */}
+              <DatePicker
+                value={date} // Set the selected date for the DatePicker
+                onChange={handleDateChange} // Handle the date change event with the specified function
+                onOk={handleApiRequest} // Handle the "OK" button click event with the specified function
+                showTime={{ format: format }} // Display time selector with the specified time format
+                format={`YYYY-MM-DD ${format}`} // Format for displaying the date and time in the DatePicker
+                style={{
+                  width: "100%",
+                  borderRadius: "5px",
+                }} // Set the width of the DatePicker
+              />
+            </div>
+          )}
+          <MenuItem
+            active={true}
+            icon={
+              <Tooltip title={menuCollapse ? "BestTime" : ""} placement="right">
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="16"
+                  height="16"
+                  fill="currentColor"
+                  className="bi bi-geo-fill"
+                  viewBox="0 0 16 16"
+                >
+                  <path
+                    fillRule="evenodd"
+                    d="M4 4a4 4 0 1 1 4.5 3.969V13.5a.5.5 0 0 1-1 0V7.97A4 4 0 0 1 4 3.999zm2.493 8.574a.5.5 0 0 1-.411.575c-.712.118-1.28.295-1.655.493a1.319 1.319 0 0 0-.37.265.301.301 0 0 0-.057.09V14l.002.008a.147.147 0 0 0 .016.033.617.617 0 0 0 .145.15c.165.13.435.27.813.395.751.25 1.82.414 3.024.414s2.273-.163 3.024-.414c.378-.126.648-.265.813-.395a.619.619 0 0 0 .146-.15.148.148 0 0 0 .015-.033L12 14v-.004a.301.301 0 0 0-.057-.09 1.318 1.318 0 0 0-.37-.264c-.376-.198-.943-.375-1.655-.493a.5.5 0 1 1 .164-.986c.77.127 1.452.328 1.957.594C12.5 13 13 13.4 13 14c0 .426-.26.752-.544.977-.29.228-.68.413-1.116.558-.878.293-2.059.465-3.34.465-1.281 0-2.462-.172-3.34-.465-.436-.145-.826-.33-1.116-.558C3.26 14.752 3 14.426 3 14c0-.599.5-1 .961-1.243.505-.266 1.187-.467 1.957-.594a.5.5 0 0 1 .575.411z"
+                  />
+                </svg>
+              </Tooltip>
+            }
+            onClick={handleBestTimeClick}
+          >
+            BestTime
+          </MenuItem>
+
+          {showBestTime && !showOtherContent && (
+            <Card
+              style={{
+                backgroundColor: "#3D5152",
+                color: "#99A3C1",
+                padding: "5px",
+                margin: "15px",
+                borderRadius: "10px",
+              }}
+            >
+              <h5>Welcome to BusyBudyy</h5>
+              <p>Want to have a city adventure in Manhattan?</p>
+              <p> Let's get started!</p>
+              <Button
+                type="primary"
+                onClick={handleNext}
+                className="button next-button"
+                style={{ backgroundColor: "#45656C" }}
+              >
+                NEXT
+              </Button>
+            </Card>
           )}
 
-        </div>
-        <div className="time-configuration">
-          <h5>Busyness Forecast Calendar</h5> {/* Display a heading for the time configuration */}
-          <DatePicker
-            value={date} // Set the selected date for the DatePicker
-            onChange={handleDateChange} // Handle the date change event with the specified function
-            onOk={handleApiRequest} // Handle the "OK" button click event with the specified function
-            showTime={{ format: format }} // Display time selector with the specified time format
-            format={`YYYY-MM-DD ${format}`} // Format for displaying the date and time in the DatePicker
-            style={{ width: "100%" }} // Set the width of the DatePicker
-          />
-        </div>
+          {/* Show other content when showBestTime is true and showOtherContent is true */}
+          {showBestTime && showOtherContent && (
+            <>
+              <Card
+                style={{
+                  backgroundColor: "#3D5152",
+                  color: "#99A3C1",
+                  padding: "5px",
+                  margin: "15px",
+                  borderRadius: "10px",
+                }}
+              >
+                <p>Got any places in mind?</p>
+                <Radio.Group
+                  value={destinationKnown}
+                  onChange={handleDestinationKnownChange}
+                >
+                  <Radio style={{ color: "#99A3C1" }} value={true}>
+                    Yes, I can't wait to go there!
+                  </Radio>
+                  <Radio style={{ color: "#99A3C1" }} value={false}>
+                    Not yet, but I'm excited to explore!
+                  </Radio>
+                </Radio.Group>
+              </Card>
 
-        <div className="filter-section">
-          <div className="filter-section">
-            <Cascader
-              style={{ width: "100%" }}
-              options={options}
-              onChange={onChange}
-              placeholder="Not sure where to go? Click below for suggestions"
-              multiple
-              maxTagCount="responsive"
-            />
-          </div>
-        </div>
-        <Button type="primary" onClick={handleSearch} className="button search-button">
-          Search
-        </Button>
-        <Button type="primary" onClick={getUserGeoLocation} className="button geo-button">
-          Locate Me
-        </Button>
-        <div className="routing-button-container">
-          <Button type="primary" onClick={handleRouting} className="button routing-button">
-            {isRoutingOn ? "Remove Route" : "Show Route"}
-          </Button>
-        </div>
-        <Itinerary setItinerary={setItinerary} />  {/* Here we are using Itinerary component */}
-      </div>
+              {/* Conditionally render based on destinationKnown state */}
+              {destinationKnown === true ? (
+                // If the user knows the destination, show Autocomplete and "Locate Me" / "Show Route" buttons
+                <>
+                  <div className="search-bar custom-search-bar">
+                    {isLoaded && (
+                      <Autocomplete
+                        onLoad={handleLoad}
+                        onPlaceChanged={handlePlaceChanged}
+                        options={{ bounds: bounds }}
+                      >
+                        <input
+                          type="text"
+                          value={destination}
+                          onChange={handleDestinationChange}
+                          placeholder="Enter your destination"
+                        />
+                      </Autocomplete>
+                    )}
+                  </div>
+                  <div
+                    className="button-container"
+                    style={{ margin: "10px", marginLeft: "20px" }}
+                  >
+                    <Button
+                      type="primary"
+                      onClick={getUserGeoLocation}
+                      className="button geo-button"
+                      size="small"
+                      style={{ backgroundColor: "#45656C", color: "#FFFFFF" }}
+                    >
+                      Current Location
+                    </Button>
+                  </div>
+                  <div
+                    className="button-container"
+                    style={{ margin: "10px", marginLeft: "20px" }}
+                  >
+                    <Button
+                      type="primary"
+                      onClick={handleRouting}
+                      className="button routing-button"
+                      size="small"
+                      style={{ backgroundColor: "#45656C", color: "#FFFFFF" }}
+                    >
+                      {isRoutingOn ? "Remove Route" : "Show Route"}
+                    </Button>
+                  </div>
+                </>
+              ) : destinationKnown === false ? (
+                // If the user doesn't know the destination, show the filter and "Search" button
+                <>
+                  <div style={{ margin: "10px" }}>
+                    <h6>Busyness Level</h6>
+                    <TreeSelect
+                      style={{
+                        width: "100%",
+                        padding: "10px",
+                        borderRadius: "5px",
+                      }}
+                      value={busynessValue}
+                      dropdownStyle={{ maxHeight: 400, overflow: "auto" }}
+                      placeholder="Select busyness level"
+                      allowClear
+                      treeDefaultExpandAll
+                      onChange={handleBusynessSelect}
+                      treeData={busynessOptions}
+                    />
+
+                    <h6>Attraction Type</h6>
+                    <TreeSelect
+                      style={{
+                        width: "100%",
+                        padding: "10px",
+                        borderRadius: "5px",
+                      }}
+                      value={attractionTypeValue}
+                      dropdownStyle={{ maxHeight: 400, overflow: "auto" }}
+                      placeholder="Select attraction type"
+                      allowClear
+                      treeDefaultExpandAll
+                      onChange={handleAttractionTypeSelect}
+                      treeData={attractionTypeOptions}
+                    />
+
+                    <h6>Nearby Area</h6>
+                    <TreeSelect
+                      style={{
+                        width: "100%",
+                        padding: "10px",
+                        borderRadius: "5px",
+                      }}
+                      value={nearbyAreaValue}
+                      dropdownStyle={{ maxHeight: 400, overflow: "auto" }}
+                      placeholder="Select nearby area"
+                      allowClear
+                      treeDefaultExpandAll
+                      onChange={handleNearbyAreaSelect}
+                      treeData={nearbyAreaOptions}
+                    />
+
+                    <div
+                      className="button-container"
+                      style={{
+                        margin: "10px",
+                        display: "flex",
+                        justifyContent: "center",
+                      }}
+                    >
+                      <Button
+                        type="primary"
+                        onClick={handleSearch}
+                        className="button search-button"
+                        size="small"
+                        style={{ backgroundColor: "#45656C", color: "#FFFFFF" }}
+                      >
+                        Search
+                      </Button>
+                    </div>
+                  </div>
+                </>
+              ) : null}
+            </>
+          )}
+
+          <MenuItem
+            icon={
+              <Tooltip
+                title={menuCollapse ? "Itinerary Route" : ""}
+                placement="right"
+              >
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="16"
+                  height="16"
+                  fill="currentColor"
+                  class="bi bi-truck-front"
+                  viewBox="0 0 16 16"
+                >
+                  <path d="M5 11a1 1 0 1 1-2 0 1 1 0 0 1 2 0Zm8 0a1 1 0 1 1-2 0 1 1 0 0 1 2 0Zm-6-1a1 1 0 1 0 0 2h2a1 1 0 1 0 0-2H7ZM4 2a1 1 0 0 0-1 1v3.9c0 .625.562 1.092 1.17.994C5.075 7.747 6.792 7.5 8 7.5c1.208 0 2.925.247 3.83.394A1.008 1.008 0 0 0 13 6.9V3a1 1 0 0 0-1-1H4Zm0 1h8v3.9c0 .002 0 .001 0 0l-.002.004a.013.013 0 0 1-.005.002h-.004C11.088 6.761 9.299 6.5 8 6.5s-3.088.26-3.99.406h-.003a.013.013 0 0 1-.005-.002L4 6.9c0 .001 0 .002 0 0V3Z" />
+                  <path d="M1 2.5A2.5 2.5 0 0 1 3.5 0h9A2.5 2.5 0 0 1 15 2.5v9c0 .818-.393 1.544-1 2v2a.5.5 0 0 1-.5.5h-2a.5.5 0 0 1-.5-.5V14H5v1.5a.5.5 0 0 1-.5.5h-2a.5.5 0 0 1-.5-.5v-2a2.496 2.496 0 0 1-1-2v-9ZM3.5 1A1.5 1.5 0 0 0 2 2.5v9A1.5 1.5 0 0 0 3.5 13h9a1.5 1.5 0 0 0 1.5-1.5v-9A1.5 1.5 0 0 0 12.5 1h-9Z" />
+                </svg>
+              </Tooltip>
+            }
+            style={{ backgroundColor: "#2b3345" }}
+            onClick={handleItineraryRouteClick}
+          >
+            Itinerary Route
+          </MenuItem>
+
+          {showItinerary && <Itinerary setItinerary={setItinerary} />}
+        </Menu>
+      </Sidebar>
+    </div>;
 
 
       <div className="map">
