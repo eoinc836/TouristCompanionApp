@@ -164,91 +164,89 @@ const tourStops = [
 ];
 
 return (
-  <div>
-      
-      <Card style={{ textAlign: "center", width: "100%", borderRadius: "15px", boxShadow: "0px 4px 4px rgba(0, 0, 0, 0.25)" }}>
-      <Collapse defaultActiveKey={['1']} ghost>
-        <Panel header={<span style={{ fontWeight: "bold" }}>Itinerary Generator</span>} key="1">
-          <Form
-            form={form}
-            name="itinerary"
-            layout="vertical"
-            onFinish={onFinish}
-            initialValues={{ itinerary: "" }}
-            style={{ marginBottom: '10px' }}
-          >
-              <Form.Item
-                  name="dateRange"
-                  label="Start and End Date"
-                  rules={[{ required: true, message: 'Please input your date range!' }]}
-              >
-                  <DatePicker.RangePicker format="YYYY-MM-DD" />
-              </Form.Item>
-              <Form.Item
-                  name="startEndHour"
-                  label="Visting Hours"
-                  rules={[{ required: true, message: 'Please select the start and end hour!' }]}
-              >
-                  <TimePicker.RangePicker format="HH" />
-              </Form.Item>
-              <Form.Item
-                  name="busyness"
-                  label="Preferred Busyness"
-                  rules={[{ required: true, message: 'Please select your preferred busyness!' }]}
-              >
-                  <Select placeholder="Select a level">
-                      <Option value="veryLow">Very Low</Option>
-                      <Option value="low">Low</Option>
-                      <Option value="medium">Medium</Option>
-                      <Option value="high">High</Option>
-                      <Option value="veryHigh">Very High</Option>
-                  </Select>
-              </Form.Item>
-              
-              <Form.Item
-                  name="markers"
-                  label="Markers for Itinerary"
-                  rules={[{ required: true, message: 'Please select markers for your itinerary!' }]}
-              >
-                  <Select placeholder="Select a type">
-                      <Option value="top20">Top 20</Option>
-                      <Option value="saved">Saved</Option>
-                  </Select>
-              </Form.Item>
-              <Form.Item>
-                  <Button type="primary" htmlType="submit">
-                      Generate Itinerary
-                  </Button>
-              </Form.Item>
-          </Form>
-          </Panel>
-          </Collapse>
-          <Drawer
-              title="Your Itinerary"
-              placement="bottom"
-              closable={false}
-              onClose={() => setVisible(false)}
-              open={visible}
-              height={500}
-          >
-              <Collapse accordion>
-                  {Object.keys(itineraryByDay).map(date => (
-                      <Panel header={date} key={date}>
-                          {itineraryByDay[date].map((item, index) => (
-                              <List.Item>
-                                  <Space direction="vertical">
-                                      <Text strong>{item.time}</Text>
-                                      <Text> - Visit {item.title}</Text>
-                                  </Space>
-                              </List.Item>
-                          ))}
-                      </Panel>
-                  ))}
-              </Collapse>
-          </Drawer>
-      </Card>
-  </div>
-);
-};
+ <div style={{ backgroundColor: "#2b3345", padding: "10px", borderRadius: "5px" }}>
+    {visible ? (
+      <div
+        title="Your Itinerary"
+        placement="bottom"
+        closable={false}
+        onClose={() => setVisible(false)}
+        open={visible}
+        height={500}
+      >
+        <Collapse accordion style={{ borderRadius: '5px', backgroundColor: "#61677A" }}>
+          {Object.keys(itineraryByDay).map((date) => (
+            <Panel header={date} key={date} style={{ backgroundColor: "#B7B7B7" }}>
+            <div style={{ backgroundColor: "#D8D9DA", borderRadius: "5px", boxShadow: "0 0 5px rgba(0, 0, 0, 0.3)", padding: "10px" }}>
+              {itineraryByDay[date].map((item, index) => (
+                <List.Item key={index}>
+                  <Space direction="vertical">
+                    <Text strong>{item.time}</Text>
+                    <Text> - Visit {item.title}</Text>
+                  </Space>
+                </List.Item>
+              ))}
+            </div>
 
+
+            </Panel>
+          ))}
+        </Collapse>
+      </div>
+         ) : (
+           <Form
+             form={form}
+             name="itinerary"
+             layout="vertical"
+             onFinish={onFinish}
+             initialValues={{ itinerary: "" }}
+             style={{ padding: "15px" }}
+           >
+             <Form.Item
+               name="dateRange"
+               label="Start and End Date"
+               rules={[{ required: true, message: 'Please input your date range!' }]}
+             >
+               <DatePicker.RangePicker format="YYYY-MM-DD" />
+             </Form.Item>
+             <Form.Item
+               name="startEndHour"
+               label="Visting Hours"
+               rules={[{ required: true, message: 'Please select the start and end hour!' }]}
+             >
+               <TimePicker.RangePicker format="HH" />
+             </Form.Item>
+             <Form.Item
+               name="busyness"
+               label="Preferred Busyness"
+               rules={[{ required: true, message: 'Please select your preferred busyness!' }]}
+             >
+               <Select placeholder="Select a level">
+                 <Option value="veryLow">Very Low</Option>
+                 <Option value="low">Low</Option>
+                 <Option value="medium">Medium</Option>
+                 <Option value="high">High</Option>
+                 <Option value="veryHigh">Very High</Option>
+               </Select>
+             </Form.Item>
+             <Form.Item
+               name="markers"
+               label="Markers for Itinerary"
+               rules={[{ required: true, message: 'Please select markers for your itinerary!' }]}
+             >
+               <Select placeholder="Select a type">
+                 <Option value="top20">Top 20</Option>
+                 <Option value="saved">Saved</Option>
+               </Select>
+             </Form.Item>
+             <Form.Item style={{ margin: "10px", display: "flex", justifyContent: "center" }}>
+               <Button type="primary" htmlType="submit" style={{ backgroundColor: "#45656C", color: "#FFFFFF" }}>
+                 Generate Itinerary
+               </Button>
+             </Form.Item>
+           </Form>
+         )}
+       </div>
+     );
+ };
 export default Itinerary;

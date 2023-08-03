@@ -114,19 +114,10 @@
   margin-right: 2px;
 }
 
-  .search-bar {
-    margin-bottom: 20px;
 
-    // Increase Autocomplete input size
-    input {
-      width: 100%;
-      padding: 10px;
-      font-size: 16px;
-    }
-  }
 
   .time-configuration {
-    margin-bottom: 30px;
+    margin-bottom: 15px;
 
 
     // Increase DatePicker size
@@ -152,6 +143,28 @@
     margin-bottom: 20px; /* Adds some margin to the bottom of the button container */
   }
   
+/* Add padding around the search bar */
+.custom-search-bar {
+  padding: 15px;
+}
+
+/* Make search input box corners rounded */
+/* Change the font size of the placeholder text */
+/* Change the font size of the placeholder text and add rounded corners */
+.custom-search-bar input[type="text"] {
+  border-radius: 5px;
+}
+
+/* Style the placeholder text */
+.custom-search-bar input[type="text"]::placeholder {
+  font-size: 13px; /* Adjust the font size as needed */
+   text-align: center;
+}
+
+/* Display each button on a separate row */
+.button-container {
+  margin-bottom: 10px; /* Add some space between buttons (adjust as needed) */
+}
 
 
 /* Modify the Switch's handle size and position */
