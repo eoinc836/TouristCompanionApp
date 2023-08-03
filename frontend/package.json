@@ -20,10 +20,11 @@
     "react-bootstrap": "^2.8.0",
     "react-dom": "^18.2.0",
     "react-draft-wysiwyg": "^1.14.7",
+    "react-pro-sidebar": "^1.1.0-alpha.1",
     "react-responsive": "^9.0.2",
     "react-responsive-carousel": "^3.2.23",
     "react-router-dom": "^6.2.2",
-    "react-scripts": "5.0.0",
+    "react-scripts": "5.0.1",
     "recharts": "^2.7.2",
     "sass": "^1.49.9",
     "web-vitals": "^2.1.4"
