@@ -503,16 +503,32 @@ const [selectedOptions, setSelectedOptions] = useState([]);
     const [nearbyAreaValue, setNearbyAreaValue] = useState();
 
     const handleBusynessSelect = (newValue) => {
-      setBusynessValue(newValue);
+      setBusynessLevels(newValue);
     };
 
     const handleAttractionTypeSelect = (newValue) => {
-      setAttractionTypeValue(newValue);
+      setAttractionTypes(newValue);
+
     };
 
-    const handleNearbyAreaSelect = (newValue) => {
-      setNearbyAreaValue(newValue);
+    useEffect(() => {
+      console.log('Current attraction type value:', attractionTypeValue);
+    }, [attractionTypeValue]);
+
+    useEffect(() => {
+      console.log('Current attraction type value:', attractionTypeValue);
+    }, [attractionTypeValue]);
+
+    const handleNearbyAreaSelect = () => {
+      if(nearBy == false){
+        setNearBy(true)
+      }
+
+      else if(nearBy == true){
+        setNearBy(false)
+      }
     };
+
  const onChange = (value) => {
     // console.log(options.value)
     // console.log(value[0][1]);
@@ -921,7 +937,6 @@ const [selectedOptions, setSelectedOptions] = useState([]);
     else if(nearBy && userMarkers[0]){
       let userlat = userMarkers[0].lat
       let userlng = userMarkers[0].lng
-      setNearBy(false)
       console.log(userlat,userlng)
       //CODE TO IMPLEMENT NEAR BY SEARCH
       let queryParamsFilter;
@@ -960,7 +975,6 @@ const [selectedOptions, setSelectedOptions] = useState([]);
     else if (date && !nearBy){
     let queryParamsFilter;
     queryParamsFilter =`?busyness=${busynessLevels}&attraction_type=${attractionTypes}&time=${translateTimes(date.format(format))}&day=${getDay(date.format('DD'),date.format('MM'),date.format('YYYY'))}`;
-    
     axios.get(`http://localhost:8000/api/get_venues${queryParamsFilter}`)
     .then((response) => {
       
