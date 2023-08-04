@@ -1,0 +1,35 @@
+{
+  "files": {
+    "main.css": "/static/css/main.4aa1dd8b.css",
+    "main.js": "/static/js/main.2567233e.js",
+    "static/media/snowflake.gif": "/static/media/snowflake.eb6bf4239820b662627e.gif",
+    "static/media/manhattancity.jpg": "/static/media/manhattancity.a2ca336a55fa87cd0206.jpg",
+    "static/media/timessquare.jpg": "/static/media/timessquare.b7afa47c22b21d14843c.jpg",
+    "static/media/manhattan3.jpg": "/static/media/manhattan3.115e8d91706189357dd6.jpg",
+    "static/media/manhattan1.jpg": "/static/media/manhattan1.25d773ca7904acd3b3e0.jpg",
+    "static/media/drizzle.gif": "/static/media/drizzle.2a6398c9de75716cae26.gif",
+    "static/media/rain.gif": "/static/media/rain.11d899146154e8dbf1b9.gif",
+    "static/media/storm.gif": "/static/media/storm.1331a4abcbe2de4516be.gif",
+    "static/media/fog.gif": "/static/media/fog.cce5b90025db5dad774c.gif",
+    "static/media/broadway.jpg": "/static/media/broadway.6802182b95e99cccfcea.jpg",
+    "static/media/manhattanculture.jpg": "/static/media/manhattanculture.85318ad2effeb7ea1242.jpg",
+    "static/media/manhattanfood.jpg": "/static/media/manhattanfood.c824c3af7cfe27100b26.jpg",
+    "static/media/centralpark.jpg": "/static/media/centralpark.abf66ad57337b61a3430.jpg",
+    "static/media/brooklynbridge.jpg": "/static/media/brooklynbridge.3a58f20ed716fc224cf1.jpg",
+    "static/media/manhattan2.jpg": "/static/media/manhattan2.769ba7bf4f5d14946437.jpg",
+    "static/media/highline.jpg": "/static/media/highline.677479a53639fe9065c0.jpg",
+    "static/media/logo.jpg": "/static/media/logo.39f0f0e8bc369e31ad4e.jpg",
+    "static/media/wallstreet.jpg": "/static/media/wallstreet.d613e56dd703319a9d5c.jpg",
+    "static/media/statueofliberty.jpg": "/static/media/statueofliberty.c804e18880ab981ed670.jpg",
+    "static/media/federalservice.ttf": "/static/media/federalservice.c5c19fb86407d1230259.ttf",
+    "static/media/empirestatebuilding.jpg": "/static/media/empirestatebuilding.f8070320c06382467696.jpg",
+    "static/media/sun.png": "/static/media/sun.3c891107df9c87318dde.png",
+    "index.html": "/index.html",
+    "main.4aa1dd8b.css.map": "/static/css/main.4aa1dd8b.css.map",
+    "main.2567233e.js.map": "/static/js/main.2567233e.js.map"
+  },
+  "entrypoints": [
+    "static/css/main.4aa1dd8b.css",
+    "static/js/main.2567233e.js"
+  ]
+}
