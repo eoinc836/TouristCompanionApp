@@ -122,6 +122,7 @@ const tourStops = [
   },
 ];
 
+
 // Busyness Legend
 const BusyLegend = () => {
   const getColor = (busyness) => {
@@ -298,7 +299,7 @@ const [destinationKnown, setDestinationKnown] = useState(null);
 const handleDestinationKnownChange = (event) => {
   setDestinationKnown(event.target.value);
 };
-
+const [showLegend, setShowLegend] = useState(false);
 
   // BestTime Drawer Variables
   const [drawerTitle, setDrawerTitle] = useState(null)
@@ -964,6 +965,7 @@ const [loading, setLoading] = useState(false);
             url: "https://maps.google.com/mapfiles/ms/icons/yellow-dot.png",
             scaledSize: new window.google.maps.Size(40, 40),
           },
+
         }))
       );       
       })
@@ -1176,9 +1178,9 @@ const [loading, setLoading] = useState(false);
 
   // React Components Logic 
   return (
-   <div className="map-container" style={{ backgroundColor: '#2b3345' }}>
+   <div className="map-container">
     <div className="sidebar-map-container">
-        <div style={{ backgroundColor: "#2b3345" }}>
+
       <Sidebar collapsed={menuCollapse}>
         <div
           className="closemenu"
@@ -1493,7 +1495,7 @@ const [loading, setLoading] = useState(false);
         </Menu>
       </Sidebar>
     </div>
-    </div>
+
 
 
       <div className="map">
@@ -1652,7 +1654,79 @@ const [loading, setLoading] = useState(false);
               checked={showPrediction}
             />
           </div>
-          <BusyLegend />
+          <>
+            <Switch
+              checked={showLegend}
+              onChange={(checked) => setShowLegend(checked)}
+              style={{
+                position: "absolute",
+
+                top: "100px",
+                right: "100px",
+                fontFamily: "Arial, sans-serif",
+
+                color: "#333",
+                width: "150px", // 2x wider
+                height: "35px", // 2x taller
+                fontSize: "12px",
+              }}
+              checkedChildren={<div style={{ fontSize: "12px" }}>Legend</div>}
+              unCheckedChildren={<div style={{ fontSize: "12px" }}>Legend</div>}
+            ></Switch>
+
+            {showLegend && (
+              <>
+                <BusyLegend />
+                <Card
+                  style={{
+                    position: "absolute",
+                    top: "330px", // Change this value to 110px to move the legend 100px lower
+                    left: "10px",
+                    backgroundColor: "rgba(255, 255, 255, 0.8)",
+                    padding: "15px",
+                    borderRadius: "8px",
+                    color: "#333",
+                    boxShadow: "0px 0px 10px rgba(0, 0, 0, 0.2)",
+                    border: "1px solid rgba(0, 0, 0, 0.1)",
+                    fontFamily: '"Arial", sans-serif',
+                  }}
+                >
+                  <h3
+                    style={{ marginBottom: "15px", fontWeight: "bold", fontSize: "18px" }}
+                  >
+                    Marker Legend
+                  </h3>
+                  <div
+                    className="marker-legend"
+                    style={{ display: "flex", flexDirection: "column", gap: "10px" }}
+                  >
+                    <div style={{ display: "flex", alignItems: "center", gap: "5px" }}>
+                      <img
+                        src="https://maps.google.com/mapfiles/ms/icons/purple-dot.png"
+                        alt="User Marker"
+                      />
+                      User Marker
+                    </div>
+                    <div style={{ display: "flex", alignItems: "center", gap: "5px" }}>
+                      <img
+                        src="https://maps.google.com/mapfiles/ms/icons/red-dot.png"
+                        alt="Top 20 Attractions Marker"
+                      />
+                      Top 20 Attractions
+                    </div>
+                    <div style={{ display: "flex", alignItems: "center", gap: "5px" }}>
+                      <img
+                        src="https://maps.google.com/mapfiles/ms/icons/yellow-dot.png"
+                        alt="Best Time Marker"
+                      />
+                      Best Time Marker
+                    </div>
+                  </div>
+                </Card>
+              </>
+            )}
+          </>;
+
         </GoogleMap>
       </div>
    <Drawer

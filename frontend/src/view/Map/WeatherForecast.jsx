@@ -149,8 +149,8 @@ const WeatherForecast = ({ onWeatherDataReceived }) => {
 
   return (
     <div className="weather-forecast">
-         <Collapse defaultActiveKey={['1']}>
-           <Panel header="Weather Forecast" key="1">
+         <Collapse defaultActiveKey={[]}>
+           <Panel header="Weather Forecast" key="1"  style={{textAlign: "center", fontWeight: "bold" }}>
              {renderWeatherTable()}
            </Panel>
          </Collapse>
