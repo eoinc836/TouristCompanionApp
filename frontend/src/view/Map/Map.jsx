@@ -1,9 +1,10 @@
 import React, { useEffect, useState, useRef, useCallback } from "react";
 import { GoogleMap, Marker, InfoWindow, DirectionsService, DirectionsRenderer } from "@react-google-maps/api";
 import { useLoadScript } from "@react-google-maps/api";
-import { Switch, Button, Card, TreeSelect, DatePicker, Select, Tooltip, Radio, Checkbox, Spin } from "antd";
+import { Switch, Button,Rate,  TreeSelect, DatePicker, Select, Tooltip, Radio, Checkbox, Spin } from "antd";
 import { Sidebar, Menu, MenuItem, SubMenu } from 'react-pro-sidebar';
 import axios from "axios";
+import { Card } from "react-bootstrap";
 import { Autocomplete } from "@react-google-maps/api";
 import "antd/dist/antd.css";
 import "./Map.scss";
@@ -260,7 +261,7 @@ const Map = () => {
   const [isSearchButtonClicked, setIsSearchButtonClicked] = useState(false);
   const [isMapClicked, setIsMapClicked] = useState(false);
   const [newMarkers, setNewMarkers] = useState([]);
-const [menuCollapse, setMenuCollapse] = useState(false);
+const [menuCollapse, setMenuCollapse] = useState(true);
 
 //create a custom function that will change menucollapse state from false to true and true to false
 const menuIconClick = () => {
@@ -272,19 +273,26 @@ const [showOtherContent, setShowOtherContent] = useState(false);
 
 const handleBestTimeClick = () => {
   setShowBestTime(!showBestTime);
+  setShowItinerary(false);
+  setShowTimeConfig(false);
 };
 
 const handleNext = () => {
   setShowOtherContent(true);
 };
 const handleBusynessPredictionClick = () => {
-  setShowTimeConfig(!showTimeConfig); // Toggle the visibility of the time configuration
+  setShowTimeConfig(!showTimeConfig);
+   setShowItinerary(false); // Hide other MenuItem's content
+    setShowBestTime(false); // Hide other MenuItem's content
 };
 const [showTimeConfig, setShowTimeConfig] = useState(false);
 const [showItinerary, setShowItinerary] = useState(false);
 
 const handleItineraryRouteClick = () => {
-  setShowItinerary(!showItinerary); // Toggle the visibility of the Itinerary component
+  setShowItinerary(!showItinerary);
+   setShowTimeConfig(false);
+  setShowBestTime(false);
+
 };
 const [destinationKnown, setDestinationKnown] = useState(null);
 const handleDestinationKnownChange = (event) => {
@@ -1169,7 +1177,8 @@ const [loading, setLoading] = useState(false);
   // React Components Logic 
   return (
    <div className="map-container" style={{ backgroundColor: '#2b3345' }}>
-    <div style={{ backgroundColor: "#2b3345" }}>
+    <div className="sidebar-map-container">
+        <div style={{ backgroundColor: "#2b3345" }}>
       <Sidebar collapsed={menuCollapse}>
         <div
           className="closemenu"
@@ -1238,7 +1247,7 @@ const [loading, setLoading] = useState(false);
             Busyness Prediction
           </MenuItem>
 
-          {showTimeConfig && (
+          {showTimeConfig && !menuCollapse && (
             <div className="time-configuration" style={{ padding: "15px" }}>
               {/* Display a heading for the time configuration */}
               <DatePicker
@@ -1278,7 +1287,7 @@ const [loading, setLoading] = useState(false);
             BestTime
           </MenuItem>
 
-          {showBestTime && !showOtherContent && (
+          {showBestTime && !showOtherContent && !menuCollapse && (
             <Card
               style={{
                 backgroundColor: "#3D5152",
@@ -1303,7 +1312,7 @@ const [loading, setLoading] = useState(false);
           )}
 
           {/* Show other content when showBestTime is true and showOtherContent is true */}
-          {showBestTime && showOtherContent && (
+          {showBestTime && showOtherContent && !menuCollapse && (
             <>
               <Card
                 style={{
@@ -1479,10 +1488,12 @@ const [loading, setLoading] = useState(false);
             Itinerary Route
           </MenuItem>
 
-          {showItinerary && <Itinerary setItinerary={setItinerary} />}
+           {!menuCollapse && showItinerary && <Itinerary setItinerary={setItinerary} />}
+
         </Menu>
       </Sidebar>
-    </div>;
+    </div>
+    </div>
 
 
       <div className="map">
@@ -1546,17 +1557,17 @@ const [loading, setLoading] = useState(false);
               right: "100px",
             }}
           >
-            <Switch
- size="small"
-              style={{
-                width: "150px", //2x wider
-                height: "35px" //2x taller
-              }}
-              checkedChildren={<div style={{ fontSize: "12px" }}>Top 20 Attractions</div>}
-              unCheckedChildren={<div style={{ fontSize: "12px" }}>Top 20 Attractions</div>}
-              onChange={handleTourStopsToggle}
-              checked={showTourStops}
-            />
+           <Switch
+             size="small"
+             style={{
+               width: "150px", // 2x wider
+               height: "35px", // 2x taller
+             }}
+             checkedChildren={<div style={{ fontSize: "12px" }}>Top 20 Attractions</div>}
+             unCheckedChildren={<div style={{ fontSize: "12px" }}>Top 20 Attractions</div>}
+             onChange={handleTourStopsToggle}
+             checked={showTourStops}
+           />
           </div>
 
      {loading && (
@@ -1649,68 +1660,134 @@ const [loading, setLoading] = useState(false);
      onClose={handleDrawerClose}
      direction="right"
      width={400}
-     disableOverlay={true}
+     disableOverlay={false}
+     style={{ overflow: 'auto' }}
    >
      {selectedMarker && !bestTimeUsed ? (
-    <Card
-        title={selectedMarker.title} // Use selectedMarker.title as the Card title
-        bordered={false}
-        style={{
-          width: 300,
-        }}
-      >
-        <p>Rating: {placeDetails.rating}</p>
-        <p>
-          Opening Hours: {placeDetails.opening_hours?.weekday_text?.join(', ')}
-        </p>
-        <p>Address: {placeDetails.formatted_address}</p>
-        <p>Busyness: {placeDetails.reviews?.length}</p>
-        <div
-          className={`toggle-btn ${isActive ? 'active' : ''}`}
-          onClick={handleToggle}
-        >
-          <div className="toggle-label"></div>
-        </div>
-      </Card>
-     ) : selectedMarker && bestTimeUsed ? (
-       <div>
-
-         <h3>{drawerTitle}</h3>
-         <p>Rating: {drawerRating}</p>
-         <p>Opening Hours: {drawerOpening}</p>
-         <p>Address: {drawerAddress}</p>
-         <p>Busyness: {}</p>
-         <div
-           className={`toggle-btn ${isActive ? 'active' : ''}`}
-           onClick={handleToggle}
+     <Card style={{ width: "80%", height: "400px" }} className="m-4">
+       <Card.Header>
+         <Card.Title
+           style={{ backgroundColor: "white", fontSize: "16px", fontWeight: "bold" }}
          >
-           <div className="toggle-label"></div>
+           {selectedMarker.title}
+         </Card.Title>
+       </Card.Header>
+       <Card.Body>
+         <Card.Text style={{ fontStyle: "italic" }}>
+           <span>Rating: {placeDetails.rating}</span>
+           <div className="rating ml-2" style={{ color: "yellow" }}>
+             <Rate disabled allowHalf value={placeDetails.rating} />
+           </div>
+         </Card.Text>
+
+         <Card.Text style={{ fontStyle: "italic" }}>
+           Opening Hours: {placeDetails.opening_hours?.weekday_text?.join(", ")}
+         </Card.Text>
+         <Card.Text style={{ fontStyle: "italic" }}>
+           Address: {placeDetails.formatted_address}
+         </Card.Text>
+         <Card.Text style={{ fontStyle: "italic" }}>
+           Busyness: {placeDetails.reviews?.length}
+         </Card.Text>
+         <div className="form-check form-switch">
+           <Tooltip title="Saved Place" placement="right" size="small">
+             <input
+               className="form-check-input"
+               type="checkbox"
+               id="toggleSwitch"
+               checked={isActive}
+               onChange={handleToggle}
+             />
+             <label className="form-check-label" htmlFor="toggleSwitch">
+               {/* Toggle label */}
+             </label>
+           </Tooltip>
          </div>
-       </div>
+       </Card.Body>
+     </Card>
+
+     ) : selectedMarker && bestTimeUsed ? (
+      <Card style={{ width: '80%', height: '400px' }} className="m-4">
+        <Card.Header>
+          <Card.Title
+            style={{ backgroundColor: 'white', fontSize: '16px', fontWeight: 'bold' }}
+          >
+            {drawerTitle}
+          </Card.Title>
+        </Card.Header>
+        <Card.Body>
+          <Card.Text style={{ fontStyle: 'italic' }}>
+            Rating: {drawerRating}
+            <span className="rating ml-2" style={{ color: 'yellow' }}>
+              <Rate disabled allowHalf value={drawerRating} />
+            </span>
+          </Card.Text>
+          <Card.Text style={{ fontStyle: 'italic' }}>Opening Hours: {drawerOpening}</Card.Text>
+          <Card.Text style={{ fontStyle: 'italic' }}>Address: {drawerAddress}</Card.Text>
+          <Card.Text style={{ fontStyle: 'italic' }}>Busyness: {}</Card.Text>
+          <div className="form-check form-switch">
+            <Tooltip title="Saved Place" placement="right" size="small">
+              <div
+                className={`toggle-btn ${isActive ? 'active' : ''}`}
+                onClick={handleToggle}
+              >
+                <div className="toggle-label"></div>
+              </div>
+            </Tooltip>
+          </div>
+        </Card.Body>
+      </Card>
+
      ) : (
        <div>
          {isSearchButtonClicked &&
            searchedPlaces.map((place) => (
-             <div key={place.placeId} className="searched-place">
-               <h4>{place.title}</h4>
-               <p>{place.address}</p>
-               <p>Busyness: {place.busyness}</p>
-               <p>Opening Hours: {place.openingHours}</p>
-               <p>General Info: {place.generalInfo}</p>
-               <p>Rating: {place.rating}</p>
-               <div
-                 className={`toggle-btn ${isActive ? 'active' : ''}`}
-                 onClick={handleToggle}
-               >
-                 <div className="toggle-label"></div>
-               </div>
-             </div>
+            <div key={place.placeId} className="searched-place">
+              <Card style={{ width: '80%', height: '300px' }} className="m-4">
+                <Card.Header>
+                  <Card.Title
+                    style={{ backgroundColor: 'white', fontSize: '16px', fontWeight: 'bold' }}
+                  >
+                    {place.title}
+                  </Card.Title>
+                </Card.Header>
+                <Card.Body>
+                  <Card.Text style={{ fontStyle: 'italic' }}>
+                    Rating: {place.rating}
+                    <span className="rating ml-2" style={{ color: 'yellow' }}>
+                      <Rate disabled allowHalf value={place.rating} />
+                    </span>
+                  </Card.Text>
+                  <Card.Text style={{ fontStyle: 'italic' }}>
+                    Opening Hours: {place.openingHours}
+                  </Card.Text>
+                  <Card.Text style={{ fontStyle: 'italic' }}>
+                    Address: {place.address}
+                  </Card.Text>
+                  <Card.Text style={{ fontStyle: 'italic' }}>
+                    Busyness: {place.busyness}
+                  </Card.Text>
+                  <div className="form-check form-switch">
+                    <Tooltip title="Saved Place" placement="right" size="small">
+                      <div
+                        className={`toggle-btn ${isActive ? 'active' : ''}`}
+                        onClick={handleToggle}
+                      >
+                        <div className="toggle-label"></div>
+                      </div>
+                    </Tooltip>
+                  </div>
+                </Card.Body>
+              </Card>
+            </div>
+
            ))}
        </div>
      )}
    </Drawer>
 
     </div>
+
   );
 };
 
