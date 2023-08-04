@@ -1,7 +1,7 @@
 import React, { useEffect, useState, useRef, useCallback } from "react";
 import { GoogleMap, Marker, InfoWindow, DirectionsService, DirectionsRenderer } from "@react-google-maps/api";
 import { useLoadScript } from "@react-google-maps/api";
-import { Switch, Button,Rate,  TreeSelect, DatePicker, Select, Tooltip, Radio, Checkbox, Spin } from "antd";
+import { Switch, Button,Rate,  TreeSelect, DatePicker, Select, Tooltip, Radio, Checkbox, Spin, Form, TimePicker, Collapse, List, Space, Typography, } from "antd";
 import { Sidebar, Menu, MenuItem, SubMenu } from 'react-pro-sidebar';
 import axios from "axios";
 import { Card } from "react-bootstrap";
@@ -9,118 +9,16 @@ import { Autocomplete } from "@react-google-maps/api";
 import "antd/dist/antd.css";
 import "./Map.scss";
 import moment from "moment";
-import Itinerary from './Itinerary';
-// import component 👇
+
+// import component 
 import Drawer from 'react-modern-drawer'
-//import styles 👇
+//import styles 
 import 'react-modern-drawer/dist/index.css'
 import WeatherForecast from './WeatherForecast';
 
 const { Option } = Select;
-
-// Top 20 attractions Markers
-const tourStops = [
-  {
-    position: { lat: 40.764908, lng: -73.974146 },
-    title: "Central Park",
-    placeId: "ChIJ4zGFAZpYwokRGUGph3Mf37k",
-  },
-  {
-    position: { lat: 40.758895, lng: -73.985131 },
-    title: "Times Square",
-    placeId: "ChIJmQJIxlVYwokRLgeuocVOGVU",
-  },
-  {
-    position: { lat: 40.748817, lng: -73.985428 },
-    title: "Empire State Building",
-    placeId: "ChIJtcaxrqlZwokRfwmmibzPsTU",
-  },
-  {
-    position: { lat: 40.779437, lng: -73.963244 },
-    title: "The Metropolitan Museum of Art",
-    placeId: "ChIJb8Jg9pZYwokR-qHGtvSkLzs",
-  },
-  {
-    position: { lat: 40.759012, lng: -73.984472 },
-    title: "Broadway",
-    placeId: "ChIJEcHIDhZYwokRSlKSVPyxiBw",
-  },
-  {
-    position: { lat: 40.689249, lng: -74.0445 },
-    title: "Statue of Liberty",
-    placeId: "ChIJPTacEpBQwokRKwIlDXelxkA",
-  },
-  {
-    position: { lat: 40.75874, lng: -73.978674 },
-    title: "Rockefeller Center",
-    placeId: "ChIJtcaxrqlZwokRfwmmibzPsTU",
-  },
-  {
-    position: { lat: 40.747936, lng: -74.004721 },
-    title: "The High Line",
-    placeId: "ChIJ5bQPhMdZwokRkTwKhVxhP1g",
-  },
-  {
-    position: { lat: 40.752726, lng: -73.977229 },
-    title: "Grand Central Terminal",
-    placeId: "ChIJPbfh-GFZwokRY7R5SP6jN8Q",
-  },
-  {
-    position: { lat: 40.71151, lng: -74.013324 },
-    title: "9/11 Memorial and Museum",
-    placeId: "ChIJO8X04x9awokRbUf-DOIkH0M",
-  },
-  {
-    position: { lat: 40.761432, lng: -73.977622 },
-    title: "Museum of Modern Art (MoMA)",
-    placeId: "ChIJk9CrWVZYwokRX9f9Va2bCjI",
-  },
-  {
-    position: { lat: 40.753584, lng: -73.983154 },
-    title: "Bryant Park",
-    placeId: "ChIJPTacEpBQwokRKwIlDXelxkA",
-  },
-  {
-    position: { lat: 40.74227, lng: -74.006005 },
-    title: "Chelsea Market",
-    placeId: "ChIJS4bhd4pZwokRklWtP1Rjz_c",
-  },
-  {
-    position: { lat: 40.741092, lng: -73.989663 },
-    title: "Flatiron Building",
-    placeId: "ChIJPZJr8JRZwokRtA1xYPL9HXo",
-  },
-  {
-    position: { lat: 40.758662, lng: -73.976356 },
-    title: "St. Patrick's Cathedral",
-    placeId: "ChIJHRvONp9YwokRG9y-w1xW3r8",
-  },
-  {
-    position: { lat: 40.781324, lng: -73.973988 },
-    title: "American Museum of Natural History",
-    placeId: "ChIJh8VHZYJYwokRL1UEkbo1b1k",
-  },
-  {
-    position: { lat: 40.77143, lng: -73.967904 },
-    title: "The Frick Collection",
-    placeId: "ChIJ20gXTflYwokRv_zwfh_OrMo",
-  },
-  {
-    position: { lat: 40.730873, lng: -73.99733 },
-    title: "Washington Square Park",
-    placeId: "ChIJARj8xyBZwokR8hg3zkVcnEA",
-  },
-  {
-    position: { lat: 40.706935, lng: -74.011013 },
-    title: "Wall Street and the Financial District",
-    placeId: "ChIJvUfDoZJawokR0J3mF4glKfs",
-  },
-  {
-    position: { lat: 40.758739, lng: -73.978808 },
-    title: "Top of the Rock Observation Deck",
-    placeId: "ChIJPbfh-GFZwokRY7R5SP6jN8Q",
-  },
-];
+const { Panel } = Collapse;
+const { Text, Title } = Typography;
 
 
 // Busyness Legend
@@ -246,6 +144,7 @@ const Map = () => {
   const [userMarkers, setUserMarkers] = useState([]);
   const [shouldRemoveMarkers, setShouldRemoveMarkers] = useState(false);
   const [destination, setDestination] = useState("");
+  const [tourStops, setTourStops] = useState([]);
   const [selectedFilters, setSelectedFilters] = useState({
     busyness: "",
     attraction_type: "",
@@ -326,10 +225,6 @@ const [selectedOptions, setSelectedOptions] = useState([]);
 
   // Add a new state for route visibility
   const [isRoutingOn, setIsRoutingOn] = useState(false);
-
-  // Add a new state for the directions renderer instance
-  const [directionsRenderer, setDirectionsRenderer] = useState(null);
-  const [itinerary, setItinerary] = useState(""); // add this line to initialize itinerary state
 
   // saved places toggle button
   const [isActive, setIsActive] = useState(false);
@@ -413,6 +308,160 @@ const [selectedOptions, setSelectedOptions] = useState([]);
     }
     return cookieValue;
   }
+
+// Itinerary Logic
+const [itinerary, setItinerary] = useState(""); 
+const [itineraryList, setItineraryList] = useState([]);
+const [form] = Form.useForm();
+const [displayRoute, setDisplayRoute] = useState(false);
+const [visible, setVisible] = useState(false);
+const [directionsRenderer, setDirectionsRenderer] = useState([]);
+const [isFormSubmitted, setIsFormSubmitted] = useState(false);
+const [isItineraryView, setIsItineraryView] = useState(false);
+const allFieldNames = form.getFieldValue(); // Get all the field values
+const fieldNamesToReset = Object.keys(allFieldNames).filter(name => name !== 'displayRoute'); // Exclude 'displayRoute'
+
+
+  const calculateDistance = (location1, location2) => {
+    const radlat1 = Math.PI * location1.lat / 180;
+    const radlat2 = Math.PI * location2.lat / 180;
+    const theta = location1.lng - location2.lng;
+    const radtheta = Math.PI * theta / 180;
+    let dist =
+        Math.sin(radlat1) * Math.sin(radlat2) +
+        Math.cos(radlat1) * Math.cos(radlat2) * Math.cos(radtheta);
+    if (dist > 1) {
+        dist = 1;
+    }
+    dist = Math.acos(dist);
+    dist = (dist * 180) / Math.PI;
+    dist = dist * 60 * 1.1515;
+    dist = dist * 1.609344;
+    return dist;
+  };
+  
+  const generateItinerary = (startEndHour, dateRange) => {
+    const totalHoursInDay = startEndHour[1] - startEndHour[0];
+    const hoursPerAttraction = 2;
+    let itinerary = [];
+    let itineraryMapping = {}; 
+  
+    let currentDay = moment(dateRange[0]);
+    let currentHour = startEndHour[0];
+  
+    let sortedTourStops = [...tourStops];
+  
+    // Finding two farthest places
+    let maxDist = -1;
+    let farthestPair = [0, 1];  // initialize with the first two places
+    for (let i = 0; i < sortedTourStops.length - 1; i++) {
+        for (let j = i + 1; j < sortedTourStops.length; j++) {
+            let dist = calculateDistance(
+                sortedTourStops[i].position,
+                sortedTourStops[j].position
+            );
+            if (dist > maxDist) {
+                maxDist = dist;
+                farthestPair = [i, j];
+            }
+        }
+    }
+
+    // Set the first and last stops to be the farthest pair
+    const startAttraction = sortedTourStops[farthestPair[0]];
+    const endAttraction = sortedTourStops[farthestPair[1]];
+    sortedTourStops = sortedTourStops.filter((stop, index) => index !== farthestPair[0] && index !== farthestPair[1]);
+    sortedTourStops.unshift(startAttraction);
+    sortedTourStops.push(endAttraction);
+  
+    sortedTourStops.forEach((stop, index) => {
+      if (currentHour + hoursPerAttraction > startEndHour[1]) {
+        currentDay = currentDay.add(1, 'days');
+        currentHour = startEndHour[0];
+      }
+  
+      let visitStart = currentDay.clone().hour(currentHour).minute(0);
+      let visitEnd = currentDay.clone().hour(currentHour + hoursPerAttraction).minute(0);
+  
+      itinerary.push({
+        key: index,
+        time: `${visitStart.format('HH:mm')} - ${visitEnd.format('HH:mm')}`,
+        title: stop.title,
+        date: currentDay.format('YYYY-MM-DD'),
+        position: stop.position, 
+      });
+  
+      itineraryMapping[stop.title] = stop.position; 
+  
+      currentHour += hoursPerAttraction;
+    });
+  
+    setItinerary(itineraryMapping);
+  
+    return itinerary;
+  }
+  
+    
+  const onFinish = async (values) => {
+    if (values.markers === "top20") {
+      if (!Array.isArray(values.startEndHour) || values.startEndHour.length !== 2 || !Array.isArray(values.dateRange) || values.dateRange.length !== 2) {
+        console.error('Invalid input for start and end hours or date range!');
+        return;
+      }
+      const newItinerary = generateItinerary(
+        [values.startEndHour[0].hour(), values.startEndHour[1].hour()],
+        [values.dateRange[0].format('YYYY-MM-DD'), values.dateRange[1].format('YYYY-MM-DD')]
+      );
+      setItineraryList(newItinerary);
+      setVisible(true);
+      setIsFormSubmitted(true);
+  
+      // If displayRoute is enabled, calculate route for tour stops
+  if (form.getFieldValue('displayRoute')) {
+    // Create an array of waypoints for all tour stops except the first and last ones
+    const waypoints = newItinerary.slice(1, newItinerary.length - 1).map(stop => {
+      return {
+        location: new window.google.maps.LatLng(stop.position.lat, stop.position.lng),
+        stopover: true,
+      };
+    });
+
+    // Create a new directions service
+    const directionsService = new window.google.maps.DirectionsService();
+
+    // Request a direction route from Google Maps API
+    const result = await new Promise((resolve, reject) => {
+      directionsService.route({
+        origin: new window.google.maps.LatLng(newItinerary[0].position.lat, newItinerary[0].position.lng),
+        destination: new window.google.maps.LatLng(newItinerary[newItinerary.length - 1].position.lat, newItinerary[newItinerary.length - 1].position.lng),
+        waypoints: waypoints,
+        optimizeWaypoints: true,
+        travelMode: window.google.maps.TravelMode.WALKING,
+      }, (result, status) => {
+        if (status === window.google.maps.DirectionsStatus.OK) {
+          resolve(result);
+        } else {
+          reject(`error fetching directions ${result}`);
+        }
+      });
+    });
+
+    // Add new result to directionsRenderer array
+    setDirectionsRenderer([result]);
+  }
+  // Reset form fields
+  form.resetFields(fieldNamesToReset);
+};
+  };
+  
+   
+    const itineraryByDay = itineraryList.reduce((acc, curr) => {
+      acc[curr["date"]] = acc[curr["date"]] || [];
+      acc[curr["date"]].push(curr);
+      return acc;
+    }, {});
+  
+
 
   const mapRef = useRef(null);
 
@@ -1178,6 +1227,25 @@ const [loading, setLoading] = useState(false);
     );
   };
 
+    // Fetch tour stops when component mounts
+    useEffect(() => {
+      // replace 'http://127.0.0.1:8000' with your backend's URL
+      axios.get('http://127.0.0.1:8000/api/get_top_attractions')
+        .then(response => {
+          // Convert received data into tourStops format
+          const newTourStops = Object.keys(response.data).map(name => {
+            const stop = response.data[name];
+            return {
+              position: { lat: stop.latitude, lng: stop.longitude },
+              title: name,
+              // Add a unique ID for each stop since we no longer have placeId
+              id: `${stop.latitude}-${stop.longitude}`
+            };
+          });
+          setTourStops(newTourStops);
+        })
+        .catch(error => console.error(error));
+    }, []);
 
   const [showTourStops, setShowTourStops] = useState(true);
 
@@ -1503,10 +1571,101 @@ const [loading, setLoading] = useState(false);
           >
             Itinerary Route
           </MenuItem>
-
-           {!menuCollapse && showItinerary && <Itinerary setItinerary={setItinerary} />}
-
-        </Menu>
+          {showItinerary && 
+  <div style={{ backgroundColor: "#2b3345", padding: "10px", borderRadius: "5px" }}>
+    <Button 
+      onClick={() => setIsItineraryView(!isItineraryView)}
+      style={{ marginBottom: '10px' }}
+    >
+      {isItineraryView ? "Go to Form View" : "Go to Itinerary View"}
+    </Button>
+    
+    {isItineraryView ? (
+      <div
+        title="Your Itinerary"
+        placement="bottom"
+        closable={false}
+        onClose={() => setVisible(false)}
+        open={visible}
+        height={500}
+      >
+              <Collapse accordion style={{ borderRadius: '5px', backgroundColor: "#61677A" }}>
+                {Object.keys(itineraryByDay).map((date) => (
+                  <Panel header={date} key={date} style={{ backgroundColor: "#B7B7B7" }}>
+                  <div style={{ backgroundColor: "#D8D9DA", borderRadius: "5px", boxShadow: "0 0 5px rgba(0, 0, 0, 0.3)", padding: "10px" }}>
+                    {itineraryByDay[date].map((item, index) => (
+                      <List.Item key={index}>
+                        <Space direction="vertical">
+                          <Text strong>{item.time}</Text>
+                          <Text> - Visit {item.title}</Text>
+                        </Space>
+                      </List.Item>
+                    ))}
+                  </div>
+      
+      
+                  </Panel>
+                ))}
+              </Collapse>
+            </div>
+               ) : (
+                 <Form
+                   form={form}
+                   name="itinerary"
+                   layout="vertical"
+                   onFinish={onFinish}
+                   initialValues={{ itinerary: "" }}
+                   style={{ padding: "15px" }}
+                 >
+                   <Form.Item
+                     name="dateRange"
+                     label="Start and End Date"
+                     rules={[{ required: true, message: 'Please input your date range!' }]}
+                   >
+                     <DatePicker.RangePicker format="YYYY-MM-DD" />
+                   </Form.Item>
+                   <Form.Item
+                     name="startEndHour"
+                     label="Visting Hours"
+                     rules={[{ required: true, message: 'Please select the start and end hour!' }]}
+                   >
+                     <TimePicker.RangePicker format="HH" />
+                   </Form.Item>
+                   
+                   <Form.Item
+                     name="markers"
+                     label="Markers for Itinerary"
+                     rules={[{ required: true, message: 'Please select markers for your itinerary!' }]}
+                   >
+                     <Select placeholder="Select a type">
+                       <Option value="top20">Top 20</Option>
+                       <Option value="saved">Saved</Option>
+                     </Select>
+                   </Form.Item>
+                   <Form.Item
+                    name="displayRoute"
+                    valuePropName="checked"
+                  >
+                    <Switch 
+                      checkedChildren={<span style={{ fontSize: '16px' }}>Display Route</span>} 
+                      unCheckedChildren={<span style={{ fontSize: '16px' }}>Hide Route</span>}
+                      style={{ width: "150px", height: "40px" }} 
+                      onChange={(checked) => {
+                        setDisplayRoute(checked);
+                        setShowTourStops(!checked);  // Also toggle showTourStops
+                      }} 
+                    />
+                  </Form.Item>
+                   <Form.Item style={{ margin: "10px", display: "flex", justifyContent: "center" }}>
+                     <Button type="primary" htmlType="submit" style={{ backgroundColor: "#45656C", color: "#FFFFFF" }}>
+                       Generate Itinerary
+                     </Button>
+                   </Form.Item>
+                 </Form>
+               )}
+             </div>
+          }
+          </Menu>
       </Sidebar>
     </div>
 
@@ -1524,7 +1683,9 @@ const [loading, setLoading] = useState(false);
             setMapCenter({ lat: map.getCenter().lat(), lng: map.getCenter().lng() });
           }}
           ref={mapRef}>
-          {directionsRenderer && <DirectionsRenderer directions={directionsRenderer} />}
+          {displayRoute && directionsRenderer.map((result, i) => (
+  <DirectionsRenderer directions={result} key={i} />
+  ))}
           {hoveredZone && (
             <HoveredZoneInfo hoveredZone={hoveredZone} getBusynessDescription={getBusynessDescription} />
           )}
