@@ -79,7 +79,7 @@ def get_forecast(request):
     
     url = BESTTIME_API_URL + "forecasts"
     params = {
-        'api_key_private': env('BESTTIME_API_KEY'),
+        'api_key_private': 'pri_4d96e94484e046e4939cf554198f685b',
         'venue_name': venue_name,
         'venue_address': venue_address
     }

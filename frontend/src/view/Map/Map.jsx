@@ -9,6 +9,8 @@ import { Autocomplete } from "@react-google-maps/api";
 import "antd/dist/antd.css";
 import "./Map.scss";
 import moment from "moment";
+import WeeklyChart from "./weeklyCharts";
+import DailyChart from "./dailyCharts";
 
 // import component 
 import Drawer from 'react-modern-drawer'
@@ -213,6 +215,18 @@ const [showLegend, setShowLegend] = useState(false);
   const[nearBy,setNearBy] = useState(false)
   const[user_lat,setUser_lat] = useState(false)
   const[user_lng,setUser_lng] = useState(false)
+
+  //BestTime Graph Variables
+  const [mondayLevel, setMondayLevel] = useState(null);
+  const [tuesdayLevel, setTuesdayLevel] = useState(null);
+  const [wednesdayLevel, setWednesdayLevel] = useState(null);
+  const [thursdayLevel, setThursdayLevel] = useState(null);
+  const [fridayLevel, setFridayLevel] = useState(null);
+  const [saturdayLevel, setSaturdayLevel] = useState(null);
+  const [sundayLevel, setSundayLevel] = useState(null);
+
+  const [dailyBusyness,setDailyBusyness] = useState([]);
+
 
 const [selectedOptions, setSelectedOptions] = useState([]);
 
@@ -1171,6 +1185,37 @@ const [loading, setLoading] = useState(false);
         .then((response) => {
           console.log('API Response:', response.data);
 
+          //Setting Busyness Graph Data(in placeChange)
+          setMondayLevel(calculateAverageNonZeroBusyness(convertStringToArray(response['data'].busyness_monday)))
+          setTuesdayLevel(calculateAverageNonZeroBusyness(convertStringToArray(response['data'].busyness_tuesday)))
+          setWednesdayLevel(calculateAverageNonZeroBusyness(convertStringToArray(response['data'].busyness_wednesday)))
+          setThursdayLevel(calculateAverageNonZeroBusyness(convertStringToArray(response['data'].busyness_thursday)))
+          setFridayLevel(calculateAverageNonZeroBusyness(convertStringToArray(response['data'].busyness_friday)))
+          setSaturdayLevel(calculateAverageNonZeroBusyness(convertStringToArray(response['data'].busyness_saturday)))
+          setSundayLevel(calculateAverageNonZeroBusyness(convertStringToArray(response['data'].busyness_sunday)))
+
+          let currentDayOfWeek = (moment().format('dddd'));
+          let currentDayBusyness;
+          
+          if (currentDayOfWeek === 'Monday') {
+            currentDayBusyness = convertStringToArray(response['data'].busyness_monday);
+          } else if (currentDayOfWeek === 'Tuesday') {
+            currentDayBusyness = convertStringToArray(response['data'].busyness_tuesday);
+          } else if (currentDayOfWeek === 'Wednesday') {
+            currentDayBusyness = convertStringToArray(response['data'].busyness_wednesnday);
+          } else if (currentDayOfWeek === 'Thursday') {
+            currentDayBusyness = convertStringToArray(response['data'].busyness_thursday);
+          } else if (currentDayOfWeek === 'Friday') {
+            currentDayBusyness = convertStringToArray(response['data'].busyness_friday);
+          } else if (currentDayOfWeek === 'Saturday') {
+            currentDayBusyness = convertStringToArray(response['data'].busyness_saturday);
+          } else if (currentDayOfWeek === 'Sunday') {
+            currentDayBusyness = convertStringToArray(response['data'].busyness_sunday);
+          }
+          
+          setDailyBusyness(currentDayBusyness)
+
+
           setDrawerTitle(response['data'].venue_name)
           setDrawerAddress(response['data'].venue_address)
           setDrawerOpening(response['data'].venue_opening_hours)
@@ -1186,6 +1231,45 @@ const [loading, setLoading] = useState(false);
     setDrawerVisible(true)
   };
   
+
+  let weeklyChartData = [
+    {"category": "Monday", "count": mondayLevel},
+    {"category": "Tuesday", "count":tuesdayLevel},
+    {"category": "Wednesday", "count": wednesdayLevel},
+    {"category": "Thursday", "count": thursdayLevel},
+    {"category": "Friday", "count": fridayLevel},
+    {"category": "Saturday", "count": saturdayLevel},
+    {"category": "Sunday", "count": sundayLevel},
+  ]
+
+  const hourlyChartData = [
+    { "category": "00:00", "count": dailyBusyness[0]},
+    { "category": "01:00", "count": dailyBusyness[1] },
+    { "category": "02:00", "count": dailyBusyness[2] },
+    { "category": "03:00", "count": dailyBusyness[3] },
+    { "category": "04:00", "count": dailyBusyness[4] },
+    { "category": "05:00", "count": dailyBusyness[5] },
+    { "category": "06:00", "count": dailyBusyness[6] },
+    { "category": "07:00", "count": dailyBusyness[7] },
+    { "category": "08:00", "count": dailyBusyness[8]},
+    { "category": "09:00", "count": dailyBusyness[9] },
+    { "category": "10:00", "count": dailyBusyness[10]},
+    { "category": "11:00", "count": dailyBusyness[11] },
+    { "category": "12:00", "count": dailyBusyness[12] },
+    { "category": "13:00", "count": dailyBusyness[13] },
+    { "category": "14:00", "count": dailyBusyness[14] },
+    { "category": "15:00", "count": dailyBusyness[15] },
+    { "category": "16:00", "count": dailyBusyness[16] },
+    { "category": "17:00", "count": dailyBusyness[17] },
+    { "category": "18:00", "count": dailyBusyness[18] },
+    { "category": "19:00", "count": dailyBusyness[19] },
+    { "category": "20:00", "count": dailyBusyness[20] },
+    { "category": "21:00", "count": dailyBusyness[21] },
+    { "category": "22:00", "count": dailyBusyness[22]},
+    { "category": "23:00", "count": dailyBusyness[23] },
+  ];
+
+
   const bounds = {
       north: 40.915255,
       south: 40.477398,
@@ -1974,12 +2058,18 @@ const [loading, setLoading] = useState(false);
           <Card.Text style={{ fontStyle: 'italic' }}>Opening Hours: {drawerOpening}</Card.Text>
           <Card.Text style={{ fontStyle: 'italic' }}>Address: {drawerAddress}</Card.Text>
           <Card.Text style={{ fontStyle: 'italic' }}>Busyness: {}</Card.Text>
+
+          <WeeklyChart data={weeklyChartData}></WeeklyChart>
+              <br></br>
+          <DailyChart data={hourlyChartData}></DailyChart>
+          
           <div className="form-check form-switch">
             <Tooltip title="Saved Place" placement="right" size="small">
               <div
                 className={`toggle-btn ${isActive ? 'active' : ''}`}
                 onClick={handleToggle}
               >
+              
                 <div className="toggle-label"></div>
               </div>
             </Tooltip>
