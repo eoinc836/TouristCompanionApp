@@ -22,7 +22,24 @@ const { Option } = Select;
 const { Panel } = Collapse;
 const { Text, Title } = Typography;
 
+function calculateAverageNonZeroBusyness(arr) {
+  let sum = 0;
+  let count = 0;
+  
+  for (let i = 0; i < arr.length; i++) {
+    if (arr[i] !== 0) {
+      sum += arr[i];
+      count++;
+    }
+  }
 
+  // Avoid dividing by zero
+  if (count === 0) {
+    return 0;
+  }
+
+  return sum / count;
+}
 // Busyness Legend
 const BusyLegend = () => {
   const getColor = (busyness) => {
