@@ -9,9 +9,9 @@ import { Autocomplete } from "@react-google-maps/api";
 import "antd/dist/antd.css";
 import "./Map.scss";
 import moment from "moment";
+import { useLocation } from "react-router-dom";
 import WeeklyChart from "./weeklyCharts";
 import DailyChart from "./dailyCharts";
-
 // import component 
 import Drawer from 'react-modern-drawer'
 //import styles 
@@ -118,6 +118,11 @@ const libraries = ["places"];
 
 // Map 
 const Map = () => {
+  const location = useLocation();
+  const queryParams = new URLSearchParams(location.search);
+  const darkMode = queryParams.get("darkMode") === "true";
+  console.log("dark mode value is:", darkMode)
+
   const mapContainerStyle = {
     width: "100%",
     height: "100vh",
@@ -127,6 +132,170 @@ const Map = () => {
     lat: 40.7831,
     lng: -73.9712,
   };
+
+  const darkMapStyles = [
+    {
+      elementType: "geometry",
+      stylers: [
+        {
+          color: "#242f3e",
+        },
+      ],
+    },
+    {
+      elementType: "labels.text.fill",
+      stylers: [
+        {
+          color: "#746855",
+        },
+      ],
+    },
+    {
+      elementType: "labels.text.stroke",
+      stylers: [
+        {
+          color: "#242f3e",
+        },
+      ],
+    },
+    {
+      featureType: "administrative.locality",
+      elementType: "labels.text.fill",
+      stylers: [
+        {
+          color: "#d59563",
+        },
+      ],
+    },
+    {
+      featureType: "poi",
+      elementType: "labels.text.fill",
+      stylers: [
+        {
+          color: "#d59563",
+        },
+      ],
+    },
+    {
+      featureType: "poi.park",
+      elementType: "geometry",
+      stylers: [
+        {
+          color: "#263c3f",
+        },
+      ],
+    },
+    {
+      featureType: "poi.park",
+      elementType: "labels.text.fill",
+      stylers: [
+        {
+          color: "#6b9a76",
+        },
+      ],
+    },
+    {
+      featureType: "road",
+      elementType: "geometry",
+      stylers: [
+        {
+          color: "#38414e",
+        },
+      ],
+    },
+    {
+      featureType: "road",
+      elementType: "geometry.stroke",
+      stylers: [
+        {
+          color: "#212a37",
+        },
+      ],
+    },
+    {
+      featureType: "road",
+      elementType: "labels.text.fill",
+      stylers: [
+        {
+          color: "#9ca5b3",
+        },
+      ],
+    },
+    {
+      featureType: "road.highway",
+      elementType: "geometry",
+      stylers: [
+        {
+          color: "#746855",
+        },
+      ],
+    },
+    {
+      featureType: "road.highway",
+      elementType: "geometry.stroke",
+      stylers: [
+        {
+          color: "#1f2835",
+        },
+      ],
+    },
+    {
+      featureType: "road.highway",
+      elementType: "labels.text.fill",
+      stylers: [
+        {
+          color: "#f3d19c",
+        },
+      ],
+    },
+    {
+      featureType: "transit",
+      elementType: "geometry",
+      stylers: [
+        {
+          color: "#2f3948",
+        },
+      ],
+    },
+    {
+      featureType: "transit.station",
+      elementType: "labels.text.fill",
+      stylers: [
+        {
+          color: "#d59563",
+        },
+      ],
+    },
+    {
+      featureType: "water",
+      elementType: "geometry",
+      stylers: [
+        {
+          color: "#17263c",
+        },
+      ],
+    },
+    {
+      featureType: "water",
+      elementType: "labels.text.fill",
+      stylers: [
+        {
+          color: "#515c6d",
+        },
+      ],
+    },
+    {
+      featureType: "water",
+      elementType: "labels.text.stroke",
+      stylers: [
+        {
+          color: "#17263c",
+        },
+      ],
+    },
+  ]
+
+  const defaultMapStyles = [];
 
   const [mapCenter, setMapCenter] = useState(center); // define a new state variable
 
@@ -1791,6 +1960,9 @@ const [loading, setLoading] = useState(false);
           mapContainerStyle={mapContainerStyle}
           zoom={zoom}
           center={mapCenter} // use mapCenter instead of center
+          options={{
+            styles: darkMode ? darkMapStyles : defaultMapStyles, 
+          }}
           onClick={handleMapClick}
           onLoad={map => {
             mapRef.current = map;

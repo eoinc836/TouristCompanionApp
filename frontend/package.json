@@ -26,8 +26,10 @@
     "react-responsive-carousel": "^3.2.23",
     "react-router-dom": "^6.2.2",
     "react-scripts": "5.0.1",
+    "react-vega": "^7.6.0",
     "recharts": "^2.7.2",
     "sass": "^1.49.9",
+    "styled-components": "^6.0.7",
     "web-vitals": "^2.1.4"
   },
   "scripts": {

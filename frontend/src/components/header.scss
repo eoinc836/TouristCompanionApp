@@ -1,98 +1,127 @@
 header {
 
-@font-face {
-  font-family: "Federal Service";
-  src: url("./federalservice.ttf") format("truetype");
-}
-  background-color: #DCD7C9;
-}
-.custom-buttons {
-  display: flex;
-  justify-content: flex-end;
-
-  .btn {
+  @font-face {
+    font-family: "Federal Service";
+    src: url("./federalservice.ttf") format("truetype");
+  }
+    background-color: #DCD7C9;
+  }
+  .custom-buttons {
     display: flex;
-    align-items: center;
-
-    &.btn-outline-primary {
-      justify-content: center;
+    justify-content: flex-end;
+  
+    .btn {
+      display: flex;
+      align-items: center;
+  
+      &.btn-outline-primary {
+        justify-content: center;
+      }
     }
   }
-}
-
-/* header.scss */
-
-/* Style for the navigation links */
-.nav-link {
-  transition: transform 0.3s ease;
-  color: #45656C;
-}
-
-/* Style for active links */
-.nav-link.active {
-
-  color:#45656C;
-  border-radius: 4px;
-}
-
-/* Hover effect for navigation links */
-.nav-link:hover {
-  transform: scale(1.1);
-  color: #45656C;
-}
-
-/* Style for the user profile icon and login button */
-.custom-buttons .btn-link svg {
-  fill: #45656C;
-}
-
-.custom-buttons .btn-outline-primary {
-  color: #45656C; /* Update the login button color to #8B9E92 */
-  border-color: #45656C; /* Update the login button border color to #8B9E92 */
-}
-
-/* Hover effect for user profile icon and login button */
-.custom-buttons .btn-link:hover,
-.custom-buttons .btn-outline-primary:hover {
-  transform: scale(1.1);
-  color: #45656C; /* Update the button color on hover to #ADD8E6 */
-  border-color: #45656C; /* Update the button border color on hover to #ADD8E6 */
-}
-
-/* Style for the logout button */
-.custom-buttons .btn-primary {
-  transition: transform 0.3s ease;
-  background-color:#45656C; /* Update the logout button background color to #8B9E92 */
-  border-color:#45656C; /* Update the logout button border color to #8B9E92 */
-}
-
-/* Hover effect for the logout button */
-.custom-buttons .btn-primary:hover {
-  transform: scale(1.1);
-  background-color: #45656C; /* Update the logout button background color on hover to #ADD8E6 */
-}
-
-.logo-style {
-    font-size: 22px;
-    font-weight: 800
-}
-.img-style {
-    margin-right: 10px
-}
-.header-style {
-    @media screen and (max-width: 546px) {
-        flex-direction: column;
-    }
-}
-.logo-container-style {
-    justify-content: left;
-    @media screen and (max-width: 546px) {
-       justify-content: center;
-    }
-}
-.nav-style {
-    @media screen and (max-width: 546px) {
-       padding-top: 5px;
-       padding-bottom: 15px;
-    }
-}
+  
+  /* header.scss */
+  
+  /* Style for the navigation links */
+  .nav-link {
+    transition: transform 0.3s ease;
+    color: #45656C;
+  }
+  
+  /* Style for active links */
+  .nav-link.active {
+    color:#45656C;
+    border-radius: 4px;
+  }
+  
+  /* Hover effect for navigation links */
+  .nav-link:hover {
+    transform: scale(1.1);
+    color: #45656C;
+  }
+  
+  /* Style for the user profile icon and login button */
+  .custom-buttons .btn-link svg {
+    fill: #45656C;
+  }
+  
+  .custom-buttons .btn-outline-primary {
+    color: #45656C; /* Update the login button color to #8B9E92 */
+    border-color: #45656C; /* Update the login button border color to #8B9E92 */
+  }
+  
+  /* Hover effect for user profile icon and login button */
+  .custom-buttons .btn-link:hover,
+  .custom-buttons .btn-outline-primary:hover {
+    transform: scale(1.1);
+    color: #45656C; /* Update the button color on hover to #ADD8E6 */
+    border-color: #45656C; /* Update the button border color on hover to #ADD8E6 */
+  }
+  
+  /* Style for the logout button */
+  .custom-buttons .btn-primary {
+    transition: transform 0.3s ease;
+    background-color:#45656C; /* Update the logout button background color to #8B9E92 */
+    border-color:#45656C; /* Update the logout button border color to #8B9E92 */
+  }
+  
+  /* Hover effect for the logout button */
+  .custom-buttons .btn-primary:hover {
+    transform: scale(1.1);
+    background-color: #45656C; /* Update the logout button background color on hover to #ADD8E6 */
+  }
+  
+  .logo-style {
+      font-size: 22px;
+      font-weight: 800;
+      text-decoration: none;
+      color: #45656C;
+      align-items: center;
+  }
+  .img-style {
+      margin-right: 10px;
+  }
+  .header-style {
+      @media screen and (max-width: 546px) {
+          flex-direction: column;
+      }
+  }
+  .logo-container-style {
+      justify-content: left;
+      @media screen and (max-width: 546px) {
+         justify-content: center;
+      }
+  }
+  .nav-style {
+      @media screen and (max-width: 546px) {
+         padding-top: 5px;
+         padding-bottom: 15px;
+      }
+  }
+  
+  /* header.scss */
+  
+  /* Add more specific selectors */
+  .header.py-3.text-center {
+    background-color: #dcd7c9;
+  }
+  
+  .header.dark-mode {
+    background-color: #222; /* Change the background color for dark mode */
+  }
+  
+  .header.py-3.text-center .nav-link {
+    color: #45656c;
+  }
+  
+  /* Add more specific selectors for active links */
+  .header.py-3.text-center .nav-link.active {
+    color: #45656c;
+    border-radius: 4px;
+  }
+  
+  /* Add more specific selectors for hover effect */
+  .header.py-3.text-center .nav-link:hover {
+    transform: scale(1.1);
+    color: #45656c;
+  }  
