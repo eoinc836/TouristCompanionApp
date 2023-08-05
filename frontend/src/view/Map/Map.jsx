@@ -40,6 +40,19 @@ function calculateAverageNonZeroBusyness(arr) {
 
   return sum / count;
 }
+
+function convertStringToArray(apiResponse) {
+  // Step 1: Remove square brackets
+  const cleanedString = apiResponse.slice(1, -1);
+
+  // Step 2: Split into individual elements
+  const elements = cleanedString.split(',');
+
+  // Step 3: Convert elements to integers
+  const convertedArray = elements.map((val) => parseInt(val.trim(), 10));
+
+  return convertedArray;
+}
 // Busyness Legend
 const BusyLegend = () => {
   const getColor = (busyness) => {
