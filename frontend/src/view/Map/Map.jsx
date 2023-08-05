@@ -9,10 +9,16 @@ import "antd/dist/antd.css";
 import "./Map.scss";
 import moment from "moment";
 import Itinerary from './Itinerary';
-
 import WeatherForecast from './WeatherForecast';
+import WeeklyChart from './weeklyCharts';
+import DailyChart from "./dailyCharts";
+
 
 const { Option } = Select;
+
+
+
+
 
 // Top 20 attractions Markers
 const tourStops = [
@@ -267,6 +273,41 @@ const menuIconClick = () => {
 const [showBestTime, setShowBestTime] = useState(false);
 const [showOtherContent, setShowOtherContent] = useState(false);
 
+
+//Function to convert string to array
+function convertStringToArray(apiResponse) {
+  // Step 1: Remove square brackets
+  const cleanedString = apiResponse.slice(1, -1);
+
+  // Step 2: Split into individual elements
+  const elements = cleanedString.split(',');
+
+  // Step 3: Convert elements to integers
+  const convertedArray = elements.map((val) => parseInt(val.trim(), 10));
+
+  return convertedArray;
+}
+
+//Function to find average busyness
+function calculateAverageNonZeroBusyness(arr) {
+  let sum = 0;
+  let count = 0;
+  
+  for (let i = 0; i < arr.length; i++) {
+    if (arr[i] !== 0) {
+      sum += arr[i];
+      count++;
+    }
+  }
+
+  // Avoid dividing by zero
+  if (count === 0) {
+    return 0;
+  }
+
+  return sum / count;
+}
+
 const handleBestTimeClick = () => {
   setShowBestTime(!showBestTime);
 };
@@ -288,6 +329,18 @@ const handleDestinationKnownChange = (event) => {
   setDestinationKnown(event.target.value);
 };
 
+  //BestTime Graph Variables
+  const [mondayLevel, setMondayLevel] = useState(null);
+  const [tuesdayLevel, setTuesdayLevel] = useState(null);
+  const [wednesdayLevel, setWednesdayLevel] = useState(null);
+  const [thursdayLevel, setThursdayLevel] = useState(null);
+  const [fridayLevel, setFridayLevel] = useState(null);
+  const [saturdayLevel, setSaturdayLevel] = useState(null);
+  const [sundayLevel, setSundayLevel] = useState(null);
+
+  const [dailyBusyness,setDailyBusyness] = useState([]);
+  
+  
 
   // BestTime Drawer Variables
   const [drawerTitle, setDrawerTitle] = useState(null)
@@ -1101,12 +1154,42 @@ const [selectedOptions, setSelectedOptions] = useState([]);
       axios.get(`http://localhost:8000/api/get_forecast${queryParams}`)
         .then((response) => {
           console.log('API Response:', response.data);
+          //Setting Busyness Graph Data
+          setMondayLevel(calculateAverageNonZeroBusyness(convertStringToArray(response['data'].busyness_monday)))
+          setTuesdayLevel(calculateAverageNonZeroBusyness(convertStringToArray(response['data'].busyness_tuesday)))
+          setWednesdayLevel(calculateAverageNonZeroBusyness(convertStringToArray(response['data'].busyness_wednesday)))
+          setThursdayLevel(calculateAverageNonZeroBusyness(convertStringToArray(response['data'].busyness_thursday)))
+          setFridayLevel(calculateAverageNonZeroBusyness(convertStringToArray(response['data'].busyness_friday)))
+          setSaturdayLevel(calculateAverageNonZeroBusyness(convertStringToArray(response['data'].busyness_saturday)))
+          setSundayLevel(calculateAverageNonZeroBusyness(convertStringToArray(response['data'].busyness_sunday)))
 
+          let currentDayOfWeek = (moment().format('dddd'));
+          let currentDayBusyness;
+          
+          if (currentDayOfWeek === 'Monday') {
+            currentDayBusyness = convertStringToArray(response['data'].busyness_monday);
+          } else if (currentDayOfWeek === 'Tuesday') {
+            currentDayBusyness = convertStringToArray(response['data'].busyness_tuesday);
+          } else if (currentDayOfWeek === 'Wednesday') {
+            currentDayBusyness = convertStringToArray(response['data'].busyness_wednesnday);
+          } else if (currentDayOfWeek === 'Thursday') {
+            currentDayBusyness = convertStringToArray(response['data'].busyness_thursday);
+          } else if (currentDayOfWeek === 'Friday') {
+            currentDayBusyness = convertStringToArray(response['data'].busyness_friday);
+          } else if (currentDayOfWeek === 'Saturday') {
+            currentDayBusyness = convertStringToArray(response['data'].busyness_saturday);
+          } else if (currentDayOfWeek === 'Sunday') {
+            currentDayBusyness = convertStringToArray(response['data'].busyness_sunday);
+          }
+          
+          setDailyBusyness(currentDayBusyness)
           setDrawerTitle(response['data'].venue_name)
           setDrawerAddress(response['data'].venue_address)
           setDrawerOpening(response['data'].venue_opening_hours)
           setDrawerRating(response['data'].rating)
           setBestTimeUsed(true)
+
+          console.log(currentDayBusyness)
         })
         .catch((error) => {
           console.error('Error fetching data:', error);
@@ -1116,7 +1199,45 @@ const [selectedOptions, setSelectedOptions] = useState([]);
     
     setDrawerVisible(true)
   };
-  
+
+
+  let weeklyChartData = [
+    {"category": "Monday", "count": mondayLevel},
+    {"category": "Tuesday", "count":tuesdayLevel},
+    {"category": "Wednesday", "count": wednesdayLevel},
+    {"category": "Thursday", "count": thursdayLevel},
+    {"category": "Friday", "count": fridayLevel},
+    {"category": "Saturday", "count": saturdayLevel},
+    {"category": "Sunday", "count": sundayLevel},
+  ]
+
+  const hourlyChartData = [
+    { "category": "00:00", "count": dailyBusyness[0]},
+    { "category": "01:00", "count": dailyBusyness[1] },
+    { "category": "02:00", "count": dailyBusyness[2] },
+    { "category": "03:00", "count": dailyBusyness[3] },
+    { "category": "04:00", "count": dailyBusyness[4] },
+    { "category": "05:00", "count": dailyBusyness[5] },
+    { "category": "06:00", "count": dailyBusyness[6] },
+    { "category": "07:00", "count": dailyBusyness[7] },
+    { "category": "08:00", "count": dailyBusyness[8]},
+    { "category": "09:00", "count": dailyBusyness[9] },
+    { "category": "10:00", "count": dailyBusyness[10]},
+    { "category": "11:00", "count": dailyBusyness[11] },
+    { "category": "12:00", "count": dailyBusyness[12] },
+    { "category": "13:00", "count": dailyBusyness[13] },
+    { "category": "14:00", "count": dailyBusyness[14] },
+    { "category": "15:00", "count": dailyBusyness[15] },
+    { "category": "16:00", "count": dailyBusyness[16] },
+    { "category": "17:00", "count": dailyBusyness[17] },
+    { "category": "18:00", "count": dailyBusyness[18] },
+    { "category": "19:00", "count": dailyBusyness[19] },
+    { "category": "20:00", "count": dailyBusyness[20] },
+    { "category": "21:00", "count": dailyBusyness[21] },
+    { "category": "22:00", "count": dailyBusyness[22]},
+    { "category": "23:00", "count": dailyBusyness[23] },
+  ];
+
   const bounds = {
       north: 40.915255,
       south: 40.477398,
@@ -1646,6 +1767,8 @@ const [selectedOptions, setSelectedOptions] = useState([]);
             </p>
             <p>Address: {placeDetails.formatted_address}</p>
             <p>Reviews: {placeDetails.reviews?.length}</p>
+
+            
             <div className={`toggle-btn ${isActive ? 'active' : ''}`} onClick={handleToggle}>
                     <div className="toggle-label">
                     </div>
@@ -1660,11 +1783,15 @@ const [selectedOptions, setSelectedOptions] = useState([]);
               Opening Hours:{drawerOpening}
             </p>
             <p>Address: {drawerAddress}</p>
-            <p>Reviews: {}</p>
+            <h1>Busyness</h1>
+            <WeeklyChart data={weeklyChartData}></WeeklyChart>
+            <br></br>
+            <DailyChart data={hourlyChartData}></DailyChart>
             <div className={`toggle-btn ${isActive ? 'active' : ''}`} onClick={handleToggle}>
                     <div className="toggle-label">
                     </div>
                   </div>
+            
           </div>
         )
         :(
