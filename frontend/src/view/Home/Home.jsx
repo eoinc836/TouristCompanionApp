@@ -10,7 +10,7 @@ const Home = () => (
         <div className="carousel-inner">
           <div className="carousel-item active">
             <img
-              src={require("../../assets/manhattan1.jpg")}
+              src={require("../../assets/manhattan2.jpg")}
               className="d-block mx-auto"
               style={{ maxWidth: "100%", maxHeight: "100%" }}
               alt="Slide 1"
@@ -24,7 +24,7 @@ const Home = () => (
           </div>
           <div className="carousel-item">
             <img
-              src={require("../../assets/manhattan2.jpg")}
+              src={require("../../assets/manhattan1.jpg")}
               className="d-block mx-auto"
               style={{ maxWidth: "100%", maxHeight: "100%" }}
               alt="Slide 2"
@@ -176,6 +176,7 @@ const Home = () => (
                 alt="Manhattan City"
                 width={380}
                 height={300}
+                 style={{ marginBottom: '70px' }}
               />
             </div>
           </div>
@@ -201,6 +202,7 @@ const Home = () => (
                 alt="Manhattan Food"
                 width={380}
                 height={300}
+                 style={{ marginBottom: '70px' }}
               />
             </div>
           </div>
@@ -227,11 +229,12 @@ const Home = () => (
                 alt="Manhattan Culture"
                 width={380}
                 height={300}
+                 style={{ marginBottom: '40px' }}
               />
             </div>
           </div>
 
-          <hr className="featurette-divider1" />
+
         </div>
       </div>
     </div>

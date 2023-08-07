@@ -72,9 +72,12 @@ const App = () => {
   const [autoCompleteResult, setAutoCompleteResult] = useState([]);
 
   return (
-    <div className="register">
+    <div className="register" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', height: '100vh' }}>
+       <h1 style={{ color: '#DCD7C9', fontWeight: 'bold' , alignItems: 'center', justifyContent: 'center'}}>
+             Welcome to BusyBuddy
+           </h1>
       <div className="form-container">
-        <h1>Welcome to BusyBuddy</h1>
+
         <Form
           {...formItemLayout}
           form={form}

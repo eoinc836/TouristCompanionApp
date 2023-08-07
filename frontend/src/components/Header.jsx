@@ -54,15 +54,16 @@ export default function Header({ darkMode, onToggle }) {
       <div className="row header-style">
         <div className="col d-flex logo-container-style align-items-center ">
           <Link
-            to="/"
-            className="d-inline-flex logo-style"
+            to="/" style={{ fontFamily: 'Federal Service, sans-serif' }}
+            className="d-inline-flex justify-content-center align-items-center link-body-emphasis text-decoration-none fs-26 font-weight-bold logo-style"
           >
             <img
               src={require("../assets/logo.jpg")}
               alt="Login"
-              width="66px"
-              height="68px"
+              width="70px"
+              height="72px"
               className="img-style"
+               style={{ marginLeft: '20px' }}
             />
             BUSYBUDDY
           </Link>

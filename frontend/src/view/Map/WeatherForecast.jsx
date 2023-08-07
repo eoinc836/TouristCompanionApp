@@ -1,10 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import { Collapse } from 'antd';
+import { Popover, Collapse } from 'antd';
+const { Panel } = Collapse;
+
 const WeatherForecast = ({ onWeatherDataReceived }) => {
   const [weatherData, setWeatherData] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
-  const { Panel } = Collapse;
+
   const getWeatherData = async () => {
     // Check if already loading data
     if (isLoading) {
@@ -146,17 +148,20 @@ const WeatherForecast = ({ onWeatherDataReceived }) => {
       </table>
     );
   };
+ const popoverContent = (
+    <div>
+      {renderWeatherTable()}
+    </div>
+  );
 
   return (
     <div className="weather-forecast">
-         <Collapse defaultActiveKey={[]}>
-           <Panel header="Weather Forecast" key="1"  style={{textAlign: "center", fontWeight: "bold" }}>
-             {renderWeatherTable()}
-           </Panel>
-         </Collapse>
-       </div>
-     );
-   };
+      <Popover content={popoverContent} trigger="click" destroyTooltipOnHide>
+        <span className="weather-popover-button">Weather Forecast</span>
+      </Popover>
+    </div>
+  );
+};
 
 
 export default WeatherForecast;

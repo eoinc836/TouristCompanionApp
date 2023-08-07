@@ -1,7 +1,7 @@
 import React, { useEffect, useState, useRef, useCallback } from "react";
 import { GoogleMap, Marker, InfoWindow, DirectionsService, DirectionsRenderer } from "@react-google-maps/api";
 import { useLoadScript } from "@react-google-maps/api";
-import { Switch, Button,Rate,  TreeSelect, DatePicker, Select, Tooltip, Radio, Checkbox, Spin, Form, TimePicker, Collapse, List, Space, Typography, } from "antd";
+import { Switch, Button,Rate,  TreeSelect, DatePicker, Select, Tooltip, Radio, Checkbox, Spin, Form, TimePicker, Collapse, List, Space, Typography, Timeline} from "antd";
 import { Sidebar, Menu, MenuItem, SubMenu } from 'react-pro-sidebar';
 import axios from "axios";
 import { Card } from "react-bootstrap";
@@ -74,7 +74,7 @@ const BusyLegend = () => {
       className="busy-legend"
       style={{
         position: "absolute",
-        top: "60px", // Change this value to 110px to move the legend 100px lower
+        top: "180px", // Change this value to 110px to move the legend 100px lower
         left: "10px",
         backgroundColor: "rgba(255, 255, 255, 0.8)",
         padding: "15px",
@@ -362,7 +362,7 @@ const Map = () => {
   const [isSearchButtonClicked, setIsSearchButtonClicked] = useState(false);
   const [isMapClicked, setIsMapClicked] = useState(false);
   const [newMarkers, setNewMarkers] = useState([]);
-const [menuCollapse, setMenuCollapse] = useState(true);
+const [menuCollapse, setMenuCollapse] = useState(false);
 
 //create a custom function that will change menucollapse state from false to true and true to false
 const menuIconClick = () => {
@@ -371,14 +371,18 @@ const menuIconClick = () => {
 };
 const [showBestTime, setShowBestTime] = useState(false);
 const [showOtherContent, setShowOtherContent] = useState(false);
-
+const [showAnotherContent, setShowAnotherContent] = useState(false);
 const handleBestTimeClick = () => {
   setShowBestTime(!showBestTime);
   setShowItinerary(false);
-  setShowTimeConfig(false);
+    setShowTimeConfig(false);
 };
 
-const handleNext = () => {
+const handleNextForBusynessPrediction = () => {
+    setShowAnotherContent(true);
+  };
+
+const handleNextForBestTime = () => {
   setShowOtherContent(true);
 };
 const handleBusynessPredictionClick = () => {
@@ -1201,12 +1205,6 @@ const fieldNamesToReset = Object.keys(allFieldNames).filter(name => name !== 'di
 const [loading, setLoading] = useState(false);
   const handleSearch = () => {
    setLoading(true);
-
-
-      setTimeout(() => {
-
-        setLoading(false);
-      }, 2000);
     setShouldRemoveMarkers(true);
     setIsSearchButtonClicked(true);
     setSelectedMarker(null);
@@ -1226,6 +1224,9 @@ const [loading, setLoading] = useState(false);
       .then((response) => {
         
         console.log(response.data)
+
+         // Set loading to false when the request is completed
+            setLoading(false);
         venue_ids =  Object.keys(response.data)
         venue_ids.forEach(id => {
           
@@ -1248,6 +1249,7 @@ const [loading, setLoading] = useState(false);
       })
       .catch((error) => {
         console.error('Error fetching data:', error);
+         setLoading(false);
       });
     }
 
@@ -1613,8 +1615,32 @@ const [loading, setLoading] = useState(false);
           >
             Busyness Prediction
           </MenuItem>
+         {showTimeConfig && !showAnotherContent && !menuCollapse && (
+                                <Card
+                                  style={{
+                                    backgroundColor: "#3D5152",
+                                    color: "#99A3C1",
+                                    padding: "5px",
+                                    margin: "15px",
+                                    borderRadius: "10px",
+                                  }}
+                                >
+                                  <h5>Welcome to BusyBudyy</h5>
+                                  <p>Want to have a city adventure in Manhattan?</p>
+                                  <p> Let's get started!</p>
+                                  <Button
+                                    type="primary"
+                                    onClick={handleNextForBusynessPrediction}
+                                    className="button next-button"
+                                    style={{ backgroundColor: "#45656C" }}
+                                  >
+                                    NEXT
+                                  </Button>
+                                </Card>
+                              )}
 
-          {showTimeConfig && !menuCollapse && (
+
+          {showTimeConfig && showAnotherContent && !menuCollapse && (
             <div className="time-configuration" style={{ padding: "15px" }}>
               {/* Display a heading for the time configuration */}
               <DatePicker
@@ -1627,6 +1653,7 @@ const [loading, setLoading] = useState(false);
                   width: "100%",
                   borderRadius: "5px",
                 }} // Set the width of the DatePicker
+                    placeholder="Select a date to visit"
               />
             </div>
           )}
@@ -1664,12 +1691,11 @@ const [loading, setLoading] = useState(false);
                 borderRadius: "10px",
               }}
             >
-              <h5>Welcome to BusyBudyy</h5>
-              <p>Want to have a city adventure in Manhattan?</p>
-              <p> Let's get started!</p>
+               <h5>Oops! Manhattan is really busy!</h5>
+                         <p>Don't worry, you'll always find an exciting place to visit.</p>
               <Button
                 type="primary"
-                onClick={handleNext}
+                onClick={handleNextForBestTime}
                 className="button next-button"
                 style={{ backgroundColor: "#45656C" }}
               >
@@ -1685,7 +1711,7 @@ const [loading, setLoading] = useState(false);
                 style={{
                   backgroundColor: "#3D5152",
                   color: "#99A3C1",
-                  padding: "5px",
+                  padding: "10px",
                   margin: "15px",
                   borderRadius: "10px",
                 }}
@@ -1854,7 +1880,7 @@ const [loading, setLoading] = useState(false);
           >
             Itinerary Route
           </MenuItem>
-          {showItinerary && 
+          {showItinerary && !menuCollapse &&
   <div style={{ backgroundColor: "#2b3345", padding: "10px", borderRadius: "5px" }}>
     <Button 
       onClick={() => setIsItineraryView(!isItineraryView)}
@@ -1875,16 +1901,20 @@ const [loading, setLoading] = useState(false);
               <Collapse accordion style={{ borderRadius: '5px', backgroundColor: "#61677A" }}>
                 {Object.keys(itineraryByDay).map((date) => (
                   <Panel header={date} key={date} style={{ backgroundColor: "#B7B7B7" }}>
-                  <div style={{ backgroundColor: "#D8D9DA", borderRadius: "5px", boxShadow: "0 0 5px rgba(0, 0, 0, 0.3)", padding: "10px" }}>
-                    {itineraryByDay[date].map((item, index) => (
-                      <List.Item key={index}>
-                        <Space direction="vertical">
-                          <Text strong>{item.time}</Text>
-                          <Text> - Visit {item.title}</Text>
-                        </Space>
-                      </List.Item>
-                    ))}
-                  </div>
+                             <div style={{ backgroundColor: "#D8D9DA", borderRadius: "5px", boxShadow: "0 0 5px rgba(0, 0, 0, 0.3)", padding: "15px" }}>
+                               <Timeline>
+                                 {itineraryByDay[date].map((item, index) => (
+                                   <Timeline.Item key={index}>
+                                     <div>
+                                       <b>{item.time}</b> <br />
+                                     </div>
+                                     <div>
+                                       Visit {item.title}
+                                     </div>
+                                   </Timeline.Item>
+                                 ))}
+                               </Timeline>
+                             </div>
       
       
                   </Panel>
@@ -2033,24 +2063,43 @@ const [loading, setLoading] = useState(false);
            />
           </div>
 
-     {loading && (
-            <div
-              style={{
-                position: "absolute",
-                top: 0,
-                left: 0,
-                width: "100%",
-                height: "100%",
-                backgroundColor: "rgba(255, 255, 255, 0.7)",
-                display: "flex",
-                justifyContent: "center",
-                alignItems: "center",
-                zIndex: 1000,
-              }}
-            >
-              <Spin size="large" />
-            </div>
-          )}
+    {loading && (
+      <div
+        style={{
+          position: "absolute",
+          top: 0,
+          left: 0,
+          width: "100%",
+          height: "100%",
+          backgroundColor: "#e6dcdc",
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+          zIndex: 1000,
+        }}
+      >
+        <div className="box">
+          <div className="cat">
+            <div className="cat__body"></div>
+            <div className="cat__body"></div>
+            <div className="cat__tail"></div>
+            <div className="cat__head"></div>
+          </div>
+
+  <blockquote className="info">
+
+  </blockquote>
+
+  <div className="intro">
+    Cat Loading
+     <small>Meow</small>
+  </div>
+</div>
+
+        </div>
+
+    )}
+
           <WeatherForecast onWeatherDataReceived={handleWeatherDataReceived} />
           {weatherDataFromAPI && (
             <div>
@@ -2138,52 +2187,44 @@ const [loading, setLoading] = useState(false);
             {showLegend && (
               <>
                 <BusyLegend />
-                <Card
-                  style={{
-                    position: "absolute",
-                    top: "330px", // Change this value to 110px to move the legend 100px lower
-                    left: "10px",
-                    backgroundColor: "rgba(255, 255, 255, 0.8)",
-                    padding: "15px",
-                    borderRadius: "8px",
-                    color: "#333",
-                    boxShadow: "0px 0px 10px rgba(0, 0, 0, 0.2)",
-                    border: "1px solid rgba(0, 0, 0, 0.1)",
-                    fontFamily: '"Arial", sans-serif',
-                  }}
-                >
-                  <h3
-                    style={{ marginBottom: "15px", fontWeight: "bold", fontSize: "18px" }}
-                  >
-                    Marker Legend
-                  </h3>
-                  <div
-                    className="marker-legend"
-                    style={{ display: "flex", flexDirection: "column", gap: "10px" }}
-                  >
-                    <div style={{ display: "flex", alignItems: "center", gap: "5px" }}>
-                      <img
-                        src="https://maps.google.com/mapfiles/ms/icons/purple-dot.png"
-                        alt="User Marker"
-                      />
-                      User Marker
-                    </div>
-                    <div style={{ display: "flex", alignItems: "center", gap: "5px" }}>
-                      <img
-                        src="https://maps.google.com/mapfiles/ms/icons/red-dot.png"
-                        alt="Top 20 Attractions Marker"
-                      />
-                      Top 20 Attractions
-                    </div>
-                    <div style={{ display: "flex", alignItems: "center", gap: "5px" }}>
-                      <img
-                        src="https://maps.google.com/mapfiles/ms/icons/yellow-dot.png"
-                        alt="Best Time Marker"
-                      />
-                      Best Time Marker
-                    </div>
+              <Card
+                style={{
+                  position: "absolute",
+                  top: "440px", // Change this value to 110px to move the legend 100px lower
+                  left: "10px",
+                  backgroundColor: "rgba(255, 255, 255, 0.8)",
+                  padding: "15px",
+                  borderRadius: "8px",
+                  color: "#333",
+                  boxShadow: "0px 0px 10px rgba(0, 0, 0, 0.2)",
+                  border: "1px solid rgba(0, 0, 0, 0.1)",
+                  fontFamily: "Arial, sans-serif",
+                  height: "28vh",
+                }}
+              >
+                <h3 style={{ marginBottom: "15px", fontWeight: "bold", fontSize: "18px" }}>
+                  Marker Legend
+                </h3>
+                <div className="marker-legend" style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
+                  <div style={{ display: "flex", alignItems: "center", gap: "5px" }}>
+                    <img src="https://maps.google.com/mapfiles/ms/icons/purple-dot.png" alt="User Marker" />
+                    User Marker
                   </div>
-                </Card>
+                  <div style={{ display: "flex", alignItems: "center", gap: "5px" }}>
+                    <img src="https://maps.google.com/mapfiles/ms/icons/red-dot.png" alt="Top 20 Attractions Marker" />
+                    Top 20 Attractions
+                  </div>
+                  <div style={{ display: "flex", alignItems: "center", gap: "5px" }}>
+                    <img src="https://maps.google.com/mapfiles/ms/icons/yellow-dot.png" alt="Best Time Marker" />
+                    Best Time Marker
+                  </div>
+                  <div style={{ display: "flex", alignItems: "center", gap: "5px" }}>
+                    <img src="https://maps.google.com/mapfiles/ms/icons/orange-dot.png" alt="Saved Places Marker" />
+                    Saved Places
+                  </div>
+                </div>
+              </Card>
+
               </>
             )}
           </>;
@@ -2194,12 +2235,12 @@ const [loading, setLoading] = useState(false);
      open={drawerVisible}
      onClose={handleDrawerClose}
      direction="right"
-     width={400}
+     width={600}
      disableOverlay={false}
      style={{ overflow: 'auto' }}
    >
      {selectedMarker && !bestTimeUsed ? (
-     <Card style={{ width: "80%", height: "400px" }} className="m-4">
+     <Card style={{ width: "100%", height: "1000px" }} className="m-4">
        <Card.Header>
          <Card.Title
            style={{ backgroundColor: "white", fontSize: "16px", fontWeight: "bold" }}
@@ -2242,7 +2283,7 @@ const [loading, setLoading] = useState(false);
      </Card>
 
      ) : selectedMarker && bestTimeUsed ? (
-      <Card style={{ width: '80%', height: '400px' }} className="m-4">
+      <Card style={{ width: '100%', height: '1000px' }} className="m-4">
         <Card.Header>
           <Card.Title
             style={{ backgroundColor: 'white', fontSize: '16px', fontWeight: 'bold' }}
@@ -2284,7 +2325,7 @@ const [loading, setLoading] = useState(false);
          {isSearchButtonClicked &&
            searchedPlaces.map((place) => (
             <div key={place.placeId} className="searched-place">
-              <Card style={{ width: '80%', height: '300px' }} className="m-4">
+              <Card style={{ width: '100%', height: '1000px' }} className="m-4">
                 <Card.Header>
                   <Card.Title
                     style={{ backgroundColor: 'white', fontSize: '16px', fontWeight: 'bold' }}
