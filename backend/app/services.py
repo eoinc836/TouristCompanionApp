@@ -8,6 +8,7 @@ from django.core.cache import cache
 from .utils import is_forecast_available, find_zone, is_in_manhattan, top_attractions
 import time, environ, requests
 import json
+from django.http import HttpResponseNotFound, JsonResponse
 
 env = environ.Env()
 environ.Env.read_env("../backend/.env")
@@ -260,9 +261,11 @@ def saved_place(request):
          
         saved_place = data.get('saved_place') 
         print('saved place in services are:', saved_place)
+
         if username and saved_place:
             try:
-                SavedPlace.objects.create(username=user, saved_place=saved_place)
+                venue = Venue.objects.get(venue_name=saved_place)
+                SavedPlace.objects.create(username=user, saved_place=saved_place, venue_id=venue)
                 return JsonResponse({'message': 'Saved successfully'})
             except Exception as e:
                 return JsonResponse({'error': str(e)})
@@ -286,6 +289,68 @@ def delete_saved_place(request):
                 return JsonResponse({'error': str(e)})
 
     return JsonResponse({'error': 'Invalid request method'})
+
+@csrf_exempt
+def get_saved_places(request):
+    if request.method == 'POST':
+        data = json.loads(request.body)
+        username = data.get('username')
+        if username:
+            try:
+                user = User.objects.get(username=username)
+                saved_places = SavedPlace.objects.filter(username=user).values()
+                saved_places_list = []
+
+                for saved_place in saved_places:
+                    venue_id = saved_place['venue_id']  
+                    venue = Venue.objects.get(venue_id=venue_id)
+
+                    saved_place_data = {
+                        'saved_place': saved_place['saved_place'],
+                        'venue_id': saved_place['venue_id'],
+                        'venue_address': venue.venue_address,
+                        'longitude': venue.longitude,
+                        'latitude': venue.latitude,
+                        'opening_hours': venue.opening_hours
+                    }
+
+                    saved_places_list.append(saved_place_data)
+
+                return JsonResponse({'saved_places': saved_places_list})
+            except User.DoesNotExist:
+                return JsonResponse({'error': 'User not found'})
+            except Exception as e:
+                return JsonResponse({'error': str(e)})
+
+    return JsonResponse({'error': 'Invalid request method'})
+
+@require_http_methods(['GET'])
+def get_venue_by_name(request):
+    venue_name = request.GET.get('venue_name')
+    try:
+        venue = Venue.objects.get(venue_name=venue_name)
+        venue_data = VenueData.objects.get(venue_id=venue.venue_id)
+
+        response = {
+            "venue_id": venue.venue_id,
+            "venue_name": venue.venue_name,
+            "venue_address": venue.venue_address,
+            "opening_hours": venue.opening_hours,
+            "longitude": venue.longitude,
+            "latitude": venue.latitude,
+            "busyness_monday": venue_data.busyness_monday,
+            "busyness_tuesday": venue_data.busyness_tuesday,
+            "busyness_wednesday": venue_data.busyness_wednesday,
+            "busyness_thursday": venue_data.busyness_thursday,
+            "busyness_friday": venue_data.busyness_friday,
+            "busyness_saturday": venue_data.busyness_saturday,
+            "busyness_sunday": venue_data.busyness_sunday,
+            "scrape_date": venue_data.scrape_date,
+        }
+
+        return JsonResponse(response)
+    except Venue.DoesNotExist:
+        return HttpResponseNotFound('Venue not found')
     
 
 

@@ -460,9 +460,12 @@ const [selectedOptions, setSelectedOptions] = useState([]);
     }));
 
     if (!isActive) {
+        console.log("selected marker values are:", selectedMarker)
       const data = {
         username: username,
         saved_place: selectedMarker.title,
+        //lat: selectedMarker.position.lat,
+        //lng: selectedMarker.position.lng
       };
 
       fetch("http://localhost:8000/api/saved_place", {

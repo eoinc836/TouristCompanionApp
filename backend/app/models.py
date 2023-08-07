@@ -27,11 +27,12 @@ class VenueData(models.Model):
 
     class Meta:
         db_table = "VenueData"
-    
+
 class SavedPlace(models.Model):
     username = models.ForeignKey(User, on_delete=models.CASCADE, db_column="username", to_field="username")
     saved_place = models.CharField(max_length=100)
+    venue_id = models.ForeignKey(Venue, on_delete=models.CASCADE, db_column="venue_id", to_field="venue_id")
     
     class Meta:
         db_table = "SavedPlace"
-        unique_together = ('username', 'saved_place')
+        unique_together = ('username', 'saved_place')    
