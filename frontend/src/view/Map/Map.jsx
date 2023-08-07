@@ -121,7 +121,7 @@ const Map = () => {
   const location = useLocation();
   const queryParams = new URLSearchParams(location.search);
   const darkMode = queryParams.get("darkMode") === "true";
-  console.log("dark mode value is:", darkMode)
+  //console.log("dark mode value is:", darkMode)
 
   const mapContainerStyle = {
     width: "100%",
@@ -460,12 +460,9 @@ const [selectedOptions, setSelectedOptions] = useState([]);
     }));
 
     if (!isActive) {
-        console.log("selected marker values are:", selectedMarker)
       const data = {
         username: username,
         saved_place: selectedMarker.title,
-        //lat: selectedMarker.position.lat,
-        //lng: selectedMarker.position.lng
       };
 
       fetch("http://localhost:8000/api/saved_place", {

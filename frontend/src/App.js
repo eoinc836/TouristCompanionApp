@@ -20,7 +20,7 @@ const darkTheme = {
 function App() {
   const [showGuide, setShowGuide] = useState(false);
   const { darkMode, toggleDarkMode } = useDarkMode();
-  console.log("Dar mode in app is: ", darkMode)
+  //console.log("Dar mode in app is: ", darkMode)
 
   useEffect(() => {
     const hasSeenGuide = localStorage.getItem("hasSeenGuide");

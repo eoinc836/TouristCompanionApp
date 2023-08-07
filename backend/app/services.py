@@ -251,7 +251,7 @@ def get_venues(request):
 def saved_place(request):
     if request.method == 'POST':
         data = json.loads(request.body)
-        print('data in services are:', data)
+        #print('data in services are:', data)
         username = data.get('username') 
         print('username in services are:', username)
 
@@ -260,7 +260,7 @@ def saved_place(request):
         print('user is:', user)
          
         saved_place = data.get('saved_place') 
-        print('saved place in services are:', saved_place)
+        #print('saved place in services are:', saved_place)
 
         if username and saved_place:
             try:
