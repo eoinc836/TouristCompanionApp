@@ -163,7 +163,7 @@ def get_venues(request):
     user_lng = request.GET.get('longitude')
     if not user_lat and not user_lng:
         params = {
-            'api_key_private': env('BESTTIME_API_KEY'),,
+            'api_key_private': env('BESTTIME_API_KEY'),
             'q': f"{request.GET.get('busyness','')} {request.GET.get('attraction_type','')} in Manhattan New York {request.GET.get('day','')} {request.GET.get('time','')}",
             'num': 10,
             'fast': False,
@@ -172,7 +172,7 @@ def get_venues(request):
     
     else:
         params = {
-            'api_key_private': env('BESTTIME_API_KEY'),,
+            'api_key_private': env('BESTTIME_API_KEY'),
             'q': f"{request.GET.get('busyness','')} {request.GET.get('attraction_type','')} in Manhattan New York {request.GET.get('day','')} {request.GET.get('time','')}",
             'num': 10,
             'lat': user_lat,
