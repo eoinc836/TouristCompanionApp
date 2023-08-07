@@ -456,17 +456,19 @@ const [selectedOptions, setSelectedOptions] = useState([]);
   }, [selectedMarker]);
 
   const handleToggle = () => {
-    setIsActive((prevIsActive) => !prevIsActive);
+    setIsPlaceSaved((prevIsPlaceSaved) => !prevIsPlaceSaved);
     // Update the toggle status for the selectedMarker's title
     setPlaceToggleStatus((prevStatus) => ({
       ...prevStatus,
-      [selectedMarker.title]: !isActive,
+      [selectedMarker.title]: !isPlaceSaved,
     }));
 
-    if (!isActive) {
+    if (!isPlaceSaved) {
       const data = {
         username: username,
         saved_place: selectedMarker.title,
+        lat: selectedMarker.position.lat,
+        lng: selectedMarker.position.lng
       };
 
       fetch("http://localhost:8000/api/saved_place", {
@@ -509,6 +511,48 @@ const [selectedOptions, setSelectedOptions] = useState([]);
     }
   };
   
+  // Saved places to array
+  const [savedPlaces, setSavedPlaces] = useState([]);
+  const [showSavedPlaces, setShowSavedPlaces] = useState(false);
+  const [isPlaceSaved, setIsPlaceSaved] = useState(false);
+
+  useEffect(() => {
+    const storedUsername = sessionStorage.getItem("username");
+    setUsername(storedUsername || "");
+
+    console.log(`Fetching saved places for user: ${storedUsername}`);
+
+    const data = { username: storedUsername };
+    fetch("http://localhost:8000/api/get_saved_places", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "X-CSRFToken": getCookie("csrftoken"),
+        },
+        body: JSON.stringify(data),
+    })
+    .then((response) => response.json())
+    .then((data) => {
+        console.log("Received saved places data:", JSON.stringify(data, null, 2));
+
+        const savedPlaceTitles = data.saved_places.map(place => place.saved_place);
+        console.log("Saved place titles:", savedPlaceTitles.join(', '));
+
+        const newSavedPlaces = tourStops.filter(tourStop => savedPlaceTitles.includes(tourStop.title));
+        console.log("Filtered tour stops for saved places:", JSON.stringify(newSavedPlaces, null, 2));
+
+        setSavedPlaces(newSavedPlaces);
+    })
+    .catch((error) => {
+        console.error("Error is:", error);
+    });
+
+}, [tourStops]);
+
+const handleSavedPlacesToggle = () => {
+  setShowSavedPlaces(!showSavedPlaces);
+};
+
 
   function getCookie(name) {
     let cookieValue = null;
@@ -834,29 +878,24 @@ const fieldNamesToReset = Object.keys(allFieldNames).filter(name => name !== 'di
     console.log(busynessLevels,attractionTypes)
   }, [busynessLevels,attractionTypes,date]);
 
-  // Google Maps API
-  useEffect(() => {
-    const getPlaceDetails = async (placeId) => {
-      try {
-        const response = await axios.get(
-          `https://maps.googleapis.com/maps/api/place/details/json?key=AIzaSyA-vxxFyGSdqhaGkOwnfGhp-klnkMLRQJA&place_id=${placeId}&fields=name,rating,formatted_address,opening_hours`
-        );
-        const result = response.data;
-        console.log(result)
-        setPlaceDetails(result.result);
-      } catch (error) {
-        console.error(error);
-      }
-    };
-
-    if (selectedMarker) {
-      getPlaceDetails(selectedMarker.placeId);
-    }
-  }, [selectedMarker]);
-
+ 
   const handleMarkerClick = (marker) => {
+    console.log(marker);
     setSelectedMarker(marker);
     setDrawerVisible(true);
+  
+    // Use existing data from the marker instead of making a new API call
+    if (marker.isBestTime) {
+      setDrawerTitle(marker.title)
+      setDrawerAddress(marker.address)
+      setDrawerOpening(marker.opening_hours) 
+      setDrawerRating(marker.rating)
+      setBestTimeUsed(true)
+    }
+  
+    // Check if the place is in the saved places
+    const isSaved = savedPlaces.some(savedPlace => savedPlace.title === marker.title);
+    setIsPlaceSaved(isSaved);
   };
 
   const handleMarkerClose = () => {
@@ -1220,7 +1259,7 @@ const [loading, setLoading] = useState(false);
       //CODE TO IMPLEMENT NEAR BY SEARCH
       let queryParamsFilter;
       queryParamsFilter =`?busyness=${busynessLevels}&attraction_type=${attractionTypes}&time=${translateTimes(date.format(format))}&day=${getDay(date.format('DD'),date.format('MM'),date.format('YYYY'))}&latitude=${userlat}&longitude=${userlng}`;
-      axios.get(`api/get_venues${queryParamsFilter}`)
+      axios.get(`http://localhost:8000/api/get_venues${queryParamsFilter}`)
       .then((response) => {
         
         console.log(response.data)
@@ -1230,7 +1269,7 @@ const [loading, setLoading] = useState(false);
         venue_ids =  Object.keys(response.data)
         venue_ids.forEach(id => {
           
-        let resultMarker = {position: {lat:response.data[id].latitude, lng:response.data[id].longitude}, title: response.data[id].venue_name}
+          let resultMarker = {position: {lat:response.data[id].latitude, lng:response.data[id].longitude}, title: response.data[id].venue_name, address: response.data[id].venue_address, opening_hours: response.data[id].venue_opening_hours, rating: response.data[id].rating, isBestTime: true}
         searchResults.push(resultMarker)
   
         });
@@ -1266,7 +1305,7 @@ const [loading, setLoading] = useState(false);
       venue_ids =  Object.keys(response.data)
       venue_ids.forEach(id => {
         
-      let resultMarker = {position: {lat:response.data[id].latitude, lng:response.data[id].longitude}, title: response.data[id].venue_name}
+        let resultMarker = {position: {lat:response.data[id].latitude, lng:response.data[id].longitude}, title: response.data[id].venue_name, address: response.data[id].venue_address, opening_hours: response.data[id].venue_opening_hours, rating: response.data[id].rating, isBestTime: true}
       searchResults.push(resultMarker)
 
       });
@@ -1514,22 +1553,35 @@ const [loading, setLoading] = useState(false);
 
     // Fetch tour stops when component mounts
     useEffect(() => {
-      // replace 'http://127.0.0.1:8000' with your backend's URL
-      axios.get('http://127.0.0.1:8000/api/get_top_attractions')
+      axios
+        .get("http://127.0.0.1:8000/api/get_top_attractions")
         .then(response => {
-          // Convert received data into tourStops format
+          console.log(response.data); // Add this line
           const newTourStops = Object.keys(response.data).map(name => {
             const stop = response.data[name];
             return {
               position: { lat: stop.latitude, lng: stop.longitude },
               title: name,
-              // Add a unique ID for each stop since we no longer have placeId
-              id: `${stop.latitude}-${stop.longitude}`
+              id: `${stop.latitude}-${stop.longitude}`,
+              address: stop.venue_address,
+              opening_hours: stop.venue_opening_hours,
+              rating: stop.rating,
+              busyness: { 
+                "Monday": stop.busyness_monday,
+                "Tuesday": stop.busyness_tuesday,
+                "Wednesday": stop.busyness_wednesday,
+                "Thursday": stop.busyness_thursday,
+                "Friday": stop.busyness_friday,
+                "Saturday": stop.busyness_saturday,
+                "Sunday": stop.busyness_sunday,
+              },
             };
           });
           setTourStops(newTourStops);
         })
-        .catch(error => console.error(error));
+        .catch(err => {
+          console.error(err);
+        });
     }, []);
 
   const [showTourStops, setShowTourStops] = useState(true);
@@ -1884,9 +1936,16 @@ const [loading, setLoading] = useState(false);
   <div style={{ backgroundColor: "#2b3345", padding: "10px", borderRadius: "5px" }}>
     <Button 
       onClick={() => setIsItineraryView(!isItineraryView)}
-      style={{ marginBottom: '10px' }}
+      style={{ 
+        marginBottom: '10px', 
+        marginLeft: '40px',
+        backgroundColor: "#45656C", 
+        color: "#FFFFFF",
+        display: "flex", 
+        justifyContent: "center"
+      }}
     >
-      {isItineraryView ? "Go to Form View" : "Go to Itinerary View"}
+      {isItineraryView ? "Go to Itinerary Form" : "Go to Itinerary"}
     </Button>
     
     {isItineraryView ? (
@@ -2024,7 +2083,7 @@ const [loading, setLoading] = useState(false);
               <div style={{ marginBottom: "15px", fontWeight: "bold", fontSize: "18px" }}>
                 Current Weather
               </div>
-              <p><strong>Temperature:</strong> {currentWeather.main.temp}°C</p>
+              <p><strong>Temperature:</strong> {currentWeather.main.temp}Â°C</p>
               <p><strong>Condition:</strong> {currentWeather.weather[0].description}</p>
               {currentWeather.weather[0].icon && (
                 <div style={{ display: "flex", alignItems: "center", marginBottom: "10px" }}>
@@ -2063,43 +2122,44 @@ const [loading, setLoading] = useState(false);
            />
           </div>
 
-    {loading && (
-      <div
-        style={{
-          position: "absolute",
-          top: 0,
-          left: 0,
-          width: "100%",
-          height: "100%",
-          backgroundColor: "#e6dcdc",
-          display: "flex",
-          justifyContent: "center",
-          alignItems: "center",
-          zIndex: 1000,
-        }}
-      >
-        <div className="box">
-          <div className="cat">
-            <div className="cat__body"></div>
-            <div className="cat__body"></div>
-            <div className="cat__tail"></div>
-            <div className="cat__head"></div>
-          </div>
+          <div
+            style={{
+              position: "absolute",
+              top: "145px",
+              right: "100px",
+            }}
+          >
+            <Switch
+              size="small"
+              style={{
+                width: "150px",
+                height: "35px",
+              }}
+              checkedChildren={<div style={{ fontSize: "12px" }}>Saved Places</div>}
+              unCheckedChildren={<div style={{ fontSize: "12px" }}>Saved Places</div>}
+              onChange={handleSavedPlacesToggle}
+              checked={showSavedPlaces}
+            />
+            </div>
 
-  <blockquote className="info">
-
-  </blockquote>
-
-  <div className="intro">
-    Cat Loading
-     <small>Meow</small>
-  </div>
-</div>
-
-        </div>
-
-    )}
-
+     {loading && (
+            <div
+              style={{
+                position: "absolute",
+                top: 0,
+                left: 0,
+                width: "100%",
+                height: "100%",
+                backgroundColor: "rgba(255, 255, 255, 0.7)",
+                display: "flex",
+                justifyContent: "center",
+                alignItems: "center",
+                zIndex: 1000,
+              }}
+            >
+              <Spin size="large" />
+            </div>
+          )}
           <WeatherForecast onWeatherDataReceived={handleWeatherDataReceived} />
           {weatherDataFromAPI && (
             <div>
@@ -2107,16 +2167,26 @@ const [loading, setLoading] = useState(false);
               </table>
             </div>
           )}
+          {showSavedPlaces && savedPlaces.map(({ position, title, id, address, opening_hours, rating, busyness }) => (
+  <Marker
+    key={`${position.lat}-${position.lng}`}
+    position={position}
+    icon={"http://maps.google.com/mapfiles/kml/pal3/icon63.png"}
+    onClick={() => handleMarkerClick({ position, title, id, address, opening_hours, rating, busyness})}
+    onMouseOver={() =>
+      handleMarkerMouseOver({ position, title, id, address, opening_hours, rating, busyness })
+    }
+    onMouseOut={handleMarkerMouseOut}
+  />
+))}
 
-
-
-          {showTourStops && tourStops.map(({ position, title, placeId }) => (
+{showTourStops && tourStops.map(({ position, title, id, address, opening_hours, rating, busyness}) => (
             <Marker
               key={`${position.lat}-${position.lng}`}
               position={position}
-              onClick={() => handleMarkerClick({ position, title, placeId })}
+    onClick={() => handleMarkerClick({ position, title, id, address, opening_hours, rating, busyness})}
               onMouseOver={() =>
-                handleMarkerMouseOver({ position, title, placeId })
+      handleMarkerMouseOver({ position, title, id, address, opening_hours, rating, busyness })
               }
               onMouseOut={handleMarkerMouseOut}
             >
@@ -2143,6 +2213,9 @@ const [loading, setLoading] = useState(false);
               position={marker.position}
               title={marker.title}
               icon={marker.icon}
+              onClick={() => handleMarkerClick(marker)}
+              onMouseOver={() => handleMarkerMouseOver(marker)}
+              onMouseOut={handleMarkerMouseOut}
             />
           ))}
           <div
@@ -2187,44 +2260,61 @@ const [loading, setLoading] = useState(false);
             {showLegend && (
               <>
                 <BusyLegend />
-              <Card
-                style={{
-                  position: "absolute",
-                  top: "440px", // Change this value to 110px to move the legend 100px lower
-                  left: "10px",
-                  backgroundColor: "rgba(255, 255, 255, 0.8)",
-                  padding: "15px",
-                  borderRadius: "8px",
-                  color: "#333",
-                  boxShadow: "0px 0px 10px rgba(0, 0, 0, 0.2)",
-                  border: "1px solid rgba(0, 0, 0, 0.1)",
-                  fontFamily: "Arial, sans-serif",
-                  height: "28vh",
-                }}
-              >
-                <h3 style={{ marginBottom: "15px", fontWeight: "bold", fontSize: "18px" }}>
-                  Marker Legend
-                </h3>
-                <div className="marker-legend" style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
-                  <div style={{ display: "flex", alignItems: "center", gap: "5px" }}>
-                    <img src="https://maps.google.com/mapfiles/ms/icons/purple-dot.png" alt="User Marker" />
-                    User Marker
+                <Card
+                  style={{
+                    position: "absolute",
+                    top: "330px", // Change this value to 110px to move the legend 100px lower
+                    bottom: "230px", // This leaves 10px space at the bottom
+                    left: "10px",
+                    backgroundColor: "rgba(255, 255, 255, 0.8)",
+                    maxWidth: "200px", // adjust this value as per your requirement
+                    padding: "15px",
+                    borderRadius: "8px",
+                    color: "#333",
+                    boxShadow: "0px 0px 10px rgba(0, 0, 0, 0.2)",
+                    border: "1px solid rgba(0, 0, 0, 0.1)",
+                    fontFamily: '"Arial", sans-serif',
+                  }}
+                >
+                  <h3
+                    style={{ marginBottom: "15px", fontWeight: "bold", fontSize: "18px" }}
+                  >
+                    Marker Legend
+                  </h3>
+                  <div
+                    className="marker-legend"
+                    style={{ display: "flex", flexDirection: "column", gap: "10px" }}
+                  >
+                    <div style={{ display: "flex", alignItems: "center", gap: "5px" }}>
+                      <img
+                        src="https://maps.google.com/mapfiles/ms/icons/purple-dot.png"
+                        alt="User Marker"
+                      />
+                      User Marker
+                    </div>
+                    <div style={{ display: "flex", alignItems: "center", gap: "5px" }}>
+                      <img
+                        src="https://maps.google.com/mapfiles/ms/icons/red-dot.png"
+                        alt="Top 20 Attractions Marker"
+                      />
+                      Top 20 Attractions
+                    </div>
+                    <div style={{ display: "flex", alignItems: "center", gap: "5px" }}>
+                      <img
+                        src="https://maps.google.com/mapfiles/ms/icons/yellow-dot.png"
+                        alt="Best Time Marker"
+                      />
+                      Best Time Marker
+                    </div>
+                    <div style={{ display: "flex", alignItems: "center", gap: "5px" }}>
+                      <img
+                        src="http://maps.google.com/mapfiles/kml/pal3/icon63.png"
+                        alt="Saved Place Marker"
+                      />
+                      Saved Places
+                    </div>
                   </div>
-                  <div style={{ display: "flex", alignItems: "center", gap: "5px" }}>
-                    <img src="https://maps.google.com/mapfiles/ms/icons/red-dot.png" alt="Top 20 Attractions Marker" />
-                    Top 20 Attractions
-                  </div>
-                  <div style={{ display: "flex", alignItems: "center", gap: "5px" }}>
-                    <img src="https://maps.google.com/mapfiles/ms/icons/yellow-dot.png" alt="Best Time Marker" />
-                    Best Time Marker
-                  </div>
-                  <div style={{ display: "flex", alignItems: "center", gap: "5px" }}>
-                    <img src="https://maps.google.com/mapfiles/ms/icons/orange-dot.png" alt="Saved Places Marker" />
-                    Saved Places
-                  </div>
-                </div>
-              </Card>
-
+                </Card>
               </>
             )}
           </>;
@@ -2250,20 +2340,20 @@ const [loading, setLoading] = useState(false);
        </Card.Header>
        <Card.Body>
          <Card.Text style={{ fontStyle: "italic" }}>
-           <span>Rating: {placeDetails.rating}</span>
+         <span>Rating: {selectedMarker.rating}</span>
            <div className="rating ml-2" style={{ color: "yellow" }}>
-             <Rate disabled allowHalf value={placeDetails.rating} />
+           <Rate disabled allowHalf value={selectedMarker.rating} />
            </div>
          </Card.Text>
 
          <Card.Text style={{ fontStyle: "italic" }}>
-           Opening Hours: {placeDetails.opening_hours?.weekday_text?.join(", ")}
+         Opening Hours: {selectedMarker.opening_hours}
          </Card.Text>
          <Card.Text style={{ fontStyle: "italic" }}>
-           Address: {placeDetails.formatted_address}
+         Address: {selectedMarker.address}
          </Card.Text>
          <Card.Text style={{ fontStyle: "italic" }}>
-           Busyness: {placeDetails.reviews?.length}
+         Busyness:   
          </Card.Text>
          <div className="form-check form-switch">
            <Tooltip title="Saved Place" placement="right" size="small">
@@ -2271,7 +2361,7 @@ const [loading, setLoading] = useState(false);
                className="form-check-input"
                type="checkbox"
                id="toggleSwitch"
-               checked={isActive}
+             checked={isPlaceSaved}
                onChange={handleToggle}
              />
              <label className="form-check-label" htmlFor="toggleSwitch">
@@ -2293,10 +2383,14 @@ const [loading, setLoading] = useState(false);
         </Card.Header>
         <Card.Body>
           <Card.Text style={{ fontStyle: 'italic' }}>
-            Rating: {drawerRating}
+            {drawerRating 
+              ? <>Rating: {drawerRating}
             <span className="rating ml-2" style={{ color: 'yellow' }}>
               <Rate disabled allowHalf value={drawerRating} />
             </span>
+                </>
+              : 'No Rating Available'
+            }
           </Card.Text>
           <Card.Text style={{ fontStyle: 'italic' }}>Opening Hours: {drawerOpening}</Card.Text>
           <Card.Text style={{ fontStyle: 'italic' }}>Address: {drawerAddress}</Card.Text>
@@ -2307,15 +2401,19 @@ const [loading, setLoading] = useState(false);
           <DailyChart data={hourlyChartData}></DailyChart>
           
           <div className="form-check form-switch">
-            <Tooltip title="Saved Place" placement="right" size="small">
+          <div>
+          <div>Save Place
+            <Tooltip title="Save Place" placement="right" size="small">
               <div
-                className={`toggle-btn ${isActive ? 'active' : ''}`}
+                className={`toggle-btn ${isPlaceSaved ? 'active' : ''}`}
                 onClick={handleToggle}
               >
               
                 <div className="toggle-label"></div>
               </div>
             </Tooltip>
+          </div>
+            </div>
           </div>
         </Card.Body>
       </Card>
@@ -2335,10 +2433,14 @@ const [loading, setLoading] = useState(false);
                 </Card.Header>
                 <Card.Body>
                   <Card.Text style={{ fontStyle: 'italic' }}>
-                    Rating: {place.rating}
+                  {place.rating 
+                    ? <>Rating: {place.rating}
                     <span className="rating ml-2" style={{ color: 'yellow' }}>
                       <Rate disabled allowHalf value={place.rating} />
                     </span>
+                      </>
+                    : 'No Rating Available'
+                  }
                   </Card.Text>
                   <Card.Text style={{ fontStyle: 'italic' }}>
                     Opening Hours: {place.openingHours}
@@ -2350,14 +2452,18 @@ const [loading, setLoading] = useState(false);
                     Busyness: {place.busyness}
                   </Card.Text>
                   <div className="form-check form-switch">
-                    <Tooltip title="Saved Place" placement="right" size="small">
+                  <div>
+                <div>Save Place
+                <Tooltip title="Save Place" placement="right" size="small">
                       <div
-                        className={`toggle-btn ${isActive ? 'active' : ''}`}
+                        className={`toggle-btn ${isPlaceSaved ? 'active' : ''}`}
                         onClick={handleToggle}
                       >
                         <div className="toggle-label"></div>
                       </div>
-                    </Tooltip>
+                </Tooltip></div>
+            </div>
+
                   </div>
                 </Card.Body>
               </Card>

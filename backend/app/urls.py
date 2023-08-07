@@ -19,4 +19,6 @@ urlpatterns = [
     path('get_top_attractions', services.get_top_attractions, name='get_top_attractions'),
     path('saved_place', services.saved_place, name='saved_place'),
     path('delete_saved_place', services.delete_saved_place, name='delete_saved_place'),
+    path('get_saved_places', services.get_saved_places, name='get_saved_places'),
+    path('get_venue_by_name', services.get_venue_by_name, name='get_venue_by_name'),
 ]

@@ -40,6 +40,7 @@ def get_top_attractions(request):
             "busyness_friday": attraction_data.busyness_friday,
             "busyness_saturday": attraction_data.busyness_saturday,
             "busyness_sunday": attraction_data.busyness_sunday,
+            "rating": attraction_data.rating,
         }
 
     cache.set('top_attractions_data', venues_details, timeout=60 * 60 * 24 * 7 * 3)
@@ -80,7 +81,7 @@ def get_forecast(request):
     
     url = BESTTIME_API_URL + "forecasts"
     params = {
-        'api_key_private': 'pri_4d96e94484e046e4939cf554198f685b',
+        'api_key_private': env('BESTTIME_API_KEY'),
         'venue_name': venue_name,
         'venue_address': venue_address
     }
@@ -162,7 +163,7 @@ def get_venues(request):
     user_lng = request.GET.get('longitude')
     if not user_lat and not user_lng:
         params = {
-            'api_key_private': env('BESTTIME_API_KEY'),
+            'api_key_private': env('BESTTIME_API_KEY'),,
             'q': f"{request.GET.get('busyness','')} {request.GET.get('attraction_type','')} in Manhattan New York {request.GET.get('day','')} {request.GET.get('time','')}",
             'num': 10,
             'fast': False,
@@ -171,7 +172,7 @@ def get_venues(request):
     
     else:
         params = {
-            'api_key_private': env('BESTTIME_API_KEY'),
+            'api_key_private': env('BESTTIME_API_KEY'),,
             'q': f"{request.GET.get('busyness','')} {request.GET.get('attraction_type','')} in Manhattan New York {request.GET.get('day','')} {request.GET.get('time','')}",
             'num': 10,
             'lat': user_lat,
@@ -244,7 +245,16 @@ def get_venues(request):
             "busyness_saturday": venue["venue_foot_traffic_forecast"][5]["day_raw"],
             "busyness_sunday": venue["venue_foot_traffic_forecast"][6]["day_raw"],
             }
+        search_string = f'{venue["venue_name"]}{venue["venue_address"]}'
+        url = f"https://maps.googleapis.com/maps/api/place/findplacefromtext/json?input={search_string}&inputtype=textquery&fields=formatted_address%2Cname%2Crating&key=AIzaSyA-MvlBdzIUHtnKMNa4bYUXjHtW_79MKSQ"
 
+        response = requests.request("GET", url)
+        data = response.json()
+
+        if data["candidates"] and data["candidates"][0]['rating']:
+            venue_details[venue["venue_id"]]["rating"] = data["candidates"][0]['rating']
+        else:
+            venue_details[venue["venue_id"]]["rating"] = None
     return JsonResponse(venue_details, safe=False)
 
 @csrf_exempt
