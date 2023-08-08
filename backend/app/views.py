@@ -2,8 +2,8 @@ from django.shortcuts import HttpResponse
 from django.contrib.auth.models import User
 from django.contrib.auth import authenticate, logout
 from django.http import JsonResponse
-from .utils import is_us_holiday, model, zones
-import json, datetime, os, pandas as pd
+from .utils import is_us_holiday, model, zones, geo_json_data
+import json, datetime, pandas as pd
 from django.views.decorators.csrf import csrf_exempt
 from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework.decorators import api_view, permission_classes
@@ -13,7 +13,6 @@ from rest_framework.permissions import IsAuthenticated
 def register(request):
     if request.method == 'POST':
         data = json.loads(request.body)
-        print("Response is", data)
         email = data.get('email')
         username = data.get('username')
         password = data.get('password')
@@ -71,7 +70,4 @@ def predict(request):
     return HttpResponse(json.dumps(predictions))
 
 def geoJson(request):
-    file_path = os.path.join(os.path.dirname(os.path.dirname(__file__)), 'modeling', 'NYC Taxi Zones.geojson')
-    with open(file_path) as file:
-        data = json.load(file)
-    return JsonResponse(data)
+    return JsonResponse(geo_json_data)

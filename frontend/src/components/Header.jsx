@@ -1,90 +1,143 @@
-import { Link, useNavigate } from "react-router-dom";
-import React, { useState } from "react";
+import { Link, useNavigate, NavLink, useLocation } from "react-router-dom";
+import React, { useState, useEffect } from "react";
 import "./header.scss";
-import { useLocation } from "react-router-dom";
+import ToggleSwitch from './ToggleSwitch';
+import styled from "styled-components";
 
-export default function Header() {
+const HeaderContainer = styled.header`
+  background-color: ${(props) => props.theme.background};
+`;
+
+export default function Header({ darkMode, onToggle }) {
+  //console.log("dark mode in header is: ", darkMode);
   const navigate = useNavigate();
-  var [isLoggedIn, setIsLoggedIn] = useState(false); // Default user is not logged in
-  var location = useLocation();
-  isLoggedIn = new URLSearchParams(location.search).get("loggedIn");
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const location = useLocation();
+  //isLoggedIn = new URLSearchParams(location.search).get("loggedIn");
+  const [username, setUsername] = useState("");
 
-  // Convert the string "true" or "false" to a boolean value
-  const isLoggedInBool = isLoggedIn === "true";
+
+  const accessToken = sessionStorage.getItem("accessToken");
+  const isLoggedInBool = !!accessToken; // Set to true if accessToken exists, otherwise false
+  //console.log('is logged in value in header file: ', isLoggedInBool);
+
+  useEffect(() => {
+    const storedUsername = sessionStorage.getItem("username");
+    setUsername(storedUsername || "");
+  }, []);
+
+  useEffect(() => {
+    const isMapLinkActive = location.pathname === '/map';
+
+    if (isMapLinkActive && location.search !== `?darkMode=${darkMode}`) {
+      navigate({ pathname: '/map', search: `?darkMode=${darkMode}` });
+    }
+  }, [darkMode, navigate, location]);
+
+
 
   const handleLogout = () => {
     setIsLoggedIn(false);
-    navigate("/signup");
+    sessionStorage.removeItem('accessToken');
+    sessionStorage.removeItem('username');
+    navigate("/login");
+  };
+
+  // Custom function to determine if the "Home" link should be considered active
+  const isHomeLinkActive = (match, location) => {
+    return location.pathname === "/" || (location.pathname === "/home" && isLoggedInBool);
   };
 
   return (
-    <header className="py-3">
-      <div className="container d-flex flex-wrap justify-content-between align-items-center">
-        <div className="col-12 col-md-3 mb-2 mb-md-0">
+    <HeaderContainer>
+      {/*  <header className={`py-3 text-center`}>*/}
+      <div className="row header-style">
+        <div className="col d-flex logo-container-style align-items-center ">
           <Link
-            to="/"
-            className="d-inline-flex link-body-emphasis text-decoration-none"
+            to="/" style={{ fontFamily: 'Federal Service, sans-serif' }}
+            className="d-inline-flex justify-content-center align-items-center text-decoration-none fs-26 font-weight-bold logo-style"
           >
             <img
-              src={require("../assets/login.jpg")}
+              src={require("../assets/logo.jpg")}
               alt="Login"
-              width="50"
-              height="40"
+              width="70px"
+              height="72px"
+              className="img-style"
+               style={{ marginLeft: '20px' }}
             />
+            BUSYBUDDY
           </Link>
         </div>
-
-        <nav className="col-12 col-md-auto mb-2">
+        <nav className="col d-flex align-items-center justify-content-center nav-style">
           <ul className="nav justify-content-center">
             <li className="nav-item">
-              <Link to="/" className="nav-link link-secondary">
+              <NavLink
+                exact
+                to="/"
+                className="nav-link link-secondary"
+                activeClassName="active"
+                isActive={isHomeLinkActive}
+                style={{ color: "#45656C", fontSize: "20px" }}
+              >
                 Home
-              </Link>
+              </NavLink>
             </li>
-
+            {isLoggedInBool ? (
+              <li className="nav-item">
+                <NavLink
+                  to={"/map?darkMode=" + darkMode}
+                  className="nav-link"
+                  activeClassName="active"
+                  style={{ color: "#45656C", fontSize: "20px" }}
+                  darkMode={darkMode}
+                >
+                  Map
+                </NavLink>
+              </li>) : (
+              <>
+              </>
+            )}
             <li className="nav-item">
-              <Link to="/map" className="nav-link">
-                Map 
-              </Link>
+              <NavLink
+                exact
+                to="/topattractions"
+                className="nav-link link-secondary"
+                activeClassName="active"
+                style={{ color: "#45656C", fontSize: "20px" }}
+              >
+                Highlights
+              </NavLink>
             </li>
           </ul>
         </nav>
 
-        <div className="col-12 col-md-3 text-md-end custom-buttons">
-          <div className="d-flex justify-content-md-end">
-            <Link to="/Userprofile" className="btn btn-link me-2">
-              {/* User profile icon */}
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                width="35"
-                height="35"
-                fill="currentColor"
-                className="bi bi-person-circle"
-                viewBox="0 0 16 16"
-              >
-                <path d="M11 6a3 3 0 1 1-6 0 3 3 0 0 1 6 0z" />
-                <path
-                  fillRule="evenodd"
-                  d="M0 8a8 8 0 1 1 16 0A8 8 0 0 1 0 8zm8-7a7 7 0 0 0-5.468 11.37C3.242 11.226 4.805 10 8 10s4.757 1.225 5.468 2.37A7 7 0 0 0 8 1z"
-                />
-              </svg>
-            </Link>
 
+        <div className="col d-flex justify-content-left align-items-center  custom-buttons">
+          <div className="d-flex justify-content-md-end">
             {/* Display "Login" or "Logout" button based on the login status */}
             {isLoggedInBool ? (
-              <button onClick={handleLogout}  className="btn btn-primary me-2">
-                Logout
-              </button>
+              <>
+                <span style={{ marginRight: "20px", fontFamily: "Segoe UI", fontSize: "20px", color: "grey" }}>Hello {username}</span>
+                <button onClick={handleLogout} className="btn btn-primary me-2">
+                  Logout
+                </button>
+              </>
             ) : (
               <>
-                <Link to="/signup" className="btn btn-primary">
-                  Login or Register
+                <Link to="/login" className="btn btn-outline-primary me-2">
+                  Login
+                </Link>
+                <Link to="/register" className="btn btn-primary">
+                  Sign up
                 </Link>
               </>
             )}
           </div>
+          <ToggleSwitch darkMode={darkMode} onToggle={onToggle} />
         </div>
       </div>
-    </header>
+      {/*} </header> */}
+    </HeaderContainer>
   );
-}
+};
+
