@@ -72,10 +72,9 @@ export default function Header({ darkMode, onToggle }) {
           <ul className="nav justify-content-center">
             <li className="nav-item">
               <NavLink
-                exact
                 to="/"
                 className="nav-link link-secondary"
-                activeClassName="active"
+                activeclassname="active"
                 isActive={isHomeLinkActive}
                 style={{ color: "#45656C", fontSize: "20px" }}
               >
@@ -87,7 +86,7 @@ export default function Header({ darkMode, onToggle }) {
                 <NavLink
                   to={"/map?darkMode=" + darkMode}
                   className="nav-link"
-                  activeClassName="active"
+                  activeclassname="active"
                   style={{ color: "#45656C", fontSize: "20px" }}
                   darkMode={darkMode}
                 >
@@ -99,10 +98,9 @@ export default function Header({ darkMode, onToggle }) {
             )}
             <li className="nav-item">
               <NavLink
-                exact
                 to="/topattractions"
                 className="nav-link link-secondary"
-                activeClassName="active"
+                activeclassname="active"
                 style={{ color: "#45656C", fontSize: "20px" }}
               >
                 Highlights

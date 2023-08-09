@@ -533,21 +533,19 @@ const [selectedOptions, setSelectedOptions] = useState([]);
     })
     .then((response) => response.json())
     .then((data) => {
-        console.log("Received saved places data:", JSON.stringify(data, null, 2));
+       // console.log("Received saved places data:", JSON.stringify(data, null, 2));
 
-        const savedPlaceTitles = data.saved_places.map(place => place.saved_place);
-        console.log("Saved place titles:", savedPlaceTitles.join(', '));
+      // Just set the 'savedPlaces' state to be the data received from the API
+      setSavedPlaces(data.saved_places);
 
-        const newSavedPlaces = tourStops.filter(tourStop => savedPlaceTitles.includes(tourStop.title));
-        console.log("Filtered tour stops for saved places:", JSON.stringify(newSavedPlaces, null, 2));
-
-        setSavedPlaces(newSavedPlaces);
-    })
-    .catch((error) => {
-        console.error("Error is:", error);
-    });
-
-}, [tourStops]);
+      // Check if the selected marker is in the list of saved places
+      const isMarkerSaved = data.saved_places.some(place => place.saved_place === selectedMarker?.title);
+      setIsPlaceSaved(isMarkerSaved);
+  })
+  .catch((error) => {
+      console.error("Error is:", error);
+  });
+}, [username, selectedMarker]);
 
 const handleSavedPlacesToggle = () => {
   setShowSavedPlaces(!showSavedPlaces);
@@ -577,177 +575,215 @@ const [form] = Form.useForm();
 const [displayRoute, setDisplayRoute] = useState(false);
 const [visible, setVisible] = useState(false);
 const [directionsRenderer, setDirectionsRenderer] = useState([]);
+const [routeDirections, setRouteDirections] = useState(null); 
 const [isFormSubmitted, setIsFormSubmitted] = useState(false);
 const [isItineraryView, setIsItineraryView] = useState(false);
 const allFieldNames = form.getFieldValue(); // Get all the field values
 const fieldNamesToReset = Object.keys(allFieldNames).filter(name => name !== 'displayRoute'); // Exclude 'displayRoute'
 
+const calculateTravelTime = async (location1, location2) => {
+  const directionsService = new window.google.maps.DirectionsService();
 
-  const calculateDistance = (location1, location2) => {
-    const radlat1 = Math.PI * location1.lat / 180;
-    const radlat2 = Math.PI * location2.lat / 180;
-    const theta = location1.lng - location2.lng;
-    const radtheta = Math.PI * theta / 180;
-    let dist =
-        Math.sin(radlat1) * Math.sin(radlat2) +
-        Math.cos(radlat1) * Math.cos(radlat2) * Math.cos(radtheta);
-    if (dist > 1) {
-        dist = 1;
-    }
-    dist = Math.acos(dist);
-    dist = (dist * 180) / Math.PI;
-    dist = dist * 60 * 1.1515;
-    dist = dist * 1.609344;
-    return dist;
-  };
-  
-  const generateItinerary = (startEndHour, dateRange) => {
-    const totalHoursInDay = startEndHour[1] - startEndHour[0];
-    const hoursPerAttraction = 2;
-    let itinerary = [];
-    let itineraryMapping = {}; 
-  
-    let currentDay = moment(dateRange[0]);
-    let currentHour = startEndHour[0];
-  
-    let sortedTourStops = [...tourStops];
-  
-    // Finding two farthest places
-    let maxDist = -1;
-    let farthestPair = [0, 1];  // initialize with the first two places
-    for (let i = 0; i < sortedTourStops.length - 1; i++) {
-        for (let j = i + 1; j < sortedTourStops.length; j++) {
-            let dist = calculateDistance(
-                sortedTourStops[i].position,
-                sortedTourStops[j].position
-            );
-            if (dist > maxDist) {
-                maxDist = dist;
-                farthestPair = [i, j];
-            }
-        }
-    }
-
-    // Set the first and last stops to be the farthest pair
-    const startAttraction = sortedTourStops[farthestPair[0]];
-    const endAttraction = sortedTourStops[farthestPair[1]];
-    sortedTourStops = sortedTourStops.filter((stop, index) => index !== farthestPair[0] && index !== farthestPair[1]);
-    sortedTourStops.unshift(startAttraction);
-    sortedTourStops.push(endAttraction);
-  
-    sortedTourStops.forEach((stop, index) => {
-      if (currentHour + hoursPerAttraction > startEndHour[1]) {
-        currentDay = currentDay.add(1, 'days');
-        currentHour = startEndHour[0];
+  const result = await new Promise((resolve, reject) => {
+    directionsService.route({
+      origin: new window.google.maps.LatLng(location1.lat, location1.lng),
+      destination: new window.google.maps.LatLng(location2.lat, location2.lng),
+      travelMode: window.google.maps.TravelMode.WALKING,
+    }, (result, status) => {
+      if (status === window.google.maps.DirectionsStatus.OK) {
+        resolve(result.routes[0].legs[0].duration.text);
+      } else {
+        reject(`error fetching directions ${result}`);
       }
-  
-      let visitStart = currentDay.clone().hour(currentHour).minute(0);
-      let visitEnd = currentDay.clone().hour(currentHour + hoursPerAttraction).minute(0);
-  
-      itinerary.push({
-        key: index,
-        time: `${visitStart.format('HH:mm')} - ${visitEnd.format('HH:mm')}`,
-        title: stop.title,
-        date: currentDay.format('YYYY-MM-DD'),
-        position: stop.position, 
-      });
-  
-      itineraryMapping[stop.title] = stop.position; 
-  
-      currentHour += hoursPerAttraction;
     });
-  
-    setItinerary(itineraryMapping);
-  
-    return itinerary;
+  });
+
+  // Handle the cases where travel time might return in "1 hr 15 min" format
+  let totalMinutes = 0;
+  if (result.includes("hr")) {
+    const hours = parseInt(result.split('hr')[0].trim());
+    totalMinutes += hours * 60;
+    const minutes = parseInt((result.split('hr')[1] || "").split(' ')[0]);
+    totalMinutes += isNaN(minutes) ? 0 : minutes;
+  } else {
+    totalMinutes = parseInt(result.split(' ')[0]);
+  }
+
+  return totalMinutes;
+};
+
+const generateItinerary = async (startEndHour, dateRange, places) => {
+  const totalHoursInDay = startEndHour[1] - startEndHour[0];
+  let itinerary = [];
+  let itineraryMapping = {}; 
+
+  let currentDay = moment(dateRange[0]);
+  let currentHour = startEndHour[0];
+
+  let sortedTourStops = [...places];
+
+  for (let i = 0; i < sortedTourStops.length; i++) {
+    let visitStart = currentDay.clone().hour(currentHour).minute(0);
+    let visitEnd;
+
+    let timeAtAttraction = 2;  // Default duration value.
+
+    if (i !== sortedTourStops.length - 1) { // Check if it's not the last location
+      const travelTimeInMinutes = await calculateTravelTime(
+          sortedTourStops[i].position,
+          sortedTourStops[i + 1].position
+      );
+
+      let travelTimeInHours = travelTimeInMinutes / 60;
+      visitEnd = visitStart.clone().add(timeAtAttraction, 'hours');
+
+      itinerary.push({
+        key: i,
+        time: `${visitStart.format('HH:mm')} - ${visitEnd.format('HH:mm')}`,
+        title: sortedTourStops[i].title,
+        date: currentDay.format('YYYY-MM-DD'),
+        position: sortedTourStops[i].position,
+        travelTime: `${travelTimeInMinutes} min`,
+        openingHours: sortedTourStops[i].openingHours,  // <-- Add this line
+      });
+
+      // Add both the visit time and the travel time to the currentHour
+      currentHour += timeAtAttraction + travelTimeInHours;
+    } else {
+      visitEnd = visitStart.clone().add(timeAtAttraction, 'hours');
+      itinerary.push({
+        key: i,
+        time: `${visitStart.format('HH:mm')} - ${visitEnd.format('HH:mm')}`,
+        title: sortedTourStops[i].title,
+        date: currentDay.format('YYYY-MM-DD'),
+        position: sortedTourStops[i].position,
+      });
+      currentHour += timeAtAttraction;
+    }
+
+    while (currentHour + timeAtAttraction + (i !== sortedTourStops.length - 1 ? (await calculateTravelTime(sortedTourStops[i].position, sortedTourStops[i + 1].position)) / 60 : 0) > startEndHour[1]) {
+      currentDay = currentDay.add(1, 'days');
+      currentHour = (currentHour + timeAtAttraction) - totalHoursInDay;
+    }
+    
   }
   
-    
-  const onFinish = async (values) => {
-    if (values.markers === "top20") {
-      if (!Array.isArray(values.startEndHour) || values.startEndHour.length !== 2 || !Array.isArray(values.dateRange) || values.dateRange.length !== 2) {
+
+  setItinerary(itineraryMapping);
+
+  return itinerary;
+};
+  
+  // Helper function to reorder an array
+function reorderArray(array, order) {
+  return order.map(index => array[index]);
+}
+
+const onFinish = async (values) => {
+  if (values.markers === "top20" || values.markers === "saved") {
+    if (!Array.isArray(values.startEndHour) || values.startEndHour.length !== 2 || !Array.isArray(values.dateRange) || values.dateRange.length !== 2) {
         console.error('Invalid input for start and end hours or date range!');
         return;
-      }
-      const newItinerary = generateItinerary(
-        [values.startEndHour[0].hour(), values.startEndHour[1].hour()],
-        [values.dateRange[0].format('YYYY-MM-DD'), values.dateRange[1].format('YYYY-MM-DD')]
+    }
+    const transformedSavedPlaces = savedPlaces
+      .filter(place => place.latitude && place.longitude)
+      .map(place => ({
+      title: place.saved_place,
+      position: { lat: place.latitude, lng: place.longitude },
+      openingHours: place.opening_hours,   // <-- Add this line
+  }))
+ 
+    let dataSource = [];
+    if (values.markers === 'top20') {
+      dataSource = tourStops.map(stop => ({
+        title: stop.title || stop.name,  // I assumed the title might be in these properties
+        position: { lat: stop.position.lat, lng: stop.position.lng },
+        openingHours: stop.opening_hours,
+      }));
+    } else if (values.markers === 'saved') {
+      dataSource = transformedSavedPlaces;
+    }
+    if (form.getFieldValue('displayRoute')) {
+      const waypoints = dataSource.map(stop => {
+        return {
+            location: new window.google.maps.LatLng(stop.position.lat, stop.position.lng),
+            stopover: true,
+        };
+      });
+      const directionsService = new window.google.maps.DirectionsService();
+      const result = await new Promise((resolve, reject) => {
+        directionsService.route({
+            origin: waypoints[0].location, 
+            destination: waypoints[waypoints.length - 1].location, 
+            waypoints: waypoints.slice(1, waypoints.length - 1), 
+            optimizeWaypoints: true,
+            travelMode: window.google.maps.TravelMode.WALKING,
+        }, (result, status) => {
+            if (status === window.google.maps.DirectionsStatus.OK) {
+                resolve(result);
+            } else {
+                reject(`error fetching directions ${result}`);
+            }
+        });
+      });
+      setDirectionsRenderer([result]);
+      const optimalRouteOrder = [0, ...result.routes[0].waypoint_order.map(x => x + 1), dataSource.length - 1]; // Adjusting the order array
+      const reorderedTourStops = reorderArray(dataSource, optimalRouteOrder);
+      const newItinerary = await generateItinerary(
+          [values.startEndHour[0].hour(), values.startEndHour[1].hour()],
+          [values.dateRange[0].format('YYYY-MM-DD'), values.dateRange[1].format('YYYY-MM-DD')],
+          reorderedTourStops,
       );
       setItineraryList(newItinerary);
-      setVisible(true);
-      setIsFormSubmitted(true);
-  
-      // If displayRoute is enabled, calculate route for tour stops
-  if (form.getFieldValue('displayRoute')) {
-    // Create an array of waypoints for all tour stops except the first and last ones
-    const waypoints = newItinerary.slice(1, newItinerary.length - 1).map(stop => {
-      return {
-        location: new window.google.maps.LatLng(stop.position.lat, stop.position.lng),
-        stopover: true,
-      };
-    });
-
-    // Create a new directions service
-    const directionsService = new window.google.maps.DirectionsService();
-
-    // Request a direction route from Google Maps API
-    const result = await new Promise((resolve, reject) => {
-      directionsService.route({
-        origin: new window.google.maps.LatLng(newItinerary[0].position.lat, newItinerary[0].position.lng),
-        destination: new window.google.maps.LatLng(newItinerary[newItinerary.length - 1].position.lat, newItinerary[newItinerary.length - 1].position.lng),
-        waypoints: waypoints,
-        optimizeWaypoints: true,
-        travelMode: window.google.maps.TravelMode.WALKING,
-      }, (result, status) => {
-        if (status === window.google.maps.DirectionsStatus.OK) {
-          resolve(result);
-        } else {
-          reject(`error fetching directions ${result}`);
-        }
-      });
-    });
-
-    // Add new result to directionsRenderer array
-    setDirectionsRenderer([result]);
-  }
-  // Reset form fields
-  form.resetFields(fieldNamesToReset);
-};
+    } else {
+        const newItinerary = await generateItinerary(
+            [values.startEndHour[0].hour(), values.startEndHour[1].hour()],
+            [values.dateRange[0].format('YYYY-MM-DD'), values.dateRange[1].format('YYYY-MM-DD')],
+            dataSource,
+        );
+        setItineraryList(newItinerary);
+    }
+    setVisible(true);
+    setIsFormSubmitted(true);
+    form.resetFields(fieldNamesToReset);
   };
-  
-   
-    const itineraryByDay = itineraryList.reduce((acc, curr) => {
-      acc[curr["date"]] = acc[curr["date"]] || [];
-      acc[curr["date"]].push(curr);
-      return acc;
-    }, {});
+};
+
+
+
+  const itineraryByDay = (Array.isArray(itineraryList) ? itineraryList : []).reduce((acc, curr) => {
+    acc[curr["date"]] = acc[curr["date"]] || [];
+    acc[curr["date"]].push(curr);
+    return acc;
+}, {});
+
   
 
 
   const mapRef = useRef(null);
 
   // Routing 
-  const handleRouting = () => {
+  const handleRouting = (markerPosition) => {
     if (!isRoutingOn) {
-      if (!userMarkers[0] || !newMarkers[0]) {
+      if (!userMarkers[0] || !markerPosition) {
         alert("Both the user and the destination need to be defined for routing.");
       } else {
         const DirectionsService = new window.google.maps.DirectionsService();
-
+  
         DirectionsService.route({
           origin: new window.google.maps.LatLng(userMarkers[0].lat, userMarkers[0].lng),
-          destination: new window.google.maps.LatLng(newMarkers[0].position.lat, newMarkers[0].position.lng),
+          destination: new window.google.maps.LatLng(markerPosition.lat, markerPosition.lng),
           travelMode: window.google.maps.TravelMode.WALKING,
         }, (result, status) => {
           if (status === window.google.maps.DirectionsStatus.OK) {
-            setDirectionsRenderer(result);
+            setRouteDirections(result);  // Set it as the response object
           } else {
             console.error(`error fetching directions ${result}`);
           }
         });
       }
     } else {
-      setDirectionsRenderer(null); // Remove the route by setting the directions renderer to null
+      setRouteDirections(null); // Remove the route by setting the directions renderer to null
     }
 
     setIsRoutingOn(!isRoutingOn); // Toggle the routing state
@@ -1000,7 +1036,7 @@ const fieldNamesToReset = Object.keys(allFieldNames).filter(name => name !== 'di
 
   // Busyness Coloration 
   const getZoneColor = (busyness) => {
-    console.log("Busyness Level:", busyness);
+    // console.log("Busyness Level:", busyness);
     const opacity = 1; // Set your desired opacity here
 
     if (busyness === 0 || isNaN(busyness)) {
@@ -1039,14 +1075,6 @@ const fieldNamesToReset = Object.keys(allFieldNames).filter(name => name !== 'di
       try {
         const response = await fetch('http://localhost:8000/api/geoJson');
         const data = await response.json();
-
-        // Log response details (optional)
-        console.log(response.status);
-        console.log(response.statusText);
-        console.log(response.headers);
-
-        // Log one feature to see its structure (optional)
-        console.log(data.features[0]);
 
         // Update the state with the fetched data
         setJsonData(data);
@@ -1394,6 +1422,12 @@ const [loading, setLoading] = useState(false);
           lat: place.geometry.location.lat(),
           lng: place.geometry.location.lng(),
         });
+          }
+      const queryParams = `?venue_name=${place.name}&venue_address=${place.formatted_address}&venue_rating=${place.rating}`;
+
+      axios.get(`http://localhost:8000/api/get_forecast${queryParams}`)
+        .then((response) => {
+          console.log('API Response:', response.data);
 
         // Add a new marker at the selected place
         let bestTimeMarker;
@@ -1402,28 +1436,23 @@ const [loading, setLoading] = useState(false);
           position: {
             lat: place.geometry.location.lat(),
             lng: place.geometry.location.lng(),
-                    },
-            title: place.name,
-            icon: {
-              url: "https://maps.google.com/mapfiles/ms/icons/yellow-dot.png",
-              scaledSize: new window.google.maps.Size(40, 40),
-            },
+          },
+          title: place.name,
+          address: place.formatted_address, // new property
+          opening_hours: response['data'].venue_opening_hours, // new property
+          rating: response['data'].rating, // new property
+          isBestTime: true, // new property to indicate that this marker has extra info
+          icon: {
+            url: "https://maps.google.com/mapfiles/ms/icons/yellow-dot.png",
+            scaledSize: new window.google.maps.Size(40, 40),
+          },
         }
 
         setNewMarkers([
           bestTimeMarker,
         ]);
 
-        setSelectedMarker(bestTimeMarker)
-       
-      }
-
-
-      const queryParams = `?venue_name=${place.name}&venue_address=${place.formatted_address}&venue_rating=${place.rating}`;
-
-      axios.get(`http://localhost:8000/api/get_forecast${queryParams}`)
-        .then((response) => {
-          console.log('API Response:', response.data);
+        setSelectedMarker(bestTimeMarker);
 
           //Setting Busyness Graph Data(in placeChange)
           setMondayLevel(calculateAverageNonZeroBusyness(convertStringToArray(response['data'].busyness_monday)))
@@ -1468,7 +1497,7 @@ const [loading, setLoading] = useState(false);
     }
 
     
-    setDrawerVisible(true)
+   
   };
   
 
@@ -1556,7 +1585,6 @@ const [loading, setLoading] = useState(false);
       axios
         .get("http://127.0.0.1:8000/api/get_top_attractions")
         .then(response => {
-          console.log(response.data); // Add this line
           const newTourStops = Object.keys(response.data).map(name => {
             const stop = response.data[name];
             return {
@@ -1590,6 +1618,13 @@ const [loading, setLoading] = useState(false);
   const handleTourStopsToggle = () => {
     setShowTourStops(!showTourStops);
   };
+
+  const isValidLatLng = (lat, lng) => {
+    if (typeof lat !== 'number' || typeof lng !== 'number') return false;
+    if (lat > 90 || lat < -90 || lng > 180 || lng < -180) return false;
+    return true;
+  };
+  
 
 
   if (loadError) return "Error loading maps";
@@ -1816,20 +1851,7 @@ const [loading, setLoading] = useState(false);
                       Current Location
                     </Button>
                   </div>
-                  <div
-                    className="button-container"
-                    style={{ margin: "10px", marginLeft: "20px" }}
-                  >
-                    <Button
-                      type="primary"
-                      onClick={handleRouting}
-                      className="button routing-button"
-                      size="small"
-                      style={{ backgroundColor: "#45656C", color: "#FFFFFF" }}
-                    >
-                      {isRoutingOn ? "Remove Route" : "Show Route"}
-                    </Button>
-                  </div>
+                  
                 </>
               ) : destinationKnown === false ? (
                 // If the user doesn't know the destination, show the filter and "Search" button
@@ -1919,7 +1941,7 @@ const [loading, setLoading] = useState(false);
                   width="16"
                   height="16"
                   fill="currentColor"
-                  class="bi bi-truck-front"
+                  className="bi bi-truck-front"
                   viewBox="0 0 16 16"
                 >
                   <path d="M5 11a1 1 0 1 1-2 0 1 1 0 0 1 2 0Zm8 0a1 1 0 1 1-2 0 1 1 0 0 1 2 0Zm-6-1a1 1 0 1 0 0 2h2a1 1 0 1 0 0-2H7ZM4 2a1 1 0 0 0-1 1v3.9c0 .625.562 1.092 1.17.994C5.075 7.747 6.792 7.5 8 7.5c1.208 0 2.925.247 3.83.394A1.008 1.008 0 0 0 13 6.9V3a1 1 0 0 0-1-1H4Zm0 1h8v3.9c0 .002 0 .001 0 0l-.002.004a.013.013 0 0 1-.005.002h-.004C11.088 6.761 9.299 6.5 8 6.5s-3.088.26-3.99.406h-.003a.013.013 0 0 1-.005-.002L4 6.9c0 .001 0 .002 0 0V3Z" />
@@ -1961,18 +1983,48 @@ const [loading, setLoading] = useState(false);
                 {Object.keys(itineraryByDay).map((date) => (
                   <Panel header={date} key={date} style={{ backgroundColor: "#B7B7B7" }}>
                              <div style={{ backgroundColor: "#D8D9DA", borderRadius: "5px", boxShadow: "0 0 5px rgba(0, 0, 0, 0.3)", padding: "15px" }}>
-                               <Timeline>
-                                 {itineraryByDay[date].map((item, index) => (
-                                   <Timeline.Item key={index}>
-                                     <div>
-                                       <b>{item.time}</b> <br />
-                                     </div>
-                                     <div>
-                                       Visit {item.title}
-                                     </div>
-                                   </Timeline.Item>
-                                 ))}
-                               </Timeline>
+                             <Timeline>
+                {itineraryByDay[date].reduce((acc, item, index) => {
+                  let startTime;
+
+                  // If it's the first attraction
+                  if (index === 0) {
+                    startTime = moment(item.time.split('-')[0].trim(), 'HH:mm');
+                  } else {
+                    // Otherwise, take the end time of the last attraction added to the accumulator
+                    const previousEndTime = moment(acc[acc.length - 1].endTime, 'HH:mm');
+                    const previousTravelTime = acc[acc.length - 1].travelTime ? parseInt(acc[acc.length - 1].travelTime.split(' ')[0]) : 0;
+                    startTime = previousEndTime.clone().add(previousTravelTime, 'minutes');
+                  }
+
+                  // Calculate the end time as start time + 2 hours
+                  const endTime = startTime.clone().add(2, 'hours').format('HH:mm');
+                  startTime = startTime.format('HH:mm');
+
+                  // Add the current attraction to the accumulator, including its calculated end time
+                  acc.push({ ...item, startTime, endTime });
+                  return acc;
+                }, []).map((item, index, itemsArray) => (
+                  <Timeline.Item key={index}>
+                    <div>
+                      <b>{`${item.startTime} - ${item.endTime}`}</b> <br />
+                    </div>
+                    <div>
+                      Visit {item.title}
+                    </div>
+                    <div>
+                      Hours: {item.openingHours}
+                    </div>
+                    {/* Check if it's not the last item before showing the walking time */}
+                    {index !== itemsArray.length - 1 && (
+                      <div>
+                        Estimated walking time: {item.travelTime}
+                      </div>
+                    )}
+                  </Timeline.Item>
+                ))}
+              </Timeline>
+
                              </div>
       
       
@@ -1994,15 +2046,35 @@ const [loading, setLoading] = useState(false);
                      label="Start and End Date"
                      rules={[{ required: true, message: 'Please input your date range!' }]}
                    >
-                     <DatePicker.RangePicker format="YYYY-MM-DD" />
-                   </Form.Item>
-                   <Form.Item
-                     name="startEndHour"
-                     label="Visting Hours"
-                     rules={[{ required: true, message: 'Please select the start and end hour!' }]}
-                   >
-                     <TimePicker.RangePicker format="HH" />
-                   </Form.Item>
+                     <DatePicker.RangePicker
+                      format="YYYY-MM-DD"
+                      disabledDate={(current) => {
+                          // Disable dates that are before today's date
+                          return current && current < moment().startOf('day');
+                      }}
+                  />
+
+
+                                    </Form.Item>
+                                    <Form.Item
+                      name="startEndHour"
+                      label="Visiting Hours"
+                      rules={[{ required: true, message: 'Please select the start and end hour!' }]}
+                  >
+                  <TimePicker.RangePicker
+                      format="HH"
+                      hideDisabledOptions
+                      disabledTime={() => {
+                          return {
+                              disabledHours: () => {
+                                  return [...Array(8).keys(), 23];
+                              }
+                          };
+                      }}
+                  />
+
+
+                  </Form.Item>
                    
                    <Form.Item
                      name="markers"
@@ -2018,15 +2090,21 @@ const [loading, setLoading] = useState(false);
                     name="displayRoute"
                     valuePropName="checked"
                   >
-                    <Switch 
-                      checkedChildren={<span style={{ fontSize: '16px' }}>Display Route</span>} 
-                      unCheckedChildren={<span style={{ fontSize: '16px' }}>Hide Route</span>}
-                      style={{ width: "150px", height: "40px" }} 
-                      onChange={(checked) => {
-                        setDisplayRoute(checked);
-                        setShowTourStops(!checked);  // Also toggle showTourStops
-                      }} 
-                    />
+                      <Switch
+                          checkedChildren={<span style={{ fontSize: '16px' }}>Display Route</span>}
+                          unCheckedChildren={<span style={{ fontSize: '16px' }}>Hide Route</span>}
+                          style={{ width: "150px", height: "40px" }}
+                          onChange={(checked) => {
+                              if (form.getFieldValue('markers') === 'top20') {
+                                  setDisplayRoute(checked);
+                                  setShowTourStops(!checked);  // Also toggle showTourStops
+                              }
+                              else {
+                                  setDisplayRoute(checked);
+                                  // here you may decide whether to setShowTourStops or not depending on your requirement.
+                              }
+                          }}
+                      />
                   </Form.Item>
                    <Form.Item style={{ margin: "10px", display: "flex", justifyContent: "center" }}>
                      <Button type="primary" htmlType="submit" style={{ backgroundColor: "#45656C", color: "#FFFFFF" }}>
@@ -2043,7 +2121,7 @@ const [loading, setLoading] = useState(false);
                           title={menuCollapse ? "Weather Forecast" : ""}
                           placement="right"
                         >
-                         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-brightness-high" viewBox="0 0 16 16">
+                         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" className="bi bi-brightness-high" viewBox="0 0 16 16">
                            <path d="M8 11a3 3 0 1 1 0-6 3 3 0 0 1 0 6zm0 1a4 4 0 1 0 0-8 4 4 0 0 0 0 8zM8 0a.5.5 0 0 1 .5.5v2a.5.5 0 0 1-1 0v-2A.5.5 0 0 1 8 0zm0 13a.5.5 0 0 1 .5.5v2a.5.5 0 0 1-1 0v-2A.5.5 0 0 1 8 13zm8-5a.5.5 0 0 1-.5.5h-2a.5.5 0 0 1 0-1h2a.5.5 0 0 1 .5.5zM3 8a.5.5 0 0 1-.5.5h-2a.5.5 0 0 1 0-1h2A.5.5 0 0 1 3 8zm10.657-5.657a.5.5 0 0 1 0 .707l-1.414 1.415a.5.5 0 1 1-.707-.708l1.414-1.414a.5.5 0 0 1 .707 0zm-9.193 9.193a.5.5 0 0 1 0 .707L3.05 13.657a.5.5 0 0 1-.707-.707l1.414-1.414a.5.5 0 0 1 .707 0zm9.193 2.121a.5.5 0 0 1-.707 0l-1.414-1.414a.5.5 0 0 1 .707-.707l1.414 1.414a.5.5 0 0 1 0 .707zM4.464 4.465a.5.5 0 0 1-.707 0L2.343 3.05a.5.5 0 1 1 .707-.707l1.414 1.414a.5.5 0 0 1 0 .708z"/>
                          </svg>
                         </Tooltip>
@@ -2083,6 +2161,7 @@ const [loading, setLoading] = useState(false);
           {displayRoute && directionsRenderer.map((result, i) => (
   <DirectionsRenderer directions={result} key={i} />
   ))}
+    {routeDirections && <DirectionsRenderer directions={routeDirections} options={{ suppressMarkers: true }} />}
           {hoveredZone && (
             <HoveredZoneInfo hoveredZone={hoveredZone} getBusynessDescription={getBusynessDescription} />
           )}
@@ -2105,7 +2184,7 @@ const [loading, setLoading] = useState(false);
               <div style={{ marginBottom: "15px", fontWeight: "bold", fontSize: "18px" }}>
                 Current Weather
               </div>
-              <p><strong>Temperature:</strong> {currentWeather.main.temp}Â°C</p>
+              <p><strong>Temperature:</strong> {currentWeather.main.temp}Ã‚Â°C</p>
               <p><strong>Condition:</strong> {currentWeather.weather[0].description}</p>
               {currentWeather.weather[0].icon && (
                 <div style={{ display: "flex", alignItems: "center", marginBottom: "10px" }}>
@@ -2238,18 +2317,40 @@ const [loading, setLoading] = useState(false);
 
             </div>
           )}
-          {showSavedPlaces && savedPlaces.map(({ position, title, id, address, opening_hours, rating, busyness }) => (
-  <Marker
-    key={`${position.lat}-${position.lng}`}
-    position={position}
-    icon={"http://maps.google.com/mapfiles/kml/pal3/icon63.png"}
-    onClick={() => handleMarkerClick({ position, title, id, address, opening_hours, rating, busyness})}
-    onMouseOver={() =>
-      handleMarkerMouseOver({ position, title, id, address, opening_hours, rating, busyness })
-    }
-    onMouseOut={handleMarkerMouseOut}
-  />
-))}
+          {showSavedPlaces && savedPlaces.map((place) => {
+  // Check if the lat and lng are valid before rendering the Marker
+  if (!isValidLatLng(place.latitude, place.longitude)) return null;
+
+  return (
+    <Marker
+      key={`${place.latitude}-${place.longitude}`}
+      position={{ lat: place.latitude, lng: place.longitude }}
+      icon={"http://maps.google.com/mapfiles/kml/pal3/icon63.png"}
+      onClick={() => handleMarkerClick({ 
+        position: { lat: place.latitude, lng: place.longitude }, 
+        title: place.saved_place, 
+        id: place.id,
+        address: place.venue_address, 
+        opening_hours: place.opening_hours,
+        rating: place.rating,
+        busyness: place.busyness
+      })}
+      onMouseOver={() =>
+        handleMarkerMouseOver({ 
+          position: { lat: place.latitude, lng: place.longitude }, 
+          title: place.saved_place, 
+          id: place.id,
+          address: place.venue_address, 
+          opening_hours: place.opening_hours,
+          rating: place.rating,
+          busyness: place.busyness
+        })
+      }
+      onMouseOut={handleMarkerMouseOut}
+    />
+  );
+})}
+
 
 {showTourStops && tourStops.map(({ position, title, id, address, opening_hours, rating, busyness}) => (
             <Marker
@@ -2405,6 +2506,16 @@ const [loading, setLoading] = useState(false);
              </label>
            </Tooltip>
          </div>
+         <Button
+          type="primary"
+          onClick={() => handleRouting(selectedMarker.position)}
+          className="button routing-button mt-3" // added margin-top for some spacing
+          size="small"
+          style={{ backgroundColor: "#45656C", color: "#FFFFFF" }}
+        >
+          {isRoutingOn ? "Remove Route" : "Show Route"}
+        </Button>
+
        </Card.Body>
      </Card>
 
@@ -2452,6 +2563,16 @@ const [loading, setLoading] = useState(false);
           </div>
             </div>
           </div>
+          <Button
+            type="primary"
+            onClick={() => handleRouting(selectedMarker.position)}
+            className="button routing-button mt-3" // added margin-top for some spacing
+            size="small"
+            style={{ backgroundColor: "#45656C", color: "#FFFFFF" }}
+          >
+            {isRoutingOn ? "Remove Route" : "Show Route"}
+          </Button>
+
         </Card.Body>
       </Card>
 
@@ -2490,19 +2611,32 @@ const [loading, setLoading] = useState(false);
                     Busyness: {place.busyness}
                   </Card.Text>
                   <div className="form-check form-switch">
-                  <div>
-                <div>Save Place
-                <Tooltip title="Save Place" placement="right" size="small">
-                      <div
-                        className={`toggle-btn ${isPlaceSaved ? 'active' : ''}`}
-                        onClick={handleToggle}
-                      >
-                        <div className="toggle-label"></div>
-                      </div>
-                </Tooltip></div>
-            </div>
+                    <div className="save-place-wrapper">
+                        <div className="save-place-label">Save Place</div>
+                        <Tooltip 
+                            title="Save Place" 
+                            placement="right" 
+                            size="small"
+                        >
+                            <div
+                                className={`toggle-btn ${isPlaceSaved ? 'active' : ''}`}
+                                onClick={handleToggle}
+                            >
+                                <div className="toggle-label"></div>
+                            </div>
+                        </Tooltip>
+                    </div>
+                </div>
+                <Button
+                  type="primary"
+                  onClick={() => handleRouting(place.position)}
+                  className="button routing-button mt-3" // added margin-top for some spacing
+                  size="small"
+                  style={{ backgroundColor: "#45656C", color: "#FFFFFF" }}
+                >
+                  {isRoutingOn ? "Remove Route" : "Show Route"}
+                </Button>
 
-                  </div>
                 </Card.Body>
               </Card>
             </div>

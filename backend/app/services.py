@@ -305,25 +305,23 @@ def get_saved_places(request):
     if request.method == 'POST':
         data = json.loads(request.body)
         username = data.get('username')
+        print("username is: ", username)
         if username:
             try:
                 user = User.objects.get(username=username)
-                saved_places = SavedPlace.objects.filter(username=user).values()
+                saved_places = SavedPlace.objects.filter(username=user).values('saved_place', 'venue_id')
                 saved_places_list = []
-
                 for saved_place in saved_places:
                     venue_id = saved_place['venue_id']  
                     venue = Venue.objects.get(venue_id=venue_id)
 
                     saved_place_data = {
                         'saved_place': saved_place['saved_place'],
-                        'venue_id': saved_place['venue_id'],
                         'venue_address': venue.venue_address,
                         'longitude': venue.longitude,
                         'latitude': venue.latitude,
                         'opening_hours': venue.opening_hours
                     }
-
                     saved_places_list.append(saved_place_data)
 
                 return JsonResponse({'saved_places': saved_places_list})

@@ -67,7 +67,7 @@ const handleUpdateClick = () => {
   };
 
   return (
-<section class="user-profile-container" style={{ backgroundColor: "#2C3639", color: "#DCD7C9" }}>
+<section className="user-profile-container" style={{ backgroundColor: "#2C3639", color: "#DCD7C9" }}>
 
 
       <div className="row" style={{ backgroundColor: "#2C3639", color: "#DCD7C9" }}>
