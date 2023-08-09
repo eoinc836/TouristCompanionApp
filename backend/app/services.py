@@ -9,6 +9,7 @@ from .utils import is_forecast_available, find_zone, is_in_manhattan, top_attrac
 import time, environ, requests
 import json
 from django.http import HttpResponseNotFound, JsonResponse
+from django.db.models import Q 
 
 env = environ.Env()
 environ.Env.read_env("../backend/.env")
@@ -361,4 +362,27 @@ def get_venue_by_name(request):
         return HttpResponseNotFound('Venue not found')
     
 
+@csrf_exempt
+def reset_password(request):
+    if request.method == 'POST':
+        data = json.loads(request.body)
+        email = data.get('email')
+        username = data.get('username')
+        new_password = data.get('new_password')
 
+        try:
+            user = User.objects.filter(Q(email=email) & Q(username=username)).first()
+            print("user is: ", user)
+
+            if user:
+                print("I'm here")
+                user.set_password(new_password)
+                user.save()
+                return JsonResponse({'message': 'Password reset successfully'})
+            else:
+                return JsonResponse({'error': 'Username does not exist'})
+
+        except User.DoesNotExist:
+            return JsonResponse({'error': 'User not found'})
+
+    return JsonResponse({'error': 'Invalid request method'})

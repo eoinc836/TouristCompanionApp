@@ -9,8 +9,14 @@ import { Link, useNavigate } from "react-router-dom";
 
 const Login = () => {
   var accessToken = " ";
+  const [rememberMe, setRememberMe] = useState(false);
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
+
+  const handleRememberChange = (e) => {
+    setRememberMe(e.target.checked);
+  };
+
 
   const onFinish = async (values) => {
     setLoading(true);
@@ -31,6 +37,11 @@ const Login = () => {
       accessToken = response.data.access_token;
       sessionStorage.setItem('accessToken', accessToken);
       sessionStorage.setItem('username', values.username);
+      if (rememberMe) {
+        localStorage.setItem('rememberedUsername', values.username);
+      } else {
+        localStorage.removeItem('rememberedUsername');
+      }
       navigate(`/home?loggedIn=${!!accessToken}`);
       window.location.reload();
     } catch (error) {
@@ -82,15 +93,19 @@ const Login = () => {
             />
           </Form.Item>
           <Form.Item>
-            <Form.Item name="remember" valuePropName="checked" noStyle>
-              <Checkbox style={{ color: "#DCD7C9", fontSize: "18px" }}>
-                Remember me
-              </Checkbox>
-            </Form.Item>
+        <Form.Item name="remember" valuePropName="checked" noStyle>
+          <Checkbox
+            style={{ color: "#DCD7C9", fontSize: "18px" }}
+            onChange={handleRememberChange}
+            checked={rememberMe}
+          >
+            Remember me
+          </Checkbox>
+        </Form.Item>
 
-            <a className="login-form-forgot" href="" style={{ fontSize: "18px" }}>
-              Forgot password
-            </a>
+            <span className="login-form-forgot" style={{ fontSize: "18px" }}>
+              <a href="/forgotpassword" style={{ color: "#DCD7C9", textDecoration: "None", fontSize: "18px" }}>Forgot password</a>
+            </span>
           </Form.Item>
 
           <Form.Item>
@@ -109,7 +124,7 @@ const Login = () => {
             </Button>
 
             <span className="login-form-or" style={{ color: "#DCD7C9", fontSize: "20px" }}>
-              Or <Link to="/register" style={{ color: "#DCD7C9", fontSize: "18px" }}>register now!</Link>
+              Or <Link to="/register" style={{ color: "#DCD7C9", textDecoration: "None", fontSize: "18px" }}>register now!</Link>
             </span>
           </Form.Item>
 

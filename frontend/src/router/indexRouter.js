@@ -5,6 +5,7 @@ import Login from "../view/Login/Login";
 import Map from '../view/Map/Map';
 import Register from '../view/Register/Register';
 import TopAttractions from '../view/TopAttractions/TopAttractions';
+import ForgotPassword from '../view/ForgotPassword/Forgotpassword';
 
 
 
@@ -22,6 +23,7 @@ const Routes = [
   { path: "/map", element: <Map /> },
   { path: "/register", element: <Register />},
   { path: "/topattractions", element: <TopAttractions /> },
+  { path: "/forgotpassword", element: <ForgotPassword /> },
   
 ];
 
