@@ -45,7 +45,7 @@ const TopAttractions = () => (
             </div>
             <div className="col-md-6 mb-4">
             <div className="section">
-    <h2>Things to Know Before Traveling</h2>
+    <h2>Things to Know Before Traveling to NYC</h2>
     <ul className="custom-list">
     <li>Up to 800 languages are spoken in New York City, making it the most linguistically diverse city in the world.</li>
     <li>Pedestrians have the right of way at crosswalks, even if there is no traffic signal. Drivers are legally required to yield to pedestrians crossing the street.</li>
@@ -56,6 +56,9 @@ const TopAttractions = () => (
     <li>It is illegal to drink alcoholic beverages in public places, such as streets, parks, and subways. </li>
     <li>New York has the largest US national park outside of Alaska.</li>
     <li>Jaywalking, crossing the street outside designated crosswalks or against traffic signals, is illegal in New York City. Always use marked crosswalks and obey traffic signals for your safety.</li>
+    <li>If you're aiming to explore numerous attractions in NYC while also saving money, exploring options like the NYC Sightseeing Pass, NYC CityPASS, and GoCity PASS might be beneficial.</li>
+    <li>Finding Bathrooms Can Be Difficult if You’re Not a Customer</li>
+    <li>Use Bank ATMs</li>
     </ul>
   </div>
             </div>
@@ -127,7 +130,7 @@ const TopAttractions = () => (
                     </div>
                     <div className="card-body">
                         <p className="card-text">
-                        Times Square's nickname also known as "The Crossroads of the World." Famous for its colorful neon billboards, Broadway theaters, and lively ambiance, it's a significant business crossroads and entertainment area. Every New Year's Eve, Times Square hosts the ball drop.
+                        Times Square's nickname also known as "The Crossroads of the World." Famous for its colorful neon billboards, Broadway theaters, and lively ambiance, it's a significant business crossroads and entertainment area.
 
                         </p>
                     </div>

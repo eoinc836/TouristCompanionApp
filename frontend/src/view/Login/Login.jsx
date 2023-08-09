@@ -32,6 +32,7 @@ const Login = () => {
       sessionStorage.setItem('accessToken', accessToken);
       sessionStorage.setItem('username', values.username);
       navigate(`/home?loggedIn=${!!accessToken}`);
+      window.location.reload();
     } catch (error) {
       console.error('Login Error:', error);
     } finally {
