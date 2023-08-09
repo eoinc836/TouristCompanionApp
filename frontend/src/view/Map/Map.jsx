@@ -74,7 +74,7 @@ const BusyLegend = () => {
       className="busy-legend"
       style={{
         position: "absolute",
-        top: "180px", // Change this value to 110px to move the legend 100px lower
+        top: "187px", // Change this value to 110px to move the legend 100px lower
         left: "10px",
         backgroundColor: "rgba(255, 255, 255, 0.8)",
         padding: "15px",
@@ -2037,6 +2037,28 @@ const [loading, setLoading] = useState(false);
                )}
              </div>
           }
+            <MenuItem
+                      icon={
+                        <Tooltip
+                          title={menuCollapse ? "Weather Forecast" : ""}
+                          placement="right"
+                        >
+                         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-brightness-high" viewBox="0 0 16 16">
+                           <path d="M8 11a3 3 0 1 1 0-6 3 3 0 0 1 0 6zm0 1a4 4 0 1 0 0-8 4 4 0 0 0 0 8zM8 0a.5.5 0 0 1 .5.5v2a.5.5 0 0 1-1 0v-2A.5.5 0 0 1 8 0zm0 13a.5.5 0 0 1 .5.5v2a.5.5 0 0 1-1 0v-2A.5.5 0 0 1 8 13zm8-5a.5.5 0 0 1-.5.5h-2a.5.5 0 0 1 0-1h2a.5.5 0 0 1 .5.5zM3 8a.5.5 0 0 1-.5.5h-2a.5.5 0 0 1 0-1h2A.5.5 0 0 1 3 8zm10.657-5.657a.5.5 0 0 1 0 .707l-1.414 1.415a.5.5 0 1 1-.707-.708l1.414-1.414a.5.5 0 0 1 .707 0zm-9.193 9.193a.5.5 0 0 1 0 .707L3.05 13.657a.5.5 0 0 1-.707-.707l1.414-1.414a.5.5 0 0 1 .707 0zm9.193 2.121a.5.5 0 0 1-.707 0l-1.414-1.414a.5.5 0 0 1 .707-.707l1.414 1.414a.5.5 0 0 1 0 .707zM4.464 4.465a.5.5 0 0 1-.707 0L2.343 3.05a.5.5 0 1 1 .707-.707l1.414 1.414a.5.5 0 0 1 0 .708z"/>
+                         </svg>
+                        </Tooltip>
+                      }
+                      style={{ backgroundColor: "#2b3345" }}
+
+                    >
+                     <WeatherForecast onWeatherDataReceived={handleWeatherDataReceived} />
+                                               {weatherDataFromAPI && (
+                                                 <div>
+                                                   <table>
+                                                   </table>
+                                                 </div>
+                                               )}
+                    </MenuItem>
           </Menu>
       </Sidebar>
     </div>
@@ -2102,11 +2124,50 @@ const [loading, setLoading] = useState(false);
               )}
             </div>
           )}
+           <div
+                      style={{
+                        position: "absolute",
+                        top: "10px",
+                        right: "249px",
+                      }}
+                    >
+                      <Switch
+                      size="small"
+                        style={{
+                          width: "150px", //2x wider
+                          height: "35px" //2x taller
+                        }}
+                        checkedChildren={<div style={{ fontSize: "12px" }}>Manhattan Zones</div>} //increased font size
+                        unCheckedChildren={<div style={{ fontSize: "12px" }}>Basic Map</div>} //increased font size
+                        onChange={handlePredictionToggle}
+                        checked={showPrediction}
+                      />
+                    </div>
+                    <>
+                      <Switch
+                        checked={showLegend}
+                        onChange={(checked) => setShowLegend(checked)}
+                        style={{
+                          position: "absolute",
+
+                          top: "8px",
+                          right: "68px",
+                          fontFamily: "Arial, sans-serif",
+
+                          color: "#333",
+                          width: "150px", // 2x wider
+                          height: "35px", // 2x taller
+                          fontSize: "12px",
+                        }}
+                        checkedChildren={<div style={{ fontSize: "12px" }}>Legend</div>}
+                        unCheckedChildren={<div style={{ fontSize: "12px" }}>Legend</div>}
+                      ></Switch>
+
           <div
             style={{
               position: "absolute",
               top: "55px",
-              right: "100px",
+              right: "249px",
             }}
           >
            <Switch
@@ -2125,8 +2186,8 @@ const [loading, setLoading] = useState(false);
           <div
             style={{
               position: "absolute",
-              top: "145px",
-              right: "100px",
+              top: "56px",
+              right: "68px",
             }}
           >
             <Switch
@@ -2142,29 +2203,39 @@ const [loading, setLoading] = useState(false);
             />
             </div>
 
-     {loading && (
-            <div
-              style={{
-                position: "absolute",
-                top: 0,
-                left: 0,
-                width: "100%",
-                height: "100%",
-                backgroundColor: "rgba(255, 255, 255, 0.7)",
-                display: "flex",
-                justifyContent: "center",
-                alignItems: "center",
-                zIndex: 1000,
-              }}
-            >
-              <Spin size="large" />
-            </div>
-          )}
-          <WeatherForecast onWeatherDataReceived={handleWeatherDataReceived} />
-          {weatherDataFromAPI && (
-            <div>
-              <table>
-              </table>
+      {loading && (
+          <div
+            style={{
+              position: "absolute",
+              top: 0,
+              left: 0,
+              width: "100%",
+              height: "100%",
+              backgroundColor: "#e6dcdc",
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "center",
+              zIndex: 1000,
+            }}
+          >
+            <div className="box">
+              <div className="cat">
+                <div className="cat__body"></div>
+                <div className="cat__body"></div>
+                <div className="cat__tail"></div>
+                <div className="cat__head"></div>
+              </div>
+
+      <blockquote className="info">
+
+      </blockquote>
+
+      <div className="intro">
+        Cat Loading
+         <small>Meow</small>
+      </div>
+    </div>
+
             </div>
           )}
           {showSavedPlaces && savedPlaces.map(({ position, title, id, address, opening_hours, rating, busyness }) => (
@@ -2218,63 +2289,25 @@ const [loading, setLoading] = useState(false);
               onMouseOut={handleMarkerMouseOut}
             />
           ))}
-          <div
-            style={{
-              position: "absolute",
-              top: "10px",
-              right: "100px",
-            }}
-          >
-            <Switch
-            size="small"
-              style={{
-                width: "150px", //2x wider
-                height: "35px" //2x taller
-              }}
-              checkedChildren={<div style={{ fontSize: "12px" }}>Manhattan Zones</div>} //increased font size
-              unCheckedChildren={<div style={{ fontSize: "12px" }}>Basic Map</div>} //increased font size
-              onChange={handlePredictionToggle}
-              checked={showPrediction}
-            />
-          </div>
-          <>
-            <Switch
-              checked={showLegend}
-              onChange={(checked) => setShowLegend(checked)}
-              style={{
-                position: "absolute",
-
-                top: "100px",
-                right: "100px",
-                fontFamily: "Arial, sans-serif",
-
-                color: "#333",
-                width: "150px", // 2x wider
-                height: "35px", // 2x taller
-                fontSize: "12px",
-              }}
-              checkedChildren={<div style={{ fontSize: "12px" }}>Legend</div>}
-              unCheckedChildren={<div style={{ fontSize: "12px" }}>Legend</div>}
-            ></Switch>
 
             {showLegend && (
               <>
                 <BusyLegend />
-                <Card
-                  style={{
-                    position: "absolute",
-                    top: "330px", // Change this value to 110px to move the legend 100px lower
-                    bottom: "230px", // This leaves 10px space at the bottom
-                    left: "10px",
-                    backgroundColor: "rgba(255, 255, 255, 0.8)",
-                    maxWidth: "200px", // adjust this value as per your requirement
-                    padding: "15px",
-                    borderRadius: "8px",
-                    color: "#333",
-                    boxShadow: "0px 0px 10px rgba(0, 0, 0, 0.2)",
-                    border: "1px solid rgba(0, 0, 0, 0.1)",
-                    fontFamily: '"Arial", sans-serif',
-                  }}
+               <Card
+                              style={{
+                                position: "absolute",
+                                top: "457px", // Change this value to 110px to move the legend 100px lower
+                                left: "10px",
+                                backgroundColor: "rgba(255, 255, 255, 0.8)",
+                                padding: "15px",
+                                borderRadius: "8px",
+                                color: "#333",
+                                boxShadow: "0px 0px 10px rgba(0, 0, 0, 0.2)",
+                                border: "1px solid rgba(0, 0, 0, 0.1)",
+                                fontFamily: "Arial, sans-serif",
+                                height: "18vh",
+                              }}
+
                 >
                   <h3
                     style={{ marginBottom: "15px", fontWeight: "bold", fontSize: "18px" }}
@@ -2327,32 +2360,35 @@ const [loading, setLoading] = useState(false);
      direction="right"
      width={600}
      disableOverlay={false}
-     style={{ overflow: 'auto' }}
+     style={{ overflow: 'auto', backgroundColor: "#2b3345",
+                                  color: "#DCD7C9",width: "380px",
+                                                       height: "100vh"}}
    >
      {selectedMarker && !bestTimeUsed ? (
-     <Card style={{ width: "100%", height: "1000px" }} className="m-4">
+     <Card style={{ width: "100%", height: "1000px" , backgroundColor: "#2b3345",
+                                                                                      color: "#DCD7C9"}} className="m-4">
        <Card.Header>
          <Card.Title
-           style={{ backgroundColor: "white", fontSize: "16px", fontWeight: "bold" }}
+           style={{  fontSize: "16px", fontWeight: "bold",  color: "#DCD7C9" }}
          >
            {selectedMarker.title}
          </Card.Title>
        </Card.Header>
-       <Card.Body>
-         <Card.Text style={{ fontStyle: "italic" }}>
+       <Card.Body >
+         <Card.Text style={{ fontStyle: "italic", color: "#DCD7C9" }}>
          <span>Rating: {selectedMarker.rating}</span>
            <div className="rating ml-2" style={{ color: "yellow" }}>
            <Rate disabled allowHalf value={selectedMarker.rating} />
            </div>
          </Card.Text>
 
-         <Card.Text style={{ fontStyle: "italic" }}>
+         <Card.Text style={{ fontStyle: "italic", color: "#DCD7C9" }}>
          Opening Hours: {selectedMarker.opening_hours}
          </Card.Text>
-         <Card.Text style={{ fontStyle: "italic" }}>
+         <Card.Text style={{ fontStyle: "italic", color: "#DCD7C9" }}>
          Address: {selectedMarker.address}
          </Card.Text>
-         <Card.Text style={{ fontStyle: "italic" }}>
+         <Card.Text style={{ fontStyle: "italic", color: "#DCD7C9" }}>
          Busyness:   
          </Card.Text>
          <div className="form-check form-switch">
@@ -2373,16 +2409,17 @@ const [loading, setLoading] = useState(false);
      </Card>
 
      ) : selectedMarker && bestTimeUsed ? (
-      <Card style={{ width: '100%', height: '1000px' }} className="m-4">
-        <Card.Header>
-          <Card.Title
-            style={{ backgroundColor: 'white', fontSize: '16px', fontWeight: 'bold' }}
+     <Card style={{ width: "100%", height: "1000px" , backgroundColor: "#2b3345",
+                                                                                           color: "#DCD7C9"}} className="m-4">
+            <Card.Header>
+              <Card.Title
+                style={{  fontSize: "16px", fontWeight: "bold",  color: "#DCD7C9" }}
           >
             {drawerTitle}
           </Card.Title>
         </Card.Header>
         <Card.Body>
-          <Card.Text style={{ fontStyle: 'italic' }}>
+          <Card.Text style={{ fontStyle: 'italic' , color: "#DCD7C9" }}>
             {drawerRating 
               ? <>Rating: {drawerRating}
             <span className="rating ml-2" style={{ color: 'yellow' }}>
@@ -2392,9 +2429,9 @@ const [loading, setLoading] = useState(false);
               : 'No Rating Available'
             }
           </Card.Text>
-          <Card.Text style={{ fontStyle: 'italic' }}>Opening Hours: {drawerOpening}</Card.Text>
-          <Card.Text style={{ fontStyle: 'italic' }}>Address: {drawerAddress}</Card.Text>
-          <Card.Text style={{ fontStyle: 'italic' }}>Busyness: {}</Card.Text>
+          <Card.Text style={{ fontStyle: 'italic' , color: "#DCD7C9" }}>Opening Hours: {drawerOpening}</Card.Text>
+          <Card.Text style={{ fontStyle: 'italic', color: "#DCD7C9"  }}>Address: {drawerAddress}</Card.Text>
+          <Card.Text style={{ fontStyle: 'italic', color: "#DCD7C9"  }}>Busyness: {}</Card.Text>
 
           <WeeklyChart data={weeklyChartData}></WeeklyChart>
               <br></br>
@@ -2423,16 +2460,17 @@ const [loading, setLoading] = useState(false);
          {isSearchButtonClicked &&
            searchedPlaces.map((place) => (
             <div key={place.placeId} className="searched-place">
-              <Card style={{ width: '100%', height: '1000px' }} className="m-4">
-                <Card.Header>
-                  <Card.Title
-                    style={{ backgroundColor: 'white', fontSize: '16px', fontWeight: 'bold' }}
+            <Card style={{ width: "100%", height: "1000px" , backgroundColor: "#2b3345",
+                                                                                                  color: "#DCD7C9"}} className="m-4">
+                   <Card.Header>
+                     <Card.Title
+                       style={{  fontSize: "16px", fontWeight: "bold",  color: "#DCD7C9" }}
                   >
                     {place.title}
                   </Card.Title>
                 </Card.Header>
                 <Card.Body>
-                  <Card.Text style={{ fontStyle: 'italic' }}>
+                  <Card.Text style={{ fontStyle: 'italic' , color: "#DCD7C9" }}>
                   {place.rating 
                     ? <>Rating: {place.rating}
                     <span className="rating ml-2" style={{ color: 'yellow' }}>
@@ -2442,13 +2480,13 @@ const [loading, setLoading] = useState(false);
                     : 'No Rating Available'
                   }
                   </Card.Text>
-                  <Card.Text style={{ fontStyle: 'italic' }}>
+                  <Card.Text style={{ fontStyle: 'italic' , color: "#DCD7C9" }}>
                     Opening Hours: {place.openingHours}
                   </Card.Text>
-                  <Card.Text style={{ fontStyle: 'italic' }}>
+                  <Card.Text style={{ fontStyle: 'italic', color: "#DCD7C9"  }}>
                     Address: {place.address}
                   </Card.Text>
-                  <Card.Text style={{ fontStyle: 'italic' }}>
+                  <Card.Text style={{ fontStyle: 'italic', color: "#DCD7C9"  }}>
                     Busyness: {place.busyness}
                   </Card.Text>
                   <div className="form-check form-switch">

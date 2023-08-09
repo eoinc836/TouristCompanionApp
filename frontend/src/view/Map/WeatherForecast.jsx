@@ -155,11 +155,11 @@ const WeatherForecast = ({ onWeatherDataReceived }) => {
   );
 
   return (
-    <div className="weather-forecast">
-      <Popover content={popoverContent} trigger="click" destroyTooltipOnHide>
-        <span className="weather-popover-button">Weather Forecast</span>
-      </Popover>
-    </div>
+   <div className="weather-forecast">
+         <Popover content={popoverContent} trigger="click" placement="bottom" arrowPointAtCenter>
+           <span className="weather-popover-button">Weather Forecast</span>
+         </Popover>
+       </div>
   );
 };
 

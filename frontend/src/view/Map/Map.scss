@@ -60,16 +60,16 @@
 }
 
 .weather-forecast {
-  position: absolute;
-  background-color: lightyellow;
-  width: 200px;
-  left:10PX;
-  top:96%;
+
+ background-color: #2b3345;
+  width: 150px;
+  left:56PX;
+  top:29%;
   border-radius: 20px; /* Add border-radius to make the box rounded */
   z-index: 1;
   overflow: hidden;
-   color: orange;
-   text-align: center/* Hide any content that overflows, ensuring rounded corners */
+  color: #DCD7C9;
+   text-align: left/* Hide any content that overflows, ensuring rounded corners */
 }
 
 .weather-table {
