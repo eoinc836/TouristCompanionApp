@@ -9,11 +9,11 @@ import { ThemeProvider } from "styled-components";
 
 const lightTheme = {
   background: '#DCD7C9',
-  text: '#000000',
+  //text: '#000000',
 };
 
 const darkTheme = {
-  background: '#000000',
+  background: '#00001a',
   text: '#ffffff',
 };
 

@@ -55,7 +55,7 @@ export default function Header({ darkMode, onToggle }) {
         <div className="col d-flex logo-container-style align-items-center ">
           <Link
             to="/" style={{ fontFamily: 'Federal Service, sans-serif' }}
-            className="d-inline-flex justify-content-center align-items-center link-body-emphasis text-decoration-none fs-26 font-weight-bold logo-style"
+            className="d-inline-flex justify-content-center align-items-center text-decoration-none fs-26 font-weight-bold logo-style"
           >
             <img
               src={require("../assets/logo.jpg")}
@@ -97,6 +97,17 @@ export default function Header({ darkMode, onToggle }) {
               <>
               </>
             )}
+            <li className="nav-item">
+              <NavLink
+                exact
+                to="/topattractions"
+                className="nav-link link-secondary"
+                activeClassName="active"
+                style={{ color: "#45656C", fontSize: "20px" }}
+              >
+                Highlights
+              </NavLink>
+            </li>
           </ul>
         </nav>
 
@@ -106,7 +117,7 @@ export default function Header({ darkMode, onToggle }) {
             {/* Display "Login" or "Logout" button based on the login status */}
             {isLoggedInBool ? (
               <>
-                <span style={{ marginRight: "20px", fontFamily: "Times New Roman", fontSize: "20px", color: "grey" }}>Hello {username}</span>
+                <span style={{ marginRight: "20px", fontFamily: "Segoe UI", fontSize: "20px", color: "grey" }}>Hello {username}</span>
                 <button onClick={handleLogout} className="btn btn-primary me-2">
                   Logout
                 </button>
