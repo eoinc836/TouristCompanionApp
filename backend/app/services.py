@@ -251,8 +251,9 @@ def get_venues(request):
 
         response = requests.request("GET", url)
         data = response.json()
+        print("data is: ", data)
 
-        if data["candidates"] and data["candidates"][0]['rating']:
+        if data["candidates"] and "rating" in data["candidates"][0]:
             venue_details[venue["venue_id"]]["rating"] = data["candidates"][0]['rating']
         else:
             venue_details[venue["venue_id"]]["rating"] = None
