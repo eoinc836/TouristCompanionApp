@@ -18,9 +18,9 @@ const Home = () => {
         <div className="carousel-inner">
           <div className="carousel-item active">
             <img
-              src={require("../../assets/manhattan2.jpg")}
+              src={require("../../assets/manhattan5.jpg")}
               className="d-block mx-auto"
-              style={{ maxWidth: "100%", maxHeight: "100%" }}
+              style={{ maxWidth: "100%", maxHeight: "40%" }}
               alt="Slide 1"
             />
             <div className="container">
@@ -42,7 +42,7 @@ const Home = () => {
             <img
               src={require("../../assets/manhattan1.jpg")}
               className="d-block mx-auto"
-              style={{ maxWidth: "100%", maxHeight: "100%" }}
+              style={{ maxWidth: "100%", maxHeight: "40%" }}
               alt="Slide 2"
             />
             <div className="container">
@@ -54,9 +54,9 @@ const Home = () => {
           </div>
           <div className="carousel-item">
             <img
-              src={require("../../assets/manhattan3.jpg")}
+              src={require("../../assets/manhattan6.jpg")}
               className="d-block mx-auto"
-              style={{ maxWidth: "100%", maxHeight: "100%" }}
+              style={{ maxWidth: "100%", maxHeight: "40%" }}
               alt="Slide 3"
             />
             <div className="container">
