@@ -17,6 +17,7 @@ import Drawer from 'react-modern-drawer'
 //import styles 
 import 'react-modern-drawer/dist/index.css'
 import WeatherForecast from './WeatherForecast';
+import { forEach } from "vega-lite/build/src/encoding";
 
 const { Option } = Select;
 const { Panel } = Collapse;
@@ -418,6 +419,8 @@ const [showLegend, setShowLegend] = useState(false);
   const[nearBy,setNearBy] = useState(false)
   const[user_lat,setUser_lat] = useState(false)
   const[user_lng,setUser_lng] = useState(false)
+  const[returnedVenues,setReturnedVenues] = useState({})
+
 
   //BestTime Graph Variables
   const [mondayLevel, setMondayLevel] = useState(null);
@@ -932,6 +935,42 @@ const onFinish = async (values) => {
     // Check if the place is in the saved places
     const isSaved = savedPlaces.some(savedPlace => savedPlace.title === marker.title);
     setIsPlaceSaved(isSaved);
+
+    //Apply data to graphs if filter marker
+    if(Object.keys(returnedVenues).includes(marker.title)){
+      setMondayLevel(calculateAverageNonZeroBusyness(returnedVenues[marker.title][0]))
+      setTuesdayLevel(calculateAverageNonZeroBusyness(returnedVenues[marker.title][1]))
+      setWednesdayLevel(calculateAverageNonZeroBusyness(returnedVenues[marker.title][2]))
+      setThursdayLevel(calculateAverageNonZeroBusyness(returnedVenues[marker.title][3]))
+      setFridayLevel(calculateAverageNonZeroBusyness(returnedVenues[marker.title][4]))
+      setSaturdayLevel(calculateAverageNonZeroBusyness(returnedVenues[marker.title][5]))
+      setSundayLevel(calculateAverageNonZeroBusyness(returnedVenues[marker.title][6]))
+
+      let selectedDay = (getDay(date.format('DD'), date.format('MM'), date.format('YYYY')))
+
+
+      let selectedDayBusyness;
+          
+          if (selectedDay === 'Monday') {
+            selectedDayBusyness = returnedVenues[marker.title][0];
+          } else if (selectedDay === 'Tuesday') {
+            selectedDayBusyness = returnedVenues[marker.title][1];
+          } else if (selectedDay=== 'Wednesday') {
+            selectedDayBusyness = returnedVenues[marker.title][2];
+          } else if (selectedDay === 'Thursday') {
+            selectedDayBusyness = returnedVenues[marker.title][3];
+          } else if (selectedDay === 'Friday') {
+            selectedDayBusyness = returnedVenues[marker.title][4];
+          } else if (selectedDay === 'Saturday') {
+            selectedDayBusyness = returnedVenues[marker.title][5];
+          } else if (selectedDay === 'Sunday') {
+            selectedDayBusyness = returnedVenues[marker.title][6];
+          }
+          
+          setDailyBusyness(selectedDayBusyness)
+    }
+
+    console.log(Object.keys(returnedVenues),marker.title)
   };
 
   const handleMarkerClose = () => {
@@ -1270,140 +1309,115 @@ const onFinish = async (values) => {
     return timeVar
   }
 const [loading, setLoading] = useState(false);
-  const handleSearch = () => {
-   setLoading(true);
-    setShouldRemoveMarkers(true);
-    setIsSearchButtonClicked(true);
-    setSelectedMarker(null);
-    let venue_ids;
-    const searchResults = []
-    if (!date)
-    {console.log('Please Select A Date and Time')}
+const handleSearch = () => {
+  setShouldRemoveMarkers(true);
+  setIsSearchButtonClicked(true);
+  setSelectedMarker(null);
+  let venue_ids;
+  const searchResults = [];
 
-    else if(nearBy && userMarkers[0]){
-      let userlat = userMarkers[0].lat
-      let userlng = userMarkers[0].lng
-      console.log(userlat,userlng)
-      //CODE TO IMPLEMENT NEAR BY SEARCH
-      let queryParamsFilter;
-      queryParamsFilter =`?busyness=${busynessLevels}&attraction_type=${attractionTypes}&time=${translateTimes(date.format(format))}&day=${getDay(date.format('DD'),date.format('MM'),date.format('YYYY'))}&latitude=${userlat}&longitude=${userlng}`;
-      axios.get(`http://localhost:8000/api/get_venues${queryParamsFilter}`)
+  if (!date) {
+    console.log('Please Select A Date and Time');
+    setLoading(false);
+    return; // If no date is selected, terminate the function here
+  }
+
+  const fetchData = (queryParamsFilter) => {
+    setLoading(true);
+    axios.get(`http://localhost:8000/api/get_venues${queryParamsFilter}`)
       .then((response) => {
-        
-        console.log(response.data)
-
-         // Set loading to false when the request is completed
-            setLoading(false);
-        venue_ids =  Object.keys(response.data)
+        console.log(response.data);
+        venue_ids = Object.keys(response.data);
         venue_ids.forEach(id => {
-          
-          let resultMarker = {position: {lat:response.data[id].latitude, lng:response.data[id].longitude}, title: response.data[id].venue_name, address: response.data[id].venue_address, opening_hours: response.data[id].venue_opening_hours, rating: response.data[id].rating, isBestTime: true}
-        searchResults.push(resultMarker)
-  
+          let resultMarker = {
+            position: {
+              lat: response.data[id].latitude, 
+              lng: response.data[id].longitude
+            },
+            title: response.data[id].venue_name,
+            address: response.data[id].venue_address,
+            opening_hours: response.data[id].venue_opening_hours,
+            rating: response.data[id].rating,
+            isBestTime: true
+          };
+          searchResults.push(resultMarker);
         });
-  
+
+        let busyness_dict = {}
+        setReturnedVenues({})
+        venue_ids.forEach(id => {
+          let dict_name = response.data[id].venue_name
+          busyness_dict[dict_name] = [response.data[id].busyness_monday,response.data[id].busyness_tuesday,response.data[id].busyness_wednesday,response.data[id].busyness_thursday,response.data[id].busyness_friday,response.data[id].busyness_saturday,response.data[id].busyness_sunday]
+        })
+        setReturnedVenues(busyness_dict)
+        
         setSearchedPlaces(searchResults);
-        setNewMarkers(
-        searchResults.map((marker) => ({
+        setNewMarkers(searchResults.map((marker) => ({
           ...marker,
           icon: {
             url: "https://maps.google.com/mapfiles/ms/icons/yellow-dot.png",
             scaledSize: new window.google.maps.Size(40, 40),
-          },
-
-        }))
-      );       
+          }
+        })));
       })
       .catch((error) => {
         console.error('Error fetching data:', error);
-         setLoading(false);
+      })
+      .finally(() => {
+        setLoading(false); // Ensuring to stop the loading animation regardless of success or error
       });
-    }
-
-    else if(nearBy && !userMarkers[0]){
-      console.log('Please set user location to use NearBy Search')
-    }
-    else if (date && !nearBy){
-    let queryParamsFilter;
-    queryParamsFilter =`?busyness=${busynessLevels}&attraction_type=${attractionTypes}&time=${translateTimes(date.format(format))}&day=${getDay(date.format('DD'),date.format('MM'),date.format('YYYY'))}`;
-    axios.get(`http://localhost:8000/api/get_venues${queryParamsFilter}`)
-    .then((response) => {
-      
-      console.log(response.data)
-      venue_ids =  Object.keys(response.data)
-      venue_ids.forEach(id => {
-        
-        let resultMarker = {position: {lat:response.data[id].latitude, lng:response.data[id].longitude}, title: response.data[id].venue_name, address: response.data[id].venue_address, opening_hours: response.data[id].venue_opening_hours, rating: response.data[id].rating, isBestTime: true}
-      searchResults.push(resultMarker)
-
-      });
-
-      setSearchedPlaces(searchResults);
-      setNewMarkers(
-      searchResults.map((marker) => ({
-        ...marker,
-        icon: {
-          url: "https://maps.google.com/mapfiles/ms/icons/yellow-dot.png",
-          scaledSize: new window.google.maps.Size(40, 40),
-        },
-      }))
-
-    );
-
-      
-    })
-    .catch((error) => {
-      console.error('Error fetching data:', error);
-    });
   }
 
-    // Add this part
-    let searchResult = searchResults.find(
-      (place) =>
-        place.title.toLowerCase() === destination.toLowerCase()
-    );
+  if (nearBy && userMarkers[0]) {
+    let userlat = userMarkers[0].lat;
+    let userlng = userMarkers[0].lng;
+    console.log(userlat, userlng);
+    let queryParamsFilter = `?busyness=${busynessLevels}&attraction_type=${attractionTypes}&time=${translateTimes(date.format(format))}&day=${getDay(date.format('DD'), date.format('MM'), date.format('YYYY'))}&latitude=${userlat}&longitude=${userlng}`;
+    fetchData(queryParamsFilter);
+    
+  } else if (nearBy && !userMarkers[0]) {
+    console.log('Please set user location to use NearBy Search');
+    setLoading(false);
+  } else {
+    let queryParamsFilter = `?busyness=${busynessLevels}&attraction_type=${attractionTypes}&time=${translateTimes(date.format(format))}&day=${getDay(date.format('DD'), date.format('MM'), date.format('YYYY'))}`;
+    fetchData(queryParamsFilter);
 
-    if (searchResult) {
-      // If the place was found in the predefined places, add a marker for it
-      setNewMarkers([
-        {
-          ...searchResult,
+  }
+
+  let searchResult = searchResults.find(
+    (place) => place.title.toLowerCase() === destination.toLowerCase()
+  );
+
+  if (searchResult) {
+    setNewMarkers([{
+      ...searchResult,
+      icon: {
+        url: "https://maps.google.com/mapfiles/ms/icons/yellow-dot.png",
+        scaledSize: new window.google.maps.Size(40, 40),
+      }
+    }]);
+  } else {
+    const service = new window.google.maps.places.PlacesService(mapRef.current);
+    service.findPlaceFromQuery({
+      query: destination,
+      fields: ["name", "geometry"],
+    }, (results, status) => {
+      if (status === window.google.maps.places.PlacesServiceStatus.OK) {
+        setNewMarkers([{
+          position: {
+            lat: results[0].geometry.location.lat(),
+            lng: results[0].geometry.location.lng(),
+          },
+          title: results[0].name,
           icon: {
             url: "https://maps.google.com/mapfiles/ms/icons/yellow-dot.png",
             scaledSize: new window.google.maps.Size(40, 40),
           },
-        },
-      ]);
-    } else {
-      // If the place was not found in the predefined places, use the Places API to search for it
-      const service = new window.google.maps.places.PlacesService(mapRef.current);
-
-      service.findPlaceFromQuery(
-        {
-          query: destination,
-          fields: ["name", "geometry"],
-        },
-        (results, status) => {
-          if (status === window.google.maps.places.PlacesServiceStatus.OK) {
-   
-            setNewMarkers([
-              {
-                position: {
-                  lat: results[0].geometry.location.lat(),
-                  lng: results[0].geometry.location.lng(),
-                },
-                title: results[0].name,
-                icon: {
-                  url: "https://maps.google.com/mapfiles/ms/icons/yellow-dot.png",
-                  scaledSize: new window.google.maps.Size(40, 40),
-                },
-              },
-            ]);
-          }
-        }
-      );
-    }
-  };
+        }]);
+      }
+    });
+  }
+};
 
 
   const autocompleteRef = useRef(null);
