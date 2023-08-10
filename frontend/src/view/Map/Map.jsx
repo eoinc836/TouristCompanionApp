@@ -1385,7 +1385,7 @@ const handleSearch = () => {
   const searchResults = [];
 
   if (!date) {
-    console.log('Please Select A Date and Time');
+    alert('Please Select A Date and Time');
     setLoading(false);
     return; // If no date is selected, terminate the function here
   }
@@ -1395,6 +1395,9 @@ const handleSearch = () => {
     axios.get(`http://localhost:8000/api/get_venues${queryParamsFilter}`)
       .then((response) => {
         console.log(response.data);
+        if(Object.keys(response.data).length === 0){
+          alert('No venues found')
+        }
         venue_ids = Object.keys(response.data);
         venue_ids.forEach(id => {
           let resultMarker = {
@@ -1444,7 +1447,7 @@ const handleSearch = () => {
     fetchData(queryParamsFilter);
     
   } else if (nearBy && !userMarkers[0]) {
-    console.log('Please set user location to use NearBy Search');
+    alert('Please set user location to use NearBy Search');
     setLoading(false);
   } else {
     let queryParamsFilter = `?busyness=${busynessLevels}&attraction_type=${attractionTypes}&time=${translateTimes(date.format(format))}&day=${getDay(date.format('DD'), date.format('MM'), date.format('YYYY'))}`;
