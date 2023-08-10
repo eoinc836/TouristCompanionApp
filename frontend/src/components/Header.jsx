@@ -70,7 +70,7 @@ export default function Header({ darkMode, onToggle }) {
         </div>
         <nav className="col d-flex align-items-center justify-content-center nav-style">
           <ul className="nav justify-content-center">
-            <li className="nav-item">
+            <li className="nav-item" id="home">
               <NavLink
                 to="/"
                 className="nav-link link-secondary"
@@ -82,7 +82,7 @@ export default function Header({ darkMode, onToggle }) {
               </NavLink>
             </li>
             {isLoggedInBool ? (
-              <li className="nav-item">
+              <li className="nav-item" id="map">
                 <NavLink
                   to={"/map?darkMode=" + darkMode}
                   className="nav-link"
@@ -96,7 +96,7 @@ export default function Header({ darkMode, onToggle }) {
               <>
               </>
             )}
-            <li className="nav-item">
+            <li className="nav-item" id="highlights">
               <NavLink
                 to="/topattractions"
                 className="nav-link link-secondary"

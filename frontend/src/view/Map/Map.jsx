@@ -18,6 +18,9 @@ import Drawer from 'react-modern-drawer'
 import 'react-modern-drawer/dist/index.css'
 import WeatherForecast from './WeatherForecast';
 import { forEach } from "vega-lite/build/src/encoding";
+import Joyride from "react-joyride";
+import steps from "../../components/Tour";
+
 
 const { Option } = Select;
 const { Panel } = Collapse;
@@ -75,7 +78,7 @@ const BusyLegend = () => {
       className="busy-legend"
       style={{
         position: "absolute",
-        top: "187px", // Change this value to 110px to move the legend 100px lower
+        top: "75px", // Change this value to 110px to move the legend 100px lower
         left: "10px",
         backgroundColor: "rgba(255, 255, 255, 0.8)",
         padding: "15px",
@@ -341,7 +344,7 @@ const Map = () => {
   const [placeDetails, setPlaceDetails] = useState([]);
   const [currentWeather, setCurrentWeather] = useState(null);
   const [predictions, setPredictions] = useState({});
-  const [showPrediction, setShowPrediction] = useState(false);
+  const [showPrediction, setShowPrediction] = useState(true);
   const [isMarkerHovered, setMarkerHovered] = useState(null);
   const [userMarkers, setUserMarkers] = useState([]);
   const [shouldRemoveMarkers, setShouldRemoveMarkers] = useState(false);
@@ -357,13 +360,13 @@ const Map = () => {
     longitude: null,
   });
   const [selectedTime, setSelectedTime] = useState(null);
-  const [date, setDate] = useState(false);
+  const [date, setDate] = useState(moment());
   const [jsonData, setJsonData] = useState(null);
   const [searchedPlaces, setSearchedPlaces] = useState([]);
   const [isSearchButtonClicked, setIsSearchButtonClicked] = useState(false);
   const [isMapClicked, setIsMapClicked] = useState(false);
   const [newMarkers, setNewMarkers] = useState([]);
-const [menuCollapse, setMenuCollapse] = useState(false);
+const [menuCollapse, setMenuCollapse] = useState(true);
 
 //create a custom function that will change menucollapse state from false to true and true to false
 const menuIconClick = () => {
@@ -404,7 +407,7 @@ const [destinationKnown, setDestinationKnown] = useState(null);
 const handleDestinationKnownChange = (event) => {
   setDestinationKnown(event.target.value);
 };
-const [showLegend, setShowLegend] = useState(false);
+const [showLegend, setShowLegend] = useState(true);
 
   // BestTime Drawer Variables
   const [drawerTitle, setDrawerTitle] = useState(null)
@@ -1646,6 +1649,19 @@ const handleSearch = () => {
   // React Components Logic 
   return (
    <div className="map-container">
+    <Joyride steps={steps} continuous={true} showProgress={true} showSkipButton={true} styles={{
+            options: {
+              arrowColor: '#fff',
+              backgroundColor: '#fff',
+              beaconSize: 36,
+              overlayColor: 'rgba(0, 0, 0, 0.5)',
+              primaryColor: '#f04',
+              spotlightShadow: '0 0 15px rgba(0, 0, 0, 0.5)',
+              textColor: '#333',
+              width: undefined,
+              zIndex: 100,
+            }
+          }}/>
     <div className="sidebar-map-container">
 
       <Sidebar collapsed={menuCollapse}>
@@ -1693,6 +1709,7 @@ const handleSearch = () => {
 
         <Menu iconShape="square" style={{ backgroundColor: "#2b3345" }}>
           <MenuItem
+            id="zone-busyness"
             icon={
               <Tooltip
                 title={menuCollapse ? "Busyness Prediction" : ""}
@@ -1713,7 +1730,7 @@ const handleSearch = () => {
             style={{ backgroundColor: "#2b3345" }}
             onClick={handleBusynessPredictionClick}
           >
-            Busyness Prediction
+            Zone Busyness
           </MenuItem>
          {showTimeConfig && !showAnotherContent && !menuCollapse && (
                                 <Card
@@ -1725,9 +1742,9 @@ const handleSearch = () => {
                                     borderRadius: "10px",
                                   }}
                                 >
-                                  <h5>Welcome to BusyBudyy</h5>
-                                  <p>Want to have a city adventure in Manhattan?</p>
+                                  <h5>Welcome to BusyBuddy!</h5>
                                   <p> Let's get started!</p>
+                                  <p>Visualize Manhattan's busyness by choosing a time & date.</p>
                                   <Button
                                     type="primary"
                                     onClick={handleNextForBusynessPrediction}
@@ -1759,6 +1776,7 @@ const handleSearch = () => {
           )}
           <MenuItem
             active={true}
+            id="besttime"
             icon={
               <Tooltip title={menuCollapse ? "BestTime" : ""} placement="right">
                 <svg
@@ -1778,7 +1796,7 @@ const handleSearch = () => {
             }
             onClick={handleBestTimeClick}
           >
-            BestTime
+            Venue Search
           </MenuItem>
 
           {showBestTime && !showOtherContent && !menuCollapse && (
@@ -1791,8 +1809,8 @@ const handleSearch = () => {
                 borderRadius: "10px",
               }}
             >
-               <h5>Oops! Manhattan is really busy!</h5>
-                         <p>Don't worry, you'll always find an exciting place to visit.</p>
+              <h5>Manhattan has everything you need!</h5>
+              <p>Click here to start exploring the city!</p>
               <Button
                 type="primary"
                 onClick={handleNextForBestTime}
@@ -1816,16 +1834,16 @@ const handleSearch = () => {
                   borderRadius: "10px",
                 }}
               >
-                <p>Got any places in mind?</p>
+                <p>Got any place in mind?</p>
                 <Radio.Group
                   value={destinationKnown}
                   onChange={handleDestinationKnownChange}
                 >
                   <Radio style={{ color: "#99A3C1" }} value={true}>
-                    Yes, I can't wait to go there!
+                    Yes, and I cannot wait to go there!
                   </Radio>
                   <Radio style={{ color: "#99A3C1" }} value={false}>
-                    Not yet, but I'm excited to explore!
+                    Not yet, but I am excited to explore!
                   </Radio>
                 </Radio.Group>
               </Card>
@@ -1944,6 +1962,7 @@ const handleSearch = () => {
           )}
 
           <MenuItem
+            id="itinerary"
             icon={
               <Tooltip
                 title={menuCollapse ? "Itinerary Route" : ""}
@@ -2129,6 +2148,7 @@ const handleSearch = () => {
              </div>
           }
             <MenuItem
+            id="weather"
                       icon={
                         <Tooltip
                           title={menuCollapse ? "Weather Forecast" : ""}
@@ -2197,7 +2217,7 @@ const handleSearch = () => {
               <div style={{ marginBottom: "15px", fontWeight: "bold", fontSize: "18px" }}>
                 Current Weather
               </div>
-              <p><strong>Temperature:</strong> {currentWeather.main.temp}Ã‚Â°C</p>
+              <p><strong>Temperature:</strong> {currentWeather.main.temp}Ãƒâ€šÃ‚Â°C</p>
               <p><strong>Condition:</strong> {currentWeather.weather[0].description}</p>
               {currentWeather.weather[0].icon && (
                 <div style={{ display: "flex", alignItems: "center", marginBottom: "10px" }}>
@@ -2224,19 +2244,21 @@ const handleSearch = () => {
                       }}
                     >
                       <Switch
+                      id="zone-toggle"
                       size="small"
                         style={{
                           width: "150px", //2x wider
                           height: "35px" //2x taller
                         }}
-                        checkedChildren={<div style={{ fontSize: "12px" }}>Manhattan Zones</div>} //increased font size
-                        unCheckedChildren={<div style={{ fontSize: "12px" }}>Basic Map</div>} //increased font size
+                        checkedChildren={<div style={{ fontSize: "12px" }}>Hide Zones</div>} //increased font size
+                        unCheckedChildren={<div style={{ fontSize: "12px" }}>Show Zones</div>} //increased font size
                         onChange={handlePredictionToggle}
                         checked={showPrediction}
                       />
                     </div>
                     <>
                       <Switch
+                        id="legend-toggle"
                         checked={showLegend}
                         onChange={(checked) => setShowLegend(checked)}
                         style={{
@@ -2251,8 +2273,8 @@ const handleSearch = () => {
                           height: "35px", // 2x taller
                           fontSize: "12px",
                         }}
-                        checkedChildren={<div style={{ fontSize: "12px" }}>Legend</div>}
-                        unCheckedChildren={<div style={{ fontSize: "12px" }}>Legend</div>}
+                        checkedChildren={<div style={{ fontSize: "12px" }}>Hide Legends</div>}
+                        unCheckedChildren={<div style={{ fontSize: "12px" }}>Show Legends</div>}
                       ></Switch>
 
           <div
@@ -2263,13 +2285,14 @@ const handleSearch = () => {
             }}
           >
            <Switch
+             id="top20-toggle"
              size="small"
              style={{
                width: "150px", // 2x wider
                height: "35px", // 2x taller
              }}
-             checkedChildren={<div style={{ fontSize: "12px" }}>Top 20 Attractions</div>}
-             unCheckedChildren={<div style={{ fontSize: "12px" }}>Top 20 Attractions</div>}
+             checkedChildren={<div style={{ fontSize: "12px" }}>Hide Top 20 Attractions</div>}
+             unCheckedChildren={<div style={{ fontSize: "12px" }}>Show Top 20 Attractions</div>}
              onChange={handleTourStopsToggle}
              checked={showTourStops}
            />
@@ -2283,13 +2306,14 @@ const handleSearch = () => {
             }}
           >
             <Switch
+              id="savedplace-toggle"
               size="small"
               style={{
                 width: "150px",
                 height: "35px",
               }}
-              checkedChildren={<div style={{ fontSize: "12px" }}>Saved Places</div>}
-              unCheckedChildren={<div style={{ fontSize: "12px" }}>Saved Places</div>}
+              checkedChildren={<div style={{ fontSize: "12px" }}>Hide Saved Places</div>}
+              unCheckedChildren={<div style={{ fontSize: "12px" }}>Show Saved Places</div>}
               onChange={handleSavedPlacesToggle}
               checked={showSavedPlaces}
             />
@@ -2410,7 +2434,7 @@ const handleSearch = () => {
                <Card
                               style={{
                                 position: "absolute",
-                                top: "457px", // Change this value to 110px to move the legend 100px lower
+                                top: "350px", // Change this value to 110px to move the legend 100px lower
                                 left: "10px",
                                 backgroundColor: "rgba(255, 255, 255, 0.8)",
                                 padding: "15px",
@@ -2419,41 +2443,41 @@ const handleSearch = () => {
                                 boxShadow: "0px 0px 10px rgba(0, 0, 0, 0.2)",
                                 border: "1px solid rgba(0, 0, 0, 0.1)",
                                 fontFamily: "Arial, sans-serif",
-                                height: "18vh",
+                                height: "30%",
                               }}
 
                 >
                   <h3
                     style={{ marginBottom: "15px", fontWeight: "bold", fontSize: "18px" }}
                   >
-                    Marker Legend
+                    Marker Legends
                   </h3>
                   <div
                     className="marker-legend"
                     style={{ display: "flex", flexDirection: "column", gap: "10px" }}
                   >
-                    <div style={{ display: "flex", alignItems: "center", gap: "5px" }}>
+                    <div id="user-marker" style={{ display: "flex", alignItems: "center", gap: "5px" }}>
                       <img
                         src="https://maps.google.com/mapfiles/ms/icons/purple-dot.png"
                         alt="User Marker"
                       />
-                      User Marker
+                      User
                     </div>
-                    <div style={{ display: "flex", alignItems: "center", gap: "5px" }}>
+                    <div id="top20-marker" style={{ display: "flex", alignItems: "center", gap: "5px" }}>
                       <img
                         src="https://maps.google.com/mapfiles/ms/icons/red-dot.png"
                         alt="Top 20 Attractions Marker"
                       />
                       Top 20 Attractions
                     </div>
-                    <div style={{ display: "flex", alignItems: "center", gap: "5px" }}>
+                    <div id="besttime-marker" style={{ display: "flex", alignItems: "center", gap: "5px" }}>
                       <img
                         src="https://maps.google.com/mapfiles/ms/icons/yellow-dot.png"
                         alt="Best Time Marker"
                       />
-                      Best Time Marker
+                      Searched Venues
                     </div>
-                    <div style={{ display: "flex", alignItems: "center", gap: "5px" }}>
+                    <div id="savedplace-marker" style={{ display: "flex", alignItems: "center", gap: "5px" }}>
                       <img
                         src="http://maps.google.com/mapfiles/kml/pal3/icon63.png"
                         alt="Saved Place Marker"
@@ -2506,7 +2530,7 @@ const handleSearch = () => {
          Busyness:   
          </Card.Text>
          <div className="form-check form-switch">
-           <Tooltip title="Saved Place" placement="right" size="small">
+           <Tooltip title="Saved Place" placement="right" size="small" id="savedplace">
              <input
                className="form-check-input"
                type="checkbox"
