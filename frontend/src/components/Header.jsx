@@ -131,7 +131,9 @@ export default function Header({ darkMode, onToggle }) {
               </>
             )}
           </div>
+           <div style={{ fontFamily: 'HappHearty, sans-serif', textAlign: 'center' }}>
           <ToggleSwitch darkMode={darkMode} onToggle={onToggle} />
+        </div>
         </div>
       </div>
       {/*} </header> */}

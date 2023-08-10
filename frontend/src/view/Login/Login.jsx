@@ -114,10 +114,12 @@ const Login = () => {
               htmlType="submit"
               className="login-form-button"
               style={{
-                fontSize: "18px",
+                fontSize: "22px",
                 border: "2px solid #DCD7C9",
                 backgroundColor: "#627B82",
                 borderRadius: "8px",
+                height:'52px',
+                fontWeight: "bold",
               }}
             >
               Log in

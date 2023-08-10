@@ -4,6 +4,10 @@ header {
     font-family: "Federal Service";
     src: url("./federalservice.ttf") format("truetype");
   }
+   @font-face {
+     font-family: 'HappHearty';
+     src: url('./happhearty-happhearty-svg-400.otf') format('opentype');
+   }
     background-color: #DCD7C9;
   }
   .custom-buttons {
@@ -19,7 +23,11 @@ header {
       }
     }
   }
-  
+.gReFIG {
+  margin-right: 20px;
+  margin-left: 10px;
+}
+
   /* header.scss */
   
   /* Style for the navigation links */
@@ -97,6 +105,11 @@ header {
          padding-top: 5px;
          padding-bottom: 15px;
       }
+  }
+  .custom-buttons {
+  @media screen and (max-width: 546px) {
+      justify-content: center;
+  }
   }
   
   /* header.scss */

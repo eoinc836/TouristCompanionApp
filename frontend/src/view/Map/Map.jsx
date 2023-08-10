@@ -1,7 +1,7 @@
 import React, { useEffect, useState, useRef, useCallback } from "react";
 import { GoogleMap, Marker, InfoWindow, DirectionsService, DirectionsRenderer } from "@react-google-maps/api";
 import { useLoadScript } from "@react-google-maps/api";
-import { Switch, Button,Rate,  TreeSelect, DatePicker, Select, Tooltip, Radio, Checkbox, Spin, Form, TimePicker, Collapse, List, Space, Typography, Timeline} from "antd";
+import { Tabs, Switch, Button,Rate,  TreeSelect, DatePicker, Select, Tooltip, Radio, Checkbox, Spin, Form, TimePicker, Collapse, List, Space, Typography, Timeline} from "antd";
 import { Sidebar, Menu, MenuItem, SubMenu } from 'react-pro-sidebar';
 import axios from "axios";
 import { Card } from "react-bootstrap";
@@ -23,7 +23,7 @@ import steps from "../../components/Tour";
 
 
 const { Option } = Select;
-const { Panel } = Collapse;
+const { TabPane } = Tabs;
 const { Text, Title } = Typography;
 
 function calculateAverageNonZeroBusyness(arr) {
@@ -1662,7 +1662,7 @@ const handleSearch = () => {
               zIndex: 100,
             }
           }}/>
-    <div className="sidebar-map-container">
+    <div className="sidebar-map-container" style={{overflow:'scroll'}}>
 
       <Sidebar collapsed={menuCollapse}>
         <div
@@ -1988,20 +1988,7 @@ const handleSearch = () => {
           </MenuItem>
           {showItinerary && !menuCollapse &&
   <div style={{ backgroundColor: "#2b3345", padding: "10px", borderRadius: "5px" }}>
-    <Button 
-      onClick={() => setIsItineraryView(!isItineraryView)}
-      style={{ 
-        marginBottom: '10px', 
-        marginLeft: '40px',
-        backgroundColor: "#45656C", 
-        color: "#FFFFFF",
-        display: "flex", 
-        justifyContent: "center"
-      }}
-    >
-      {isItineraryView ? "Go to Itinerary Form" : "Go to Itinerary"}
-    </Button>
-    
+
     {isItineraryView ? (
       <div
         title="Your Itinerary"
@@ -2011,10 +1998,10 @@ const handleSearch = () => {
         open={visible}
         height={500}
       >
-              <Collapse accordion style={{ borderRadius: '5px', backgroundColor: "#61677A" }}>
+             <Tabs defaultActiveKey="0" onChange={onChange}>
                 {Object.keys(itineraryByDay).map((date) => (
-                  <Panel header={date} key={date} style={{ backgroundColor: "#B7B7B7" }}>
-                             <div style={{ backgroundColor: "#D8D9DA", borderRadius: "5px", boxShadow: "0 0 5px rgba(0, 0, 0, 0.3)", padding: "15px" }}>
+                  <TabPane tab={date} key={date} >
+                             <div >
                              <Timeline>
                 {itineraryByDay[date].reduce((acc, item, index) => {
                   let startTime;
@@ -2038,31 +2025,62 @@ const handleSearch = () => {
                   return acc;
                 }, []).map((item, index, itemsArray) => (
                   <Timeline.Item key={index}>
-                    <div>
+                   <Card style={{ backgroundColor: "#414756", boxShadow: "0 0 5px rgba(0, 0, 0, 0.3)" }}>
+                                <div style={{ color: '#DCD7C9', textAlign: 'center' }}>
+
                       <b>{`${item.startTime} - ${item.endTime}`}</b> <br />
                     </div>
-                    <div>
-                      Visit {item.title}
+                    <div style={{ color: '#DCD7C9', textAlign: 'center' }}>
+                      {item.title}
                     </div>
-                    <div>
-                      Hours: {item.openingHours}
-                    </div>
-                    {/* Check if it's not the last item before showing the walking time */}
-                    {index !== itemsArray.length - 1 && (
-                      <div>
-                        Estimated walking time: {item.travelTime}
-                      </div>
-                    )}
+
+
+                     </Card>
+
+                      {index !== itemsArray.length - 1 && (
+                               <div style={{ color: '#DCD7C9', textAlign: 'center', marginTop: '10px' }}>
+                                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 50 50"  width="24" height="24">
+                                                          <path
+                                                            style={{
+                                                             fill: "#DCD7C9",
+                                                              lineHeight: "normal",
+                                                              WebkitTextIndent: "0",
+                                                              textIndent: "0",
+                                                              WebkitTextAlign: "start",
+                                                              textAlign: "start",
+                                                              WebkitTextDecorationLine: "none",
+                                                              textDecorationLine: "none",
+                                                              WebkitTextDecorationStyle: "solid",
+                                                              textDecorationStyle: "solid",
+                                                              WebkitTextDecorationColor: "#000",
+                                                              textDecorationColor: "#000",
+                                                              WebkitTextTransform: "none",
+                                                              textTransform: "none",
+                                                              blockProgression: "tb",
+                                                              isolation: "auto",
+                                                              mixBlendMode: "normal",
+                                                            }}
+                                                            d="M27 2c-2.75 0-5 2.25-5 5s2.25 5 5 5 5-2.25 5-5-2.25-5-5-5zm0 2c1.669 0 3 1.331 3 3s-1.331 3-3 3-3-1.331-3-3 1.331-3 3-3zm-3.79 9a5.007 5.007 0 00-3.04 1.03l-5.951 4.558a1 1 0 00-.104.092 2.992 2.992 0 00-.82 1.047 1 1 0 00-.08.152l-2.836 6.69c-.23.42-.379.907-.379 1.431 0 1.645 1.355 3 3 3 1.318 0 2.436-.87 2.832-2.06l2.451-5.499 1.139-.834-1.235 5.069a1 1 0 00-.03.26c-.077.324-.152.658-.155 1.039a1 1 0 00-.006.027l-1.426 7.152-4.619 5.957.086-.095A3.5 3.5 0 0011 44.5c0 1.921 1.579 3.5 3.5 3.5 1.089 0 1.994-.573 2.633-1.355a1 1 0 00.314-.268l4.971-6.477a1 1 0 00.172-.345l.947-3.479 1.682 1.535 1.834 7.368c.033.258.097.52.195.779l.012.043a1 1 0 00.46.623c.632.905 1.595 1.576 2.78 1.576 1.921 0 3.5-1.579 3.5-3.5 0-.487-.12-.934-.293-1.34l-2.008-8.05a1 1 0 00-.168-.356l-4.44-5.955 1.247-4.586 1.525 1.693a1 1 0 00.469.293l5.566 1.59.024.01a1 1 0 00.371.066c.23.06.452.135.707.135 1.645 0 3-1.355 3-3 0-1.081-.657-1.931-1.521-2.457a1 1 0 00-.54-.39l-4.656-1.368-3.799-5.383a1 1 0 00-.095-.117 4.494 4.494 0 00-3.67-2.256c-.036-.009-.108-.013-.168-.02l-.014-.001c-.013 0-.024-.008-.037-.008-.178 0-.107.001-.014.002L25.475 13H23.21zm0 2h2.265l.007.002c.229 0 .234-.002.018-.002 1.393 0 2.5 1.107 2.5 2.5 0 .216-.041.443-.115.697a1 1 0 00-.037.201l-2.813 10.346a1 1 0 00.162.86l4.61 6.183 1.959 7.858a1 1 0 00.074.199A1.484 1.484 0 0130.5 46a1.485 1.485 0 01-1.354-.867 1 1 0 00-.015-.03v-.001a1.479 1.479 0 01-.111-.46 1 1 0 00-.026-.146l-1.908-7.66a1 1 0 00-.297-.498l-5.016-4.576a1 1 0 00-.195-.139 3.007 3.007 0 01-.98-.89l.039.306a1 1 0 00-.143-.4c-.001-.003-.004-.004-.006-.006a1 1 0 00-.125-.156l.112.11A2.949 2.949 0 0120 29c0-.249.045-.503.123-.787a1 1 0 00.025-.137c.033-.126 1.213-4.627 1.872-7.683a1 1 0 00-1.569-1.018l-3.562 2.61a1 1 0 00-.323.4l-2.56 5.74a1 1 0 00-.05.14A.982.982 0 0113 29c-.565 0-1-.435-1-1 0-.186.053-.356.152-.518a1 1 0 00.069-.134l2.785-6.57-.065.083a1 1 0 00.135-.236.992.992 0 01.336-.426 1 1 0 00.197-.195l-.07.092 5.846-4.477.002-.002A3.01 3.01 0 0123.21 15zm6.497 4.186l2.143 3.037a1 1 0 00.535.382l4.875 1.432a1 1 0 00.064.026A.987.987 0 0138 25a.984.984 0 01-1.352.93 1 1 0 00-.074-.024 1 1 0 00-.002 0 1 1 0 00-.002 0 1 1 0 00-.03-.011 1 1 0 00-.204-.032 1 1 0 00-.004 0 1 1 0 00-.918.502l.346-.695-4.602-1.315-2.195-2.439.744-2.73zm6.625 6.677c-.042-.007-.088-.018-.096-.02h-.004a1 1 0 00-.007 0l.107.02zm-.096-.02l.252.036a1 1 0 00-.252-.035zm-16.879 6.555c.335.353.716.654 1.131.897l1.5 1.37a1 1 0 00-.265.46L20.71 38.84l-4.248 5.535.783.588a1 1 0 00-1.46.293c-.265.448-.731.744-1.286.744-.84 0-1.5-.66-1.5-1.5 0-.423.169-.79.445-1.064a1 1 0 00.086-.098l4.764-6.145a1 1 0 00.191-.416l.871-4.379z"
+                                                            fontFamily="sans-serif"
+                                                            fontWeight="400"
+                                                            overflow="visible"
+                                                          ></path>
+                                                        </svg>
+
+{item.travelTime}
+                               </div>
+                             )}
+
                   </Timeline.Item>
                 ))}
               </Timeline>
-
-                             </div>
-      
-      
-                  </Panel>
+               </div>
+                </TabPane>
                 ))}
-              </Collapse>
+              </Tabs>
+
+
+
             </div>
                ) : (
                  <Form
@@ -2145,6 +2163,20 @@ const handleSearch = () => {
                    </Form.Item>
                  </Form>
                )}
+               <Button
+                     onClick={() => setIsItineraryView(!isItineraryView)}
+                     style={{
+                       marginBottom: '10px',
+                       marginLeft: '40px',
+                       backgroundColor: "#45656C",
+                       color: "#FFFFFF",
+                       display: "flex",
+                       justifyContent: "center"
+                     }}
+                   >
+                     {isItineraryView ? "Go to Itinerary Form" : "Go to Itinerary"}
+                   </Button>
+
              </div>
           }
             <MenuItem

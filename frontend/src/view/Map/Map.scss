@@ -5,7 +5,15 @@
   background-color: #2b3345;
   color: #DCD7C9;
 }
-
+.ant-tabs-tab {
+color: #DCD7C9;
+}
+.card {
+    aspect-ratio: unset !important;
+  }
+.anticon {
+color: #DCD7C9;
+}
 .sidebar {
   width: 300px;
   height: calc(100vh - 100px); 
@@ -14,7 +22,7 @@
   box-sizing: border-box;
   background-color: #2b3345;
   color: #DCD7C9;
-  overflow-y: auto; /* Enable vertical scroll when the content overflows the height */
+  overflow-y: auto; 
   transition: width 0.3s;
 }
 
@@ -52,6 +60,10 @@
 
 .table th {
   background-color: #f2f2f2;
+}
+
+.ant-tabs-tab:hover {
+   color: #414756 !important;
 }
 
 .weather-icon {
@@ -384,7 +396,22 @@ color: rgba(175, 143, 143, 1);
     color: inherit;
   }
 
+.sidebar-map-container::-webkit-scrollbar {
+  width: 8px; /* Width of the scrollbar */
+}
 
+.sidebar-map-container::-webkit-scrollbar-track {
+  background: #f1f1f1; /* Background color of the track */
+}
+
+.sidebar-map-container::-webkit-scrollbar-thumb {
+  background: #888; /* Color of the thumb */
+  border-radius: 4px;
+}
+
+.sidebar-map-container::-webkit-scrollbar-thumb:hover {
+  background: #555; /* Color of the thumb on hover */
+}
 @media (max-width: 760px) {
   .map-container {
   display: block;
