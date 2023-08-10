@@ -341,7 +341,7 @@ const Map = () => {
 
   const [selectedMarker, setSelectedMarker] = useState(null);
   const [drawerVisible, setDrawerVisible] = useState(false);
-  const [placeDetails, setPlaceDetails] = useState([]);
+
   const [currentWeather, setCurrentWeather] = useState(null);
   const [predictions, setPredictions] = useState({});
   const [showPrediction, setShowPrediction] = useState(true);
@@ -920,24 +920,88 @@ const onFinish = async (values) => {
     console.log(busynessLevels,attractionTypes)
   }, [busynessLevels,attractionTypes,date]);
 
- 
-  const handleMarkerClick = (marker) => {
-    console.log(marker);
-    setSelectedMarker(marker);
-    setDrawerVisible(true);
-  
-    // Use existing data from the marker instead of making a new API call
-    if (marker.isBestTime) {
-      setDrawerTitle(marker.title)
-      setDrawerAddress(marker.address)
-      setDrawerOpening(marker.opening_hours) 
-      setDrawerRating(marker.rating)
-      setBestTimeUsed(true)
+  const fetchRating = async (venue_name, venue_address) => {
+    const response = await fetch(`http://localhost:8000/api/fetch_rating?venue_name=${venue_name}&venue_address=${venue_address}`);
+    if (response.ok) {
+        const data = await response.json();
+        return data.rating;
+    } else {
+        return null;
     }
-  
-    // Check if the place is in the saved places
-    const isSaved = savedPlaces.some(savedPlace => savedPlace.title === marker.title);
-    setIsPlaceSaved(isSaved);
+};
+
+const [placePhoto, setPlacePhoto] = useState(null);
+
+const fetchPlacePhoto = async (lat, lng) => {
+  console.log(`Calling API with lat: ${lat}, lng: ${lng}`);
+  const response = await fetch(`http://localhost:8000/api/get_place_photo?lat=${lat}&lng=${lng}`);
+  if (response.ok) {
+      const data = await response.json();
+      console.log("API Response:", data);
+      return data.photo_url;
+  } else {
+      console.error("API Error:", response.statusText);
+      return null;
+  }
+};
+
+// State for place description
+const [placeDetails, setPlaceDetails] = useState({});
+
+const fetchPlaceDescription = async (lat, lng) => {
+  console.log(`Calling API with lat: ${lat}, lng: ${lng}`);
+  const response = await fetch(`http://localhost:8000/api/get_place_description?lat=${lat}&lng=${lng}`);
+  if (response.ok) {
+      const data = await response.json();
+      console.log("API Response:", data);
+      return data; // Return structured data
+  } else {
+      console.error("API Error:", response.statusText);
+      return null;
+  }
+};
+
+
+
+const handleMarkerClick = async (marker) => {
+  setSelectedMarker(marker);
+  setDrawerVisible(true);
+
+  if (marker.isBestTime) {
+      setDrawerTitle(marker.title);
+      setDrawerAddress(marker.address);
+      setDrawerOpening(marker.opening_hours); 
+      setDrawerRating(marker.rating);
+      setBestTimeUsed(true);
+  }
+
+  // Check if the place is in the saved places
+  const isSaved = savedPlaces.some(savedPlace => savedPlace.saved_place === marker.title);
+  setIsPlaceSaved(isSaved);
+
+
+if (isSaved) {
+      const updatedRating = await fetchRating(marker.title, marker.address);
+      if (updatedRating !== null) {
+          marker.rating = updatedRating;
+          setDrawerRating(updatedRating);
+      }
+  }
+  // Fetch the place photo
+  const photoUrl = await fetchPlacePhoto(marker.position.lat, marker.position.lng);
+  if (photoUrl !== null) {
+      setPlacePhoto(photoUrl);
+  } else {
+      setPlacePhoto(null); // Handle cases where no photo is found
+  }
+
+  // Fetch the place description (add this part)
+  const details = await fetchPlaceDescription(marker.position.lat, marker.position.lng);
+  if (details) {
+      setPlaceDetails(details);
+  } else {
+      setPlaceDetails({overview: 'No description available.'}); 
+  }
 
     //Apply data to graphs if filter marker
     if(Object.keys(returnedVenues).includes(marker.title)){
@@ -978,6 +1042,8 @@ const onFinish = async (values) => {
   const handleMarkerClose = () => {
     setSelectedMarker(null);
     setDrawerVisible(false);
+    setPlacePhoto(null);
+    setPlaceDetails(null);
   };
 
   const handleMarkerMouseOver = (marker) => {
@@ -1419,6 +1485,25 @@ const handleSearch = () => {
       }
     });
   }
+};
+
+const [isReviewExpanded, setIsReviewExpanded] = useState(false);
+const [isFlipped, setIsFlipped] = useState(false);
+const [flipType, setFlipType] = useState(''); // 'review' or 'busyness'
+
+const handleFlipToReview = () => {
+  setIsFlipped(true);
+  setFlipType('review');
+};
+
+const handleFlipToBusyness = () => {
+  setIsFlipped(true);
+  setFlipType('busyness');
+};
+
+const handleBackToDetails = () => {
+  setIsFlipped(false);
+  setFlipType('');
 };
 
 
@@ -2108,7 +2193,7 @@ const handleSearch = () => {
                                     </Form.Item>
                                     <Form.Item
                       name="startEndHour"
-                      label="Visiting Hours"
+                      label="Preferred Visiting Hours"
                       rules={[{ required: true, message: 'Please select the start and end hour!' }]}
                   >
                   <TimePicker.RangePicker
@@ -2128,12 +2213,12 @@ const handleSearch = () => {
                    
                    <Form.Item
                      name="markers"
-                     label="Markers for Itinerary"
+                     label="Itinerary Stops"
                      rules={[{ required: true, message: 'Please select markers for your itinerary!' }]}
                    >
                      <Select placeholder="Select a type">
-                       <Option value="top20">Top 20</Option>
-                       <Option value="saved">Saved</Option>
+                       <Option value="top20">Top 20 Attractions</Option>
+                       <Option value="saved">Saved Places</Option>
                      </Select>
                    </Form.Item>
                    <Form.Item
@@ -2530,185 +2615,479 @@ const handleSearch = () => {
      direction="right"
      width={600}
      disableOverlay={false}
-     style={{ overflow: 'auto', backgroundColor: "#2b3345",
-                                  color: "#DCD7C9",width: "380px",
-                                                       height: "100vh"}}
+     style={{ overflow: 'auto', backgroundColor: "#2b3345", color: "#DCD7C9", width: "575px", maxHeight: "95vh"}}
    >
      {selectedMarker && !bestTimeUsed ? (
-     <Card style={{ width: "100%", height: "1000px" , backgroundColor: "#2b3345",
-                                                                                      color: "#DCD7C9"}} className="m-4">
-       <Card.Header>
-         <Card.Title
-           style={{  fontSize: "16px", fontWeight: "bold",  color: "#DCD7C9" }}
-         >
-           {selectedMarker.title}
-         </Card.Title>
-       </Card.Header>
-       <Card.Body >
-         <Card.Text style={{ fontStyle: "italic", color: "#DCD7C9" }}>
-         <span>Rating: {selectedMarker.rating}</span>
-           <div className="rating ml-2" style={{ color: "yellow" }}>
-           <Rate disabled allowHalf value={selectedMarker.rating} />
-           </div>
-         </Card.Text>
+   <Card className={`m-3 card-flip card-flip-container ${isFlipped ? 'is-flipped' : ''}`} style={{ width: "100%", height: "780px", backgroundColor: "#2b3345", color: "#DCD7C9" }}>
 
-         <Card.Text style={{ fontStyle: "italic", color: "#DCD7C9" }}>
-         Opening Hours: {selectedMarker.opening_hours}
-         </Card.Text>
-         <Card.Text style={{ fontStyle: "italic", color: "#DCD7C9" }}>
-         Address: {selectedMarker.address}
-         </Card.Text>
-         <Card.Text style={{ fontStyle: "italic", color: "#DCD7C9" }}>
-         Busyness:   
-         </Card.Text>
-         <div className="form-check form-switch">
-           <Tooltip title="Saved Place" placement="right" size="small" id="savedplace">
-             <input
-               className="form-check-input"
-               type="checkbox"
-               id="toggleSwitch"
-             checked={isPlaceSaved}
-               onChange={handleToggle}
-             />
-             <label className="form-check-label" htmlFor="toggleSwitch">
-               {/* Toggle label */}
-             </label>
-           </Tooltip>
-         </div>
-         <Button
-          type="primary"
-          onClick={() => handleRouting(selectedMarker.position)}
-          className="button routing-button mt-3" // added margin-top for some spacing
-          size="small"
-          style={{ backgroundColor: "#45656C", color: "#FFFFFF" }}
+
+   <div className="card-front">
+       <Card.Header>
+           <Card.Title style={{ fontSize: "16px", fontWeight: "bold", color: "#DCD7C9", textAlign: "center",  backgroundColor: "#2b3345"}}>
+               {selectedMarker.title}
+           </Card.Title>
+       </Card.Header>
+ 
+       {placePhoto && 
+   <img src={placePhoto} alt="Place" style={{ maxWidth: '100%', maxHeight: '300px', objectFit: 'cover', display: 'block', margin: 'auto', marginBottom: '10px' }} />
+}
+ 
+   
+           {placeDetails.overview && 
+               <p style={{ textAlign: "center", fontSize: "14px", maxWidth: '90%', overflowWrap: 'break-word', marginTop: '10px' }}>
+                   {placeDetails.overview}
+               </p>
+           }<div style={{ display: 'flex', flexDirection: 'column' }}>
+      <div style={{ border: '1px solid #ccc', padding: '10px', marginBottom: '10px', borderRadius: '5px', display: 'flex', alignItems: 'center', maxWidth: '90%' }}>
+    <Card.Text style={{ fontSize: '16px', marginRight: '10px', marginTop: '5px', marginBottom: '0', fontStyle: "italic", color: "#DCD7C9" }}>
+        Rating: {selectedMarker.rating}
+    </Card.Text>
+    <div className="rating" style={{ color: "yellow", marginTop: '5px' }}>
+        <Rate disabled allowHalf value={selectedMarker.rating} />
+    </div>
+</div>
+
+
+       
+           <div style={{ border: '1px solid #ccc', padding: '10px', marginBottom: '10px', borderRadius: '5px', maxWidth: '90%' }}>
+               <Card.Text style={{ fontStyle: "italic", color: "#DCD7C9" }}>
+                   Opening Hours: {selectedMarker.opening_hours}
+               </Card.Text>
+           </div>
+       
+           {placeDetails.international_phone_number && (
+               <div style={{ border: '1px solid #ccc', padding: '10px', marginBottom: '10px', borderRadius: '5px', maxWidth: '90%' }}>
+                   <Card.Text style={{ fontStyle: "italic", color: "#DCD7C9" }}>
+                       Phone Number: {placeDetails.international_phone_number}
+                   </Card.Text>
+               </div>
+           )}
+       
+           <div style={{ border: '1px solid #ccc', padding: '10px', marginBottom: '10px', borderRadius: '5px', maxWidth: '90%' }}>
+               <Card.Text style={{ fontStyle: "italic", color: "#DCD7C9" }}>
+                   Address: {selectedMarker.address}
+               </Card.Text>
+           </div>
+       </div>
+       
+           <div style={{ display: 'flex', justifyContent: 'space-between', maxWidth: '90%' }}>
+        <Button
+            type="primary"
+            onClick={() => handleRouting(selectedMarker.position)}
+            className="button routing-button mt-1"
+            size="small"
+            style={{ backgroundColor: "#45656C", color: "#FFFFFF" }}
         >
           {isRoutingOn ? "Remove Route" : "Show Route"}
         </Button>
-
-       </Card.Body>
-     </Card>
-
-     ) : selectedMarker && bestTimeUsed ? (
-     <Card style={{ width: "100%", height: "1000px" , backgroundColor: "#2b3345",
-                                                                                           color: "#DCD7C9"}} className="m-4">
-            <Card.Header>
-              <Card.Title
-                style={{  fontSize: "16px", fontWeight: "bold",  color: "#DCD7C9" }}
-          >
-            {drawerTitle}
-          </Card.Title>
-        </Card.Header>
-        <Card.Body>
-          <Card.Text style={{ fontStyle: 'italic' , color: "#DCD7C9" }}>
-            {drawerRating 
-              ? <>Rating: {drawerRating}
-            <span className="rating ml-2" style={{ color: 'yellow' }}>
-              <Rate disabled allowHalf value={drawerRating} />
-            </span>
-                </>
-              : 'No Rating Available'
-            }
-          </Card.Text>
-          <Card.Text style={{ fontStyle: 'italic' , color: "#DCD7C9" }}>Opening Hours: {drawerOpening}</Card.Text>
-          <Card.Text style={{ fontStyle: 'italic', color: "#DCD7C9"  }}>Address: {drawerAddress}</Card.Text>
-          <Card.Text style={{ fontStyle: 'italic', color: "#DCD7C9"  }}>Busyness: {}</Card.Text>
-
-          <WeeklyChart data={weeklyChartData}></WeeklyChart>
-              <br></br>
-          <DailyChart data={hourlyChartData}></DailyChart>
-          
-          <div className="form-check form-switch">
-          <div>
-          <div>Save Place
-            <Tooltip title="Save Place" placement="right" size="small">
-              <div
-                className={`toggle-btn ${isPlaceSaved ? 'active' : ''}`}
-                onClick={handleToggle}
-              >
-              
-                <div className="toggle-label"></div>
-              </div>
-            </Tooltip>
-          </div>
-            </div>
-          </div>
-          <Button
+        <Button
             type="primary"
-            onClick={() => handleRouting(selectedMarker.position)}
-            className="button routing-button mt-3" // added margin-top for some spacing
+            onClick={handleFlipToReview}
+            className="button review-button mt-1"
             size="small"
             style={{ backgroundColor: "#45656C", color: "#FFFFFF" }}
-          >
-            {isRoutingOn ? "Remove Route" : "Show Route"}
-          </Button>
+            
+        >
+            Show Review
+        </Button>
 
-        </Card.Body>
+        <Button
+        type="primary"
+        onClick={handleFlipToBusyness}
+        className="button busyness-button mt-1"
+        size="small"
+        style={{ backgroundColor: "#45656C", color: "#FFFFFF" }}
+    >
+        Show Busyness
+    </Button>
+
+        <Button
+            type="primary"
+            onClick={handleToggle}
+            className={`button mt-1 ${isPlaceSaved ? "saved-button" : "not-saved-button"}`}
+            size="small"
+            style={{ backgroundColor: isPlaceSaved ? "#6A8EAE" : "#E28F83", color: "#FFFFFF" }}
+        >
+            {isPlaceSaved ? "Unsave" : "Save"}
+        </Button>
+    </div>
+
+      </div>
+
+      {flipType === 'review' && (
+    <div className="card-back">
+      <Card className="inner-card" style={{ backgroundColor: "#2b3345", color: "#DCD7C9", width: "90%", margin: "auto", marginTop: "10px", padding: "10px", display: "flex", flexDirection: "column", justifyContent: "space-between"}}>
+        <Card.Header style={{ borderBottom: "1px solid #DCD7C9", marginBottom: "20px"}}>
+          <Card.Title style={{ fontSize: "22px", fontWeight: "bold", color: "#DCD7C9", textAlign: "center", backgroundColor: "#2b3345"}}>
+            Review 
+          </Card.Title>
+        </Card.Header>
+
+        {placeDetails.relative_time_description && placeDetails.review_text && (
+          <div style={{ display: "flex", flexDirection: "column", alignItems: "center", flexGrow: 1, padding: "5px", overflowY: "auto"}}>
+            <Card.Text style={{ fontSize: "16px", marginBottom: "10px", color: "#DCD7C9", maxWidth: "90%", textAlign: "center" }}>
+              <strong>{placeDetails.relative_time_description}:</strong>
+            </Card.Text>
+            <Card.Text style={{ fontSize: "13.5px", maxWidth: '95%', overflowWrap: 'break-word', color: "#DCD7C9" }}>
+              "{placeDetails.review_text}"
+            </Card.Text>
+          </div>
+        )}
+
+        <Button
+          type="primary"
+          onClick={handleBackToDetails}
+          className="button close-review-button"
+          size="small"
+          style={{ backgroundColor: "#45656C", color: "#FFFFFF", marginTop: "10px", width: "150px" }}
+        >
+          Back to Details
+        </Button>
       </Card>
+    </div>
+  )}
+
+  {flipType === 'busyness' && (
+    <div className="card-back-busyness">
+      <Card className="inner-card" style={{ backgroundColor: "#2b3345", color: "#DCD7C9", width: "90%", margin: "auto", marginTop: "10px", padding: "10px", display: "flex", flexDirection: "column", justifyContent: "space-between" }}>
+        <Card.Header style={{ borderBottom: "1px solid #DCD7C9", marginBottom: "20px"}}>
+          <Card.Title style={{ fontSize: "22px", fontWeight: "bold", color: "#DCD7C9", textAlign: "center", backgroundColor: "#2b3345"}}>
+            Busyness
+          </Card.Title>
+        </Card.Header>
+
+        {/* Placeholder for Busyness content */}
+        <div style={{ flexGrow: 1, padding: "5px", display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+          Content Goes Here
+        </div>
+
+        <Button
+          type="primary"
+          onClick={handleBackToDetails}
+          className="button close-busyness-button"
+          size="small"
+          style={{ backgroundColor: "#45656C", color: "#FFFFFF", marginTop: "10px", width: "150px" }}
+        >
+          Back to Details
+        </Button>
+      </Card>
+    </div>
+  )}
+
+</Card>
+ 
+
+     ) : selectedMarker && bestTimeUsed ? (
+      <Card style={{ width: "100%", height: "780px", backgroundColor: "#2b3345", color: "#DCD7C9" }} className={`m-3 card-flip card-flip-container ${isFlipped ? 'is-flipped' : ''}`}>
+
+      <div className="card-front">
+          <Card.Header>
+              <Card.Title style={{ fontSize: "16px", fontWeight: "bold", color: "#DCD7C9", textAlign: "center", backgroundColor: "#2b3345" }}>
+                  {drawerTitle}
+              </Card.Title>
+          </Card.Header>
+  
+          {placePhoto && 
+   <img src={placePhoto} alt="Place" style={{ maxWidth: '100%', maxHeight: '300px', objectFit: 'cover', display: 'block', margin: 'auto', marginBottom: '10px' }} />
+}
+  
+          {placeDetails.overview &&
+              <p style={{ textAlign: "center", fontSize: "14px", maxWidth: '90%', overflowWrap: 'break-word', marginTop: '10px' }}>
+                  {placeDetails.overview}
+              </p>
+          }
+  
+          <div style={{ display: 'flex', flexDirection: 'column' }}>
+              <div style={{ border: '1px solid #ccc', padding: '10px', marginBottom: '10px', borderRadius: '5px', display: 'flex', alignItems: 'center', maxWidth: '90%' }}>
+                  <Card.Text style={{ fontSize: '16px', marginRight: '10px', marginTop: '5px', marginBottom: '0', fontStyle: "italic", color: "#DCD7C9" }}>
+                      Rating: {drawerRating}
+                  </Card.Text>
+                  <div className="rating" style={{ color: "yellow", marginTop: '5px' }}>
+                      <Rate disabled allowHalf value={drawerRating} />
+                  </div>
+              </div>
+              <div style={{ border: '1px solid #ccc', padding: '10px', marginBottom: '10px', borderRadius: '5px', maxWidth: '90%' }}>
+                    <Card.Text style={{ fontStyle: 'italic', color: "#DCD7C9" }}>Opening Hours: {drawerOpening}</Card.Text></div>
+              {placeDetails.international_phone_number && (
+                  <div style={{ border: '1px solid #ccc', padding: '10px', marginBottom: '10px', borderRadius: '5px', maxWidth: '90%' }}>
+                      <Card.Text style={{ fontStyle: "italic", color: "#DCD7C9" }}>
+                          Phone Number: {placeDetails.international_phone_number}
+                      </Card.Text>
+                  </div>
+              )}
+              <div style={{ border: '1px solid #ccc', padding: '10px', marginBottom: '10px', borderRadius: '5px', maxWidth: '90%' }}>
+                  <Card.Text style={{ fontStyle: "italic", color: "#DCD7C9" }}>
+                      Address: {drawerAddress}
+                  </Card.Text>
+              </div>
+          </div>
+          <div style={{ display: 'flex', justifyContent: 'space-between', maxWidth: '90%' }}>
+        <Button
+            type="primary"
+            onClick={() => handleRouting(selectedMarker.position)}
+            className="button routing-button mt-1"
+            size="small"
+            style={{ backgroundColor: "#45656C", color: "#FFFFFF" }}
+        >
+            {isRoutingOn ? "Remove Route" : "Show Route"}
+        </Button>
+        <Button
+            type="primary"
+            onClick={handleFlipToReview}
+            className="button review-button mt-1"
+            size="small"
+            style={{ backgroundColor: "#45656C", color: "#FFFFFF" }}
+            
+        >
+            Show Review
+        </Button>
+
+        <Button
+        type="primary"
+        onClick={handleFlipToBusyness}
+        className="button busyness-button mt-1"
+        size="small"
+        style={{ backgroundColor: "#45656C", color: "#FFFFFF" }}
+    >
+        Show Busyness
+    </Button>
+
+        <Button
+            type="primary"
+            onClick={handleToggle}
+            className={`button mt-1 ${isPlaceSaved ? "saved-button" : "not-saved-button"}`}
+            size="small"
+            style={{ backgroundColor: isPlaceSaved ? "#6A8EAE" : "#E28F83", color: "#FFFFFF" }}
+        >
+            {isPlaceSaved ? "Unsave" : "Save"}
+        </Button>
+    </div>
+
+      </div>
+
+      {flipType === 'review' && (
+    <div className="card-back">
+      <Card className="inner-card" style={{ backgroundColor: "#2b3345", color: "#DCD7C9", width: "90%", margin: "auto", marginTop: "10px", padding: "10px", display: "flex", flexDirection: "column", justifyContent: "space-between"}}>
+        <Card.Header style={{ borderBottom: "1px solid #DCD7C9", marginBottom: "20px"}}>
+          <Card.Title style={{ fontSize: "22px", fontWeight: "bold", color: "#DCD7C9", textAlign: "center", backgroundColor: "#2b3345"}}>
+            Review 
+          </Card.Title>
+        </Card.Header>
+
+        {placeDetails.relative_time_description && placeDetails.review_text && (
+          <div style={{ display: "flex", flexDirection: "column", alignItems: "center", flexGrow: 1, padding: "5px", overflowY: "auto"}}>
+            <Card.Text style={{ fontSize: "16px", marginBottom: "10px", color: "#DCD7C9", maxWidth: "90%", textAlign: "center" }}>
+              <strong>{placeDetails.relative_time_description}:</strong>
+            </Card.Text>
+            <Card.Text style={{ fontSize: "13.5px", maxWidth: '95%', overflowWrap: 'break-word', color: "#DCD7C9" }}>
+              "{placeDetails.review_text}"
+            </Card.Text>
+          </div>
+        )}
+
+        <Button
+          type="primary"
+          onClick={handleBackToDetails}
+          className="button close-review-button"
+          size="small"
+          style={{ backgroundColor: "#45656C", color: "#FFFFFF", marginTop: "10px", width: "150px" }}
+        >
+          Back to Details
+        </Button>
+      </Card>
+    </div>
+  )}
+
+  {flipType === 'busyness' && (
+    <div className="card-back-busyness">
+      <Card className="inner-card" style={{ backgroundColor: "#2b3345", color: "#DCD7C9", width: "90%", margin: "auto", marginTop: "10px", padding: "10px", display: "flex", flexDirection: "column", justifyContent: "space-between" }}>
+        <Card.Header style={{ borderBottom: "1px solid #DCD7C9", marginBottom: "20px"}}>
+          <Card.Title style={{ fontSize: "22px", fontWeight: "bold", color: "#DCD7C9", textAlign: "center", backgroundColor: "#2b3345"}}>
+            Busyness
+          </Card.Title>
+        </Card.Header>
+
+        {/* Placeholder for Busyness content */}
+        <div style={{ flexGrow: 1, padding: "5px", display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+        <div style={{ flexGrow: 1, padding: "5px", display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+                    <Card.Text style={{ fontStyle: 'italic', color: "#DCD7C9" }}>Busyness: {}</Card.Text>
+                    <WeeklyChart data={weeklyChartData}></WeeklyChart>
+                    <br></br>
+                    <DailyChart data={hourlyChartData}></DailyChart>
+                </div>
+        </div>
+
+        <Button
+          type="primary"
+          onClick={handleBackToDetails}
+          className="button close-busyness-button"
+          size="small"
+          style={{ backgroundColor: "#45656C", color: "#FFFFFF", marginTop: "10px", width: "150px" }}
+        >
+          Back to Details
+        </Button>
+      </Card>
+    </div>
+  )}
+
+</Card>
+ 
 
      ) : (
        <div>
          {isSearchButtonClicked &&
            searchedPlaces.map((place) => (
-            <div key={place.placeId} className="searched-place">
-            <Card style={{ width: "100%", height: "1000px" , backgroundColor: "#2b3345",
-                                                                                                  color: "#DCD7C9"}} className="m-4">
-                   <Card.Header>
-                     <Card.Title
-                       style={{  fontSize: "16px", fontWeight: "bold",  color: "#DCD7C9" }}
-                  >
-                    {place.title}
-                  </Card.Title>
+            <Card style={{ width: "100%", height: "780px", backgroundColor: "#2b3345", color: "#DCD7C9" }} className={`m-3 card-flip card-flip-container ${isFlipped ? 'is-flipped' : ''}`}>
+
+            <div className="card-front">
+                <Card.Header>
+                    <Card.Title style={{ fontSize: "16px", fontWeight: "bold", color: "#DCD7C9", textAlign: "center", backgroundColor: "#2b3345" }}>
+                        {drawerTitle}
+                    </Card.Title>
                 </Card.Header>
-                <Card.Body>
-                  <Card.Text style={{ fontStyle: 'italic' , color: "#DCD7C9" }}>
-                  {place.rating 
-                    ? <>Rating: {place.rating}
-                    <span className="rating ml-2" style={{ color: 'yellow' }}>
-                      <Rate disabled allowHalf value={place.rating} />
-                    </span>
-                      </>
-                    : 'No Rating Available'
-                  }
-                  </Card.Text>
-                  <Card.Text style={{ fontStyle: 'italic' , color: "#DCD7C9" }}>
-                    Opening Hours: {place.openingHours}
-                  </Card.Text>
-                  <Card.Text style={{ fontStyle: 'italic', color: "#DCD7C9"  }}>
-                    Address: {place.address}
-                  </Card.Text>
-                  <Card.Text style={{ fontStyle: 'italic', color: "#DCD7C9"  }}>
-                    Busyness: {place.busyness}
-                  </Card.Text>
-                  <div className="form-check form-switch">
-                    <div className="save-place-wrapper">
-                        <div className="save-place-label">Save Place</div>
-                        <Tooltip 
-                            title="Save Place" 
-                            placement="right" 
-                            size="small"
-                        >
-                            <div
-                                className={`toggle-btn ${isPlaceSaved ? 'active' : ''}`}
-                                onClick={handleToggle}
-                            >
-                                <div className="toggle-label"></div>
-                            </div>
-                        </Tooltip>
+        
+                {placePhoto && 
+   <img src={placePhoto} alt="Place" style={{ maxWidth: '100%', maxHeight: '300px', objectFit: 'cover', display: 'block', margin: 'auto', marginBottom: '10px' }} />
+}
+        
+                {placeDetails.overview &&
+                    <p style={{ textAlign: "center", fontSize: "14px", maxWidth: '90%', overflowWrap: 'break-word', marginTop: '10px' }}>
+                        {placeDetails.overview}
+                    </p>
+                }
+        
+                <div style={{ display: 'flex', flexDirection: 'column' }}>
+                    <div style={{ border: '1px solid #ccc', padding: '10px', marginBottom: '10px', borderRadius: '5px', display: 'flex', alignItems: 'center', maxWidth: '90%' }}>
+                        <Card.Text style={{ fontSize: '16px', marginRight: '10px', marginTop: '5px', marginBottom: '0', fontStyle: "italic", color: "#DCD7C9" }}>
+                            Rating: {drawerRating}
+                        </Card.Text>
+                        <div className="rating" style={{ color: "yellow", marginTop: '5px' }}>
+                            <Rate disabled allowHalf value={drawerRating} />
+                        </div>
+                    </div>
+                    <div style={{ border: '1px solid #ccc', padding: '10px', marginBottom: '10px', borderRadius: '5px', maxWidth: '90%' }}>
+                    <Card.Text style={{ fontStyle: 'italic', color: "#DCD7C9" }}>Opening Hours: {drawerOpening}</Card.Text></div>
+                    {placeDetails.international_phone_number && (
+                        <div style={{ border: '1px solid #ccc', padding: '10px', marginBottom: '10px', borderRadius: '5px', maxWidth: '90%' }}>
+                            <Card.Text style={{ fontStyle: "italic", color: "#DCD7C9" }}>
+                                Phone Number: {placeDetails.international_phone_number}
+                            </Card.Text>
+                        </div>
+                    )}
+                    <div style={{ border: '1px solid #ccc', padding: '10px', marginBottom: '10px', borderRadius: '5px', maxWidth: '90%' }}>
+                        <Card.Text style={{ fontStyle: "italic", color: "#DCD7C9" }}>
+                            Address: {drawerAddress}
+                        </Card.Text>
                     </div>
                 </div>
-                <Button
+                <div style={{ display: 'flex', justifyContent: 'space-between', maxWidth: '90%' }}>
+              <Button
                   type="primary"
-                  onClick={() => handleRouting(place.position)}
-                  className="button routing-button mt-3" // added margin-top for some spacing
+                  onClick={() => handleRouting(selectedMarker.position)}
+                  className="button routing-button mt-1"
                   size="small"
                   style={{ backgroundColor: "#45656C", color: "#FFFFFF" }}
-                >
+              >
                   {isRoutingOn ? "Remove Route" : "Show Route"}
-                </Button>
-
-                </Card.Body>
-              </Card>
+              </Button>
+              <Button
+                  type="primary"
+                  onClick={handleFlipToReview}
+                  className="button review-button mt-1"
+                  size="small"
+                  style={{ backgroundColor: "#45656C", color: "#FFFFFF" }}
+                  
+              >
+                  Show Review
+              </Button>
+      
+              <Button
+              type="primary"
+              onClick={handleFlipToBusyness}
+              className="button busyness-button mt-1"
+              size="small"
+              style={{ backgroundColor: "#45656C", color: "#FFFFFF" }}
+          >
+              Show Busyness
+          </Button>
+      
+              <Button
+                  type="primary"
+                  onClick={handleToggle}
+                  className={`button mt-1 ${isPlaceSaved ? "saved-button" : "not-saved-button"}`}
+                  size="small"
+                  style={{ backgroundColor: isPlaceSaved ? "#6A8EAE" : "#E28F83", color: "#FFFFFF" }}
+              >
+                  {isPlaceSaved ? "Unsave" : "Save"}
+              </Button>
+          </div>
+      
             </div>
+      
+            {flipType === 'review' && (
+          <div className="card-back">
+            <Card className="inner-card" style={{ backgroundColor: "#2b3345", color: "#DCD7C9", width: "90%", margin: "auto", marginTop: "10px", padding: "10px", display: "flex", flexDirection: "column", justifyContent: "space-between"}}>
+              <Card.Header style={{ borderBottom: "1px solid #DCD7C9", marginBottom: "20px"}}>
+                <Card.Title style={{ fontSize: "22px", fontWeight: "bold", color: "#DCD7C9", textAlign: "center", backgroundColor: "#2b3345"}}>
+                  Review 
+                </Card.Title>
+              </Card.Header>
+      
+              {placeDetails.relative_time_description && placeDetails.review_text && (
+                <div style={{ display: "flex", flexDirection: "column", alignItems: "center", flexGrow: 1, padding: "5px", overflowY: "auto"}}>
+                  <Card.Text style={{ fontSize: "16px", marginBottom: "10px", color: "#DCD7C9", maxWidth: "90%", textAlign: "center" }}>
+                    <strong>{placeDetails.relative_time_description}:</strong>
+                  </Card.Text>
+                  <Card.Text style={{ fontSize: "13.5px", maxWidth: '95%', overflowWrap: 'break-word', color: "#DCD7C9" }}>
+                    "{placeDetails.review_text}"
+                  </Card.Text>
+                </div>
+              )}
+      
+              <Button
+                type="primary"
+                onClick={handleBackToDetails}
+                className="button close-review-button"
+                size="small"
+                style={{ backgroundColor: "#45656C", color: "#FFFFFF", marginTop: "10px", width: "150px" }}
+              >
+                Back to Details
+              </Button>
+            </Card>
+          </div>
+        )}
+      
+        {flipType === 'busyness' && (
+          <div className="card-back-busyness">
+            <Card className="inner-card" style={{ backgroundColor: "#2b3345", color: "#DCD7C9", width: "90%", margin: "auto", marginTop: "10px", padding: "10px", display: "flex", flexDirection: "column", justifyContent: "space-between" }}>
+              <Card.Header style={{ borderBottom: "1px solid #DCD7C9", marginBottom: "20px"}}>
+                <Card.Title style={{ fontSize: "22px", fontWeight: "bold", color: "#DCD7C9", textAlign: "center", backgroundColor: "#2b3345"}}>
+                  Busyness
+                </Card.Title>
+              </Card.Header>
+      
+              {/* Placeholder for Busyness content */}
+              <div style={{ flexGrow: 1, padding: "5px", display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+              <div style={{ flexGrow: 1, padding: "5px", display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+                          <Card.Text style={{ fontStyle: 'italic', color: "#DCD7C9" }}>Busyness: {}</Card.Text>
+                          {place.busyness}
+                      </div>
+              </div>
+      
+              <Button
+                type="primary"
+                onClick={handleBackToDetails}
+                className="button close-busyness-button"
+                size="small"
+                style={{ backgroundColor: "#45656C", color: "#FFFFFF", marginTop: "10px", width: "150px" }}
+              >
+                Back to Details
+              </Button>
+            </Card>
+          </div>
+        )}
+      
+      </Card>
 
            ))}
        </div>

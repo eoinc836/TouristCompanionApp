@@ -34,7 +34,9 @@ export default function Header({ darkMode, onToggle }) {
     }
   }, [darkMode, navigate, location]);
 
-
+  function capitalizeFirstLetter(string) {
+    return string.charAt(0).toUpperCase() + string.slice(1);
+}
 
   const handleLogout = () => {
     setIsLoggedIn(false);
@@ -103,7 +105,7 @@ export default function Header({ darkMode, onToggle }) {
                 activeclassname="active"
                 style={{ color: "#45656C", fontSize: "20px" }}
               >
-                Highlights
+                NYC Highlights
               </NavLink>
             </li>
           </ul>
@@ -115,7 +117,7 @@ export default function Header({ darkMode, onToggle }) {
             {/* Display "Login" or "Logout" button based on the login status */}
             {isLoggedInBool ? (
               <>
-                <span style={{ marginRight: "20px", fontFamily: "Segoe UI", fontSize: "20px", color: "grey" }}>Hello {username}</span>
+                <span style={{ marginRight: "20px", fontFamily: "Segoe UI", fontSize: "20px", color: "grey" }}>Hello {capitalizeFirstLetter(username)}</span>
                 <button onClick={handleLogout} className="btn btn-primary me-2">
                   Logout
                 </button>
