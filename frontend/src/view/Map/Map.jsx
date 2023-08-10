@@ -970,7 +970,6 @@ const onFinish = async (values) => {
           setDailyBusyness(selectedDayBusyness)
     }
 
-    console.log(Object.keys(returnedVenues),marker.title)
   };
 
   const handleMarkerClose = () => {
