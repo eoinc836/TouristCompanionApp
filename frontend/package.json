@@ -55,6 +55,7 @@
     ]
   },
   "devDependencies": {
+    "cypress": "^12.17.3",
     "http-proxy-middleware": "^2.0.3"
   }
 }
