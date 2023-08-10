@@ -1,11 +1,19 @@
-import React from "react";
+import React, { useState } from "react";
 import { Link } from 'react-router-dom';
 import "./Home.scss";
+import ZapierEmbed from './ZapierEmbed'; 
 
-const Home = () => (
-  <div className="custom-background">
-    <div className="carousel-container">
-      <div id="myCarousel" className="carousel slide" data-bs-ride="carousel">
+const Home = () => {
+  const [isChatbotOpen, setIsChatbotOpen] = useState(false);
+
+  const toggleChatbot = () => {
+    setIsChatbotOpen(prevState => !prevState);
+  };
+
+  return (
+    <div className="custom-background">
+      <div className="carousel-container">
+        <div id="myCarousel" className="carousel slide" data-bs-ride="carousel">
 
         <div className="carousel-inner">
           <div className="carousel-item active">
@@ -16,7 +24,15 @@ const Home = () => (
               alt="Slide 1"
             />
             <div className="container">
-              <div className="carousel-caption text-start">
+            <div className="carousel-caption text-start">
+            <button onClick={toggleChatbot} className="transparent-button">
+  <img src={require("../../assets/chatbot.png")} alt="Chatbot" style={{ maxWidth: "30px", maxHeight: "30px" }} />
+  Ask Me Anything About New York
+</button>
+
+
+              {isChatbotOpen && <ZapierEmbed pageId="cll4zocco131960omgcfmdy4qx" />}
+
                 <h1>Discover the Iconic Beauty of Manhattan</h1>
                 <p>Experience the Pulse of New York City</p>
               </div>
@@ -217,5 +233,11 @@ const Home = () => (
     </div>
   </div>
 );
+};
 
 export default Home;
+
+
+
+
+

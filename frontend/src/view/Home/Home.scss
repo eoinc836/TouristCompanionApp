@@ -13,6 +13,25 @@
   margin-top: 5rem;
 }
 
+/* Add this CSS in your Home.scss file or your preferred CSS file */
+
+.transparent-button {
+  background-color: transparent;
+  border: 2px solid #000; /* Dark black border */
+  color: #000; /* Black text color */
+  padding: 10px 20px;
+  font-size: 16px;
+  cursor: pointer;
+  transition: background-color 0.3s, color 0.3s, border-color 0.3s;
+}
+
+.transparent-button:hover {
+  background-color: #000; /* Dark black background on hover */
+  color: #fff; /* White text color on hover */
+  border-color: #000; /* Dark black border color on hover */
+}
+
+
 
 .featurette-divider {
   margin: 5rem 0;
