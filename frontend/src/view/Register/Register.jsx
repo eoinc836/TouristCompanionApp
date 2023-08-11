@@ -1,23 +1,7 @@
-import axios from "axios";
-import {
-  AutoComplete,
-  Button,
-  Cascader,
-  Checkbox,
-  Col,
-  Form,
-  Input,
-  InputNumber,
-  Row,
-  Select,
-} from "antd";
-import { Link, useNavigate } from "react-router-dom";
-import React, { useState } from "react";
+import { Button, Form, Input } from "antd";
+import { useNavigate } from "react-router-dom";
+import React from "react";
 import "./Register.scss";
-
-const { Option } = Select;
-
-
 
 const formItemLayout = {
   labelCol: {
@@ -69,13 +53,11 @@ const App = () => {
       });
   };
 
-  const [autoCompleteResult, setAutoCompleteResult] = useState([]);
-
   return (
     <div className="register" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', height: '100vh' }}>
-       <h1 style={{ color: '#DCD7C9', fontWeight: 'bold' , alignItems: 'center', justifyContent: 'center'}}>
-             Welcome to BusyBuddy
-           </h1>
+      <h1 style={{ color: '#DCD7C9', fontWeight: 'bold', alignItems: 'center', justifyContent: 'center' }}>
+        Welcome to BusyBuddy
+      </h1>
       <div className="form-container">
 
         <Form
@@ -106,7 +88,6 @@ const App = () => {
           <Form.Item
             name="username"
             label="Username"
-            tooltip="What do you want others to call you?"
             rules={[
               {
                 required: true,
@@ -179,7 +160,6 @@ function getCookie(name) {
     const cookies = document.cookie.split(";");
     for (let i = 0; i < cookies.length; i++) {
       const cookie = cookies[i].trim();
-      // Does this cookie string begin with the name we want?
       if (cookie.substring(0, name.length + 1) === name + "=") {
         cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
         break;

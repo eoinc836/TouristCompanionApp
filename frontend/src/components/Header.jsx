@@ -9,17 +9,14 @@ const HeaderContainer = styled.header`
 `;
 
 export default function Header({ darkMode, onToggle }) {
-  //console.log("dark mode in header is: ", darkMode);
   const navigate = useNavigate();
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const location = useLocation();
-  //isLoggedIn = new URLSearchParams(location.search).get("loggedIn");
   const [username, setUsername] = useState("");
 
 
   const accessToken = sessionStorage.getItem("accessToken");
   const isLoggedInBool = !!accessToken; // Set to true if accessToken exists, otherwise false
-  //console.log('is logged in value in header file: ', isLoggedInBool);
 
   useEffect(() => {
     const storedUsername = sessionStorage.getItem("username");
@@ -34,7 +31,9 @@ export default function Header({ darkMode, onToggle }) {
     }
   }, [darkMode, navigate, location]);
 
-
+  function capitalizeFirstLetter(string) {
+    return string.charAt(0).toUpperCase() + string.slice(1);
+}
 
   const handleLogout = () => {
     setIsLoggedIn(false);
@@ -53,29 +52,39 @@ export default function Header({ darkMode, onToggle }) {
       {/*  <header className={`py-3 text-center`}>*/}
       <div className="row header-style">
         <div className="col d-flex logo-container-style align-items-center ">
-          <Link
-            to="/" style={{ fontFamily: 'Federal Service, sans-serif' }}
-            className="d-inline-flex justify-content-center align-items-center text-decoration-none fs-26 font-weight-bold logo-style"
-          >
-            <img
-              src={require("../assets/logo.jpg")}
-              alt="Login"
-              width="70px"
-              height="72px"
-              className="img-style"
-               style={{ marginLeft: '20px' }}
-            />
-            BUSYBUDDY
-          </Link>
+        <Link
+  to="/" style={{ fontFamily: 'Federal Service, sans-serif' }}
+  className="d-inline-flex justify-content-center align-items-center text-decoration-none fs-26 font-weight-bold logo-style"
+>
+  {darkMode ? (
+    <img
+      src={require("../assets/darkmodelogo.jpeg")}
+      alt="Login"
+      width="70px"
+      height="72px"
+      className="img-style"
+      style={{ marginLeft: '20px' }}
+    />
+  ) : (
+    <img
+      src={require("../assets/logo.jpg")}
+      alt="Login"
+      width="70px"
+      height="72px"
+      className="img-style"
+      style={{ marginLeft: '20px' }}
+    />
+  )}
+  BUSYBUDDY
+</Link>
         </div>
         <nav className="col d-flex align-items-center justify-content-center nav-style">
           <ul className="nav justify-content-center">
-            <li className="nav-item">
+            <li className="nav-item" id="home">
               <NavLink
-                exact
                 to="/"
                 className="nav-link link-secondary"
-                activeClassName="active"
+                activeclassname="active"
                 isActive={isHomeLinkActive}
                 style={{ color: "#45656C", fontSize: "20px" }}
               >
@@ -83,11 +92,11 @@ export default function Header({ darkMode, onToggle }) {
               </NavLink>
             </li>
             {isLoggedInBool ? (
-              <li className="nav-item">
+              <li className="nav-item" id="map">
                 <NavLink
                   to={"/map?darkMode=" + darkMode}
                   className="nav-link"
-                  activeClassName="active"
+                  activeclassname="active"
                   style={{ color: "#45656C", fontSize: "20px" }}
                   darkMode={darkMode}
                 >
@@ -97,15 +106,14 @@ export default function Header({ darkMode, onToggle }) {
               <>
               </>
             )}
-            <li className="nav-item">
+            <li className="nav-item" id="highlights">
               <NavLink
-                exact
                 to="/topattractions"
                 className="nav-link link-secondary"
-                activeClassName="active"
+                activeclassname="active"
                 style={{ color: "#45656C", fontSize: "20px" }}
               >
-                Highlights
+                NYC Highlights
               </NavLink>
             </li>
           </ul>
@@ -117,7 +125,7 @@ export default function Header({ darkMode, onToggle }) {
             {/* Display "Login" or "Logout" button based on the login status */}
             {isLoggedInBool ? (
               <>
-                <span style={{ marginRight: "20px", fontFamily: "Segoe UI", fontSize: "20px", color: "grey" }}>Hello {username}</span>
+                <span style={{ marginRight: "20px", fontFamily: "Segoe UI", fontSize: "20px", color: "grey" }}>Hello {capitalizeFirstLetter(username)}</span>
                 <button onClick={handleLogout} className="btn btn-primary me-2">
                   Logout
                 </button>
@@ -133,7 +141,9 @@ export default function Header({ darkMode, onToggle }) {
               </>
             )}
           </div>
+           <div style={{ fontFamily: 'Segoe UI, sans-serif', textAlign: 'center' }}>
           <ToggleSwitch darkMode={darkMode} onToggle={onToggle} />
+        </div>
         </div>
       </div>
       {/*} </header> */}

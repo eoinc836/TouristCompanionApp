@@ -23,13 +23,21 @@ $background-color: #2b3345;
   color: $primary-color; // Set input content font color
 }
 
+label[for="register_password2"] {
+  width: 230px; 
+}
+
+.ant-input-affix-wrapper.ant-input-password.ant-input-affix-wrapper-has-feedback {
+  border-radius: 6px;
+}
+
 .register {
   display: flex;
   justify-content: center;
   align-items: center;
   height: 100vh;
   background-color: $background-color;
-  padding: 20px;
+  padding: 0px;
 
   .form-container {
     margin-top: 20px;

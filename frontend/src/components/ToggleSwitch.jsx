@@ -69,7 +69,9 @@ const ToggleSwitch = ({ darkMode, onToggle }) => {
           <img src={require('../assets/FiMoon.png')} alt="Moon" />
         </ModeIcon>
       </SwitchContainer>
-      <ModeText darkMode={darkMode}>{darkMode ? 'Dark' : 'Light'}</ModeText>
+      <ModeText darkMode={darkMode} style={{ fontFamily: 'Segoe UI', color: '#808080' }}>
+  {darkMode ? 'Dark' : 'Light'}
+</ModeText>
     </>
   );
 };

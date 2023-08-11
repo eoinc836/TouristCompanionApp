@@ -3,14 +3,18 @@ import { LockOutlined, UserOutlined } from "@ant-design/icons";
 import { Button, Checkbox, Form, Input } from "antd";
 import "./Login.scss";
 import axios from "axios";
-
 import { Link, useNavigate } from "react-router-dom";
-
 
 const Login = () => {
   var accessToken = " ";
+  const [rememberMe, setRememberMe] = useState(false);
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
+
+  const handleRememberChange = (e) => {
+    setRememberMe(e.target.checked);
+  };
+
 
   const onFinish = async (values) => {
     setLoading(true);
@@ -31,7 +35,13 @@ const Login = () => {
       accessToken = response.data.access_token;
       sessionStorage.setItem('accessToken', accessToken);
       sessionStorage.setItem('username', values.username);
+      if (rememberMe) {
+        localStorage.setItem('rememberedUsername', values.username);
+      } else {
+        localStorage.removeItem('rememberedUsername');
+      }
       navigate(`/home?loggedIn=${!!accessToken}`);
+      window.location.reload();
     } catch (error) {
       console.error('Login Error:', error);
     } finally {
@@ -81,15 +91,19 @@ const Login = () => {
             />
           </Form.Item>
           <Form.Item>
-            <Form.Item name="remember" valuePropName="checked" noStyle>
-              <Checkbox style={{ color: "#DCD7C9", fontSize: "18px" }}>
-                Remember me
-              </Checkbox>
-            </Form.Item>
+        <Form.Item name="remember" valuePropName="checked" noStyle>
+          <Checkbox
+            style={{ color: "#DCD7C9", fontSize: "18px" }}
+            onChange={handleRememberChange}
+            checked={rememberMe}
+          >
+            Remember me
+          </Checkbox>
+        </Form.Item>
 
-            <a className="login-form-forgot" href="" style={{ fontSize: "18px" }}>
-              Forgot password
-            </a>
+            <span className="login-form-forgot" style={{ fontSize: "18px" }}>
+              <a href="/forgotpassword" style={{ color: "#DCD7C9", textDecoration: "None", fontSize: "18px" }}>Forgot password</a>
+            </span>
           </Form.Item>
 
           <Form.Item>
@@ -98,17 +112,19 @@ const Login = () => {
               htmlType="submit"
               className="login-form-button"
               style={{
-                fontSize: "18px",
+                fontSize: "22px",
                 border: "2px solid #DCD7C9",
                 backgroundColor: "#627B82",
                 borderRadius: "8px",
+                height:'52px',
+                fontWeight: "bold",
               }}
             >
               Log in
             </Button>
 
             <span className="login-form-or" style={{ color: "#DCD7C9", fontSize: "20px" }}>
-              Or <Link to="/register" style={{ color: "#DCD7C9", fontSize: "18px" }}>register now!</Link>
+              Or <Link to="/register" style={{ color: "#DCD7C9", textDecoration: "None", fontSize: "18px" }}>register now!</Link>
             </span>
           </Form.Item>
 
@@ -124,7 +140,6 @@ function getCookie(name) {
     const cookies = document.cookie.split(";");
     for (let i = 0; i < cookies.length; i++) {
       const cookie = cookies[i].trim();
-      // Does this cookie string begin with the name we want?
       if (cookie.substring(0, name.length + 1) === name + "=") {
         cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
         break;

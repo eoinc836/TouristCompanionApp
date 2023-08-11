@@ -2,13 +2,13 @@ from django.http import JsonResponse
 from django.shortcuts import HttpResponse
 from django.views.decorators.http import require_http_methods
 from django.views.decorators.csrf import csrf_exempt
-from django.contrib.auth.decorators import login_required
 from .models import *
 from django.core.cache import cache
 from .utils import is_forecast_available, find_zone, is_in_manhattan, top_attractions
 import time, environ, requests
 import json
 from django.http import HttpResponseNotFound, JsonResponse
+from django.db.models import Q
 
 env = environ.Env()
 environ.Env.read_env("../backend/.env")
@@ -251,7 +251,7 @@ def get_venues(request):
         response = requests.request("GET", url)
         data = response.json()
 
-        if data["candidates"] and data["candidates"][0]['rating']:
+        if data["candidates"] and "rating" in data["candidates"][0]:
             venue_details[venue["venue_id"]]["rating"] = data["candidates"][0]['rating']
         else:
             venue_details[venue["venue_id"]]["rating"] = None
@@ -261,16 +261,12 @@ def get_venues(request):
 def saved_place(request):
     if request.method == 'POST':
         data = json.loads(request.body)
-        #print('data in services are:', data)
         username = data.get('username') 
-        print('username in services are:', username)
 
         # Get the user object of the provided username
         user = User.objects.get(username=username)
-        print('user is:', user)
          
         saved_place = data.get('saved_place') 
-        #print('saved place in services are:', saved_place)
 
         if username and saved_place:
             try:
@@ -307,25 +303,28 @@ def get_saved_places(request):
         username = data.get('username')
         if username:
             try:
-                user = User.objects.get(username=username)
-                saved_places = SavedPlace.objects.filter(username=user).values()
+                saved_places = SavedPlace.objects.filter(username=username).values('saved_place', 'venue_id')
                 saved_places_list = []
-
                 for saved_place in saved_places:
                     venue_id = saved_place['venue_id']  
                     venue = Venue.objects.get(venue_id=venue_id)
+                    venue_data = VenueData.objects.get(venue_id=venue.venue_id)
 
                     saved_place_data = {
                         'saved_place': saved_place['saved_place'],
-                        'venue_id': saved_place['venue_id'],
                         'venue_address': venue.venue_address,
                         'longitude': venue.longitude,
                         'latitude': venue.latitude,
-                        'opening_hours': venue.opening_hours
+                        'opening_hours': venue.opening_hours,
+                        "busyness_monday": venue_data.busyness_monday,
+                        "busyness_tuesday": venue_data.busyness_tuesday,
+                        "busyness_wednesday": venue_data.busyness_wednesday,
+                        "busyness_thursday": venue_data.busyness_thursday,
+                        "busyness_friday": venue_data.busyness_friday,
+                        "busyness_saturday": venue_data.busyness_saturday,
+                        "busyness_sunday": venue_data.busyness_sunday,
                     }
-
                     saved_places_list.append(saved_place_data)
-
                 return JsonResponse({'saved_places': saved_places_list})
             except User.DoesNotExist:
                 return JsonResponse({'error': 'User not found'})
@@ -363,4 +362,141 @@ def get_venue_by_name(request):
         return HttpResponseNotFound('Venue not found')
     
 
+@csrf_exempt
+def reset_password(request):
+    if request.method == 'POST':
+        data = json.loads(request.body)
+        email = data.get('email')
+        username = data.get('username')
+        new_password = data.get('new_password')
 
+        try:
+            user = User.objects.filter(Q(email=email) & Q(username=username)).first()
+            if user:
+                user.set_password(new_password)
+                user.save()
+                return JsonResponse({'message': 'Password reset successfully'})
+            else:
+                return JsonResponse({'error': 'Username does not exist'})
+
+        except User.DoesNotExist:
+            return JsonResponse({'error': 'User not found'})
+
+    return JsonResponse({'error': 'Invalid request method'})
+	
+	
+@require_http_methods(['GET'])
+def fetch_rating_from_google(request):
+    
+    venue_name = request.GET.get('venue_name', None)
+    venue_address = request.GET.get('venue_address', None)
+
+    if not venue_name or not venue_address:
+        return JsonResponse({"error": "Missing required parameters."}, status=400)
+
+    search_string = f'{venue_name}{venue_address}'
+    url = f"https://maps.googleapis.com/maps/api/place/findplacefromtext/json?input={search_string}&inputtype=textquery&fields=formatted_address%2Cname%2Crating&key=AIzaSyDHD8Mx3whdiohHLAqUltDnog3v5Q5-KVA"
+    
+    response = requests.get(url)
+    data = response.json()
+
+    if data["candidates"] and 'rating' in data["candidates"][0]:
+        return JsonResponse({"rating": data["candidates"][0]['rating']})
+    else:
+        return JsonResponse({"error": "Rating not found."}, status=404)
+    # return JsonResponse({"error": f"An error occurred: {str(e)}"}, status=500)
+
+
+@require_http_methods(['GET'])
+def get_place_photo(request):
+    GOOGLE_API_KEY = 'AIzaSyDHD8Mx3whdiohHLAqUltDnog3v5Q5-KVA'
+    REVERSE_GEOCODE_URL = "https://maps.googleapis.com/maps/api/geocode/json"
+    PLACE_PHOTO_URL = "https://maps.googleapis.com/maps/api/place/photo"
+
+    lat = request.GET.get('lat')
+    lng = request.GET.get('lng')
+
+    if not lat or not lng:
+        return JsonResponse({"error": "lat and lng parameters are required"}, status=400)
+
+    # Reverse geocode to get place_id
+    reverse_geocode_response = requests.get(f"{REVERSE_GEOCODE_URL}?latlng={lat},{lng}&key={GOOGLE_API_KEY}")
+    if reverse_geocode_response.status_code != 200:
+        return JsonResponse({"error": "Failed to reverse geocode"}, status=500)
+
+    reverse_geocode_data = reverse_geocode_response.json()
+    results = reverse_geocode_data.get("results")
+    if not results:
+        return JsonResponse({"error": "No results found in reverse geocode data"}, status=404)
+    place_id = results[0].get("place_id")
+    if not place_id:
+        return JsonResponse({"error": "No place found for this location"}, status=404)
+
+    # Fetch place details to get a photo reference
+    place_details_response = requests.get(f"https://maps.googleapis.com/maps/api/place/details/json?place_id={place_id}&key={GOOGLE_API_KEY}")
+    if place_details_response.status_code != 200:
+        return JsonResponse({"error": "Failed to fetch place details"}, status=500)
+
+    place_details = place_details_response.json()
+    photo_reference = place_details.get("result", {}).get("photos", [{}])[0].get("photo_reference")
+    if not photo_reference:
+        return JsonResponse({"error": "No photo available for this place"}, status=404)
+
+    # Fetch photo using photo_reference
+    photo_url = f"{PLACE_PHOTO_URL}?maxwidth=400&photoreference={photo_reference}&key={GOOGLE_API_KEY}"
+
+    return JsonResponse({"photo_url": photo_url}) 
+
+@require_http_methods(['GET'])
+def get_place_description(request):
+    GOOGLE_API_KEY = 'AIzaSyDHD8Mx3whdiohHLAqUltDnog3v5Q5-KVA'
+    REVERSE_GEOCODE_URL = "https://maps.googleapis.com/maps/api/geocode/json"
+    PLACE_DETAILS_URL = "https://maps.googleapis.com/maps/api/place/details/json"
+
+    lat = request.GET.get('lat')
+    lng = request.GET.get('lng')
+
+    if not lat or not lng:
+        return JsonResponse({"error": "lat and lng parameters are required"}, status=400)
+
+    # Reverse geocode to get place_id
+    reverse_geocode_response = requests.get(f"{REVERSE_GEOCODE_URL}?latlng={lat},{lng}&key={GOOGLE_API_KEY}")
+    if reverse_geocode_response.status_code != 200:
+        return JsonResponse({"error": "Failed to reverse geocode"}, status=500)
+
+    reverse_geocode_data = reverse_geocode_response.json()
+
+    results = reverse_geocode_data.get("results")
+    if not results:
+        return JsonResponse({"error": "No results found in reverse geocode data"}, status=404)
+    place_id = results[0].get("place_id")
+    if not place_id:
+        return JsonResponse({"error": "No place found for this location"}, status=404)
+
+    # Fetch place details
+    place_details_response = requests.get(f"{PLACE_DETAILS_URL}?place_id={place_id}&key={GOOGLE_API_KEY}")
+    if place_details_response.status_code != 200:
+        return JsonResponse({"error": "Failed to fetch place details"}, status=500)
+
+    place_details = place_details_response.json()
+
+    result = place_details.get("result", {})
+    
+    # Extract relevant fields
+    overview = result.get("editorial_summary", {}).get("overview")
+    international_phone_number = result.get("international_phone_number")
+
+    # Assuming the 'relative_time_description' and 'text' fields belong to a review:
+    review = result.get("reviews", [{}])[0]  # Get the first review, if available
+    relative_time_description = review.get("relative_time_description")
+    text = review.get("text")
+
+    # Return a structured response instead of cramming everything into description
+    response_data = {
+        "overview": overview,
+        "international_phone_number": international_phone_number,
+        "relative_time_description": relative_time_description,
+        "review_text": text
+    }
+
+    return JsonResponse(response_data)

@@ -8,6 +8,7 @@ from django.views.decorators.csrf import csrf_exempt
 from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated
+from django.core.cache import cache
 
 @csrf_exempt
 def register(request):
@@ -70,4 +71,10 @@ def predict(request):
     return HttpResponse(json.dumps(predictions))
 
 def geoJson(request):
+    cached_data = cache.get('geoJson_data')    
+    if cached_data is not None:
+        return JsonResponse(cached_data)
+
+    # if data is not in cache, query database then cache result
+    cache.set('geoJson_data', geo_json_data, timeout=60 * 60 * 24 * 7)
     return JsonResponse(geo_json_data)

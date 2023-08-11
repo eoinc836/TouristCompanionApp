@@ -1,6 +1,6 @@
 .custom-background {
   background-color: #2b3345;
-  color:#DCD7C9;
+  color: #DCD7C9;
 }
 
 .carousel-item img {
@@ -13,13 +13,42 @@
   margin-top: 5rem;
 }
 
+.chatbot-container {
+  position: fixed;
+  top: 600px;
+  transform: translate(0, 0);
+  right: 5%;
+  z-index: 1001;
+}
+
+
+.transparent-button {
+  background-color: white;
+  border: 2px solid #45656C;
+  color: #45656C;
+  padding: 5px 10px;
+  font-size: 16px;
+  cursor: pointer;
+  border-radius: 10px;
+  transition: background-color 0.3s, color 0.3s, border-color 0.3s;
+  position:relative;
+  bottom: -5vh;
+}
+
+.transparent-button:hover {
+  background-color: #45656C;
+  color: #fff;
+  border-color: #45656C;
+}
 
 .featurette-divider {
   margin: 5rem 0;
 }
+
 .featurette-divider1 {
   margin: 3rem 0;
 }
+
 .featurette-heading {
   font-weight: 500;
   line-height: 1.2;
@@ -28,6 +57,7 @@
 .featurette p {
   font-size: 18px;
   line-height: 1.5;
+
   .image-container {
     display: flex;
     align-items: center;
@@ -37,4 +67,32 @@
   }
 
 
+}
+
+
+
+@media (max-width: 767px) {
+  .container.marketing {
+    margin-top: 2rem;
+    /* Adjust as needed for spacing */
+  }
+
+  .carousel-inner {
+    max-height: 75vh;
+    /* Adjust as needed for image size */
+  }
+
+  .carousel-control-prev,
+  .carousel-control-next {
+    display: none;
+    /* Hide carousel controls for small screens */
+  }
+  .chatbot-container {
+     top: 650px;
+     right: 0%;
+     left: 40%;
+  }
+  .transparent-button {
+    bottom: -5vh;
+  }
 }

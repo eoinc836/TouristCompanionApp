@@ -18,8 +18,27 @@
   
   .card-text {
     color: #333;
-    font-family: 'Roboto', sans-serif;
-  }
+    font-family: "Segoe UI";  
+    font-size: 15px;                     
+    line-height: 1.5;                    
+    font-weight: 400;                  
+    padding: 10px 0;                     
+
+}
+
+.info-text {
+  color: #333;
+  font-family: "Segoe UI";
+  font-size: 15px;
+  line-height: 1.5;
+  font-weight: 400;
+  padding: 10px 0;
+}
+
+
+.container, .card {
+  border: none !important;
+}
 
   .position-relative {
     position: relative;
@@ -67,20 +86,15 @@
     background-color: rgba(0, 0, 0, 0.0);
   }
   
-  .card-title {
-    margin-bottom: 0;
-    background-color: rgba(0, 0, 0, 0.5);
-    
-  }
+
   
   .card-body {
-    background-color: rgba(255, 255, 255, 0);
-  }
+    background-color: #45656C;
+    
+}
 
-  .card:hover .card-body {
-    background-color: rgba(255, 255, 255, 0.95);
-   
-  }
+
+
 
   .custom-list {
     list-style: none;
@@ -95,4 +109,40 @@
   }
 
 
+  body {
+    background-color: #2b3345;
+}
 
+// TopAttractions.scss
+
+.card-text, .card-title, .section h2, .custom-list li {
+  color: ivory;
+}
+
+.card {
+  background-color: #2b3345;
+}
+
+.section, .custom-list li {
+  background-color: #45656C;;
+  color: ivory;
+}
+
+.section h2 {
+  color: ivory;
+}
+
+.custom-title-position {
+  align-items: flex-start;  // Aligns the title to the top of the container
+  padding-top: 10px;        // Gives some spacing from the top edge of the image
+}
+
+
+
+.custom-title-bg {
+  background-color: #2b3345;  // Specified background color
+  border-radius: 5px;         // Gives the rounded corners
+  display: inline-block;      // Makes the background fit to the content size
+  padding: 5px 10px;          // Adds some spacing around the text
+  opacity: 0.8;               // You can adjust this for desired transparency
+}

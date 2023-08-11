@@ -5,6 +5,8 @@ export default function Footer() {
       <p>
         {" "}
         © 2023 BusyBuddy. All rights reserved.
+        <br></br>
+        BusyBuddy uses BestTime for venue foot traffic and insights.
       </p>
     </footer>
   );

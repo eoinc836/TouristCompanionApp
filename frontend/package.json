@@ -20,6 +20,7 @@
     "react-bootstrap": "^2.8.0",
     "react-dom": "^18.2.0",
     "react-draft-wysiwyg": "^1.14.7",
+    "react-joyride": "^2.5.5",
     "react-modern-drawer": "^1.2.2",
     "react-pro-sidebar": "^1.1.0-alpha.1",
     "react-responsive": "^9.0.2",
