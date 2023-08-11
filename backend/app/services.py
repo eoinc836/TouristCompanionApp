@@ -8,8 +8,7 @@ from .utils import is_forecast_available, find_zone, is_in_manhattan, top_attrac
 import time, environ, requests
 import json
 from django.http import HttpResponseNotFound, JsonResponse
-from django.db.models import Q 
-import logging
+from django.db.models import Q
 
 env = environ.Env()
 environ.Env.read_env("../backend/.env")
@@ -304,22 +303,28 @@ def get_saved_places(request):
         username = data.get('username')
         if username:
             try:
-                user = User.objects.get(username=username)
-                saved_places = SavedPlace.objects.filter(username=user).values('saved_place', 'venue_id')
+                saved_places = SavedPlace.objects.filter(username=username).values('saved_place', 'venue_id')
                 saved_places_list = []
                 for saved_place in saved_places:
                     venue_id = saved_place['venue_id']  
                     venue = Venue.objects.get(venue_id=venue_id)
+                    venue_data = VenueData.objects.get(venue_id=venue.venue_id)
 
                     saved_place_data = {
                         'saved_place': saved_place['saved_place'],
                         'venue_address': venue.venue_address,
                         'longitude': venue.longitude,
                         'latitude': venue.latitude,
-                        'opening_hours': venue.opening_hours
+                        'opening_hours': venue.opening_hours,
+                        "busyness_monday": venue_data.busyness_monday,
+                        "busyness_tuesday": venue_data.busyness_tuesday,
+                        "busyness_wednesday": venue_data.busyness_wednesday,
+                        "busyness_thursday": venue_data.busyness_thursday,
+                        "busyness_friday": venue_data.busyness_friday,
+                        "busyness_saturday": venue_data.busyness_saturday,
+                        "busyness_sunday": venue_data.busyness_sunday,
                     }
                     saved_places_list.append(saved_place_data)
-
                 return JsonResponse({'saved_places': saved_places_list})
             except User.DoesNotExist:
                 return JsonResponse({'error': 'User not found'})
@@ -442,11 +447,6 @@ def get_place_photo(request):
 
     return JsonResponse({"photo_url": photo_url}) 
 
-
-# Configure logging
-logging.basicConfig(level=logging.INFO)
-logger = logging.getLogger(__name__)
-
 @require_http_methods(['GET'])
 def get_place_description(request):
     GOOGLE_API_KEY = 'AIzaSyDHD8Mx3whdiohHLAqUltDnog3v5Q5-KVA'
@@ -456,19 +456,15 @@ def get_place_description(request):
     lat = request.GET.get('lat')
     lng = request.GET.get('lng')
 
-    logger.info(f"Received lat: {lat}, lng: {lng}")
-
     if not lat or not lng:
         return JsonResponse({"error": "lat and lng parameters are required"}, status=400)
 
     # Reverse geocode to get place_id
     reverse_geocode_response = requests.get(f"{REVERSE_GEOCODE_URL}?latlng={lat},{lng}&key={GOOGLE_API_KEY}")
     if reverse_geocode_response.status_code != 200:
-        logger.error("Reverse geocode API call failed with status: %s", reverse_geocode_response.status_code)
         return JsonResponse({"error": "Failed to reverse geocode"}, status=500)
 
     reverse_geocode_data = reverse_geocode_response.json()
-    logger.info(f"Reverse geocode data: {reverse_geocode_data}")
 
     results = reverse_geocode_data.get("results")
     if not results:
@@ -480,11 +476,9 @@ def get_place_description(request):
     # Fetch place details
     place_details_response = requests.get(f"{PLACE_DETAILS_URL}?place_id={place_id}&key={GOOGLE_API_KEY}")
     if place_details_response.status_code != 200:
-        logger.error("Place details API call failed with status: %s", place_details_response.status_code)
         return JsonResponse({"error": "Failed to fetch place details"}, status=500)
 
     place_details = place_details_response.json()
-    logger.info(f"Place details data: {place_details}")
 
     result = place_details.get("result", {})
     
