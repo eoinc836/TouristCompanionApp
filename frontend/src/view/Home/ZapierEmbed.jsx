@@ -11,7 +11,7 @@ const ZapierEmbed = ({ pageId }) => {
     const zapierElement = document.createElement('zapier-interfaces-page-embed');
     zapierElement.setAttribute('page-id', pageId);
     zapierElement.setAttribute('no-background', 'true');
-    zapierElement.style.maxWidth = '500px';
+    zapierElement.style.maxWidth = '400px';
     zapierElement.style.height = '600px';
     //zapierElement.style.background = 'transparent';
 
@@ -20,7 +20,7 @@ const ZapierEmbed = ({ pageId }) => {
     wrapper.style.bottom = '0';
     wrapper.style.right = '0';
     wrapper.style.margin = '0px'; 
-    wrapper.style.width = '500px'; 
+    wrapper.style.width = '480px'; 
     wrapper.style.height = '600px'
 
     wrapper.appendChild(zapierElement);

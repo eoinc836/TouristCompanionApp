@@ -31,6 +31,8 @@
   cursor: pointer;
   border-radius: 10px;
   transition: background-color 0.3s, color 0.3s, border-color 0.3s;
+  position:relative;
+  bottom: -5vh;
 }
 
 .transparent-button:hover {
@@ -68,30 +70,15 @@
 }
 
 
-/* Media Query for Small Screens */
+
 @media (max-width: 767px) {
   .container.marketing {
     margin-top: 2rem;
     /* Adjust as needed for spacing */
   }
 
-  .chatbot-container {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    margin-top: 1rem;
-    /* Adjust as needed for spacing */
-    z-index: 1;
-    /* Bring chatbot container to the front */
-    background-color: rgba(255, 255, 255, 0.95);
-    padding: 10px;
-    transform: translate(0, 0);
-    border-radius: 5px;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.8);
-  }
-
   .carousel-inner {
-    max-height: 50vh;
+    max-height: 75vh;
     /* Adjust as needed for image size */
   }
 
@@ -99,5 +86,13 @@
   .carousel-control-next {
     display: none;
     /* Hide carousel controls for small screens */
+  }
+  .chatbot-container {
+     top: 650px;
+     right: 0%;
+     left: 40%;
+  }
+  .transparent-button {
+    bottom: -5vh;
   }
 }

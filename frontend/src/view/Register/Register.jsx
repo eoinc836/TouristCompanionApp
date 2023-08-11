@@ -106,7 +106,6 @@ const App = () => {
           <Form.Item
             name="username"
             label="Username"
-            tooltip="What do you want others to call you?"
             rules={[
               {
                 required: true,
