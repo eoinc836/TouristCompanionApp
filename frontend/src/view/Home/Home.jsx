@@ -40,8 +40,9 @@ const Home = () => {
             />
             <div className="container">
             <div className="carousel-caption text-start">
-                <h1>Discover the Iconic Beauty of Manhattan</h1>
-                <p>Experience the Pulse of New York City</p>
+    
+                <h1>Unlocking Manhattan's Marvels</h1>
+                <h5>Your Ultimate Guide to Exploring New York with BusyBuddy</h5>
               </div>
             </div>
           </div>
@@ -54,8 +55,8 @@ const Home = () => {
             />
             <div className="container">
               <div className="carousel-caption">
-                <h1>Unleash Your Adventurous Spirit in Manhattan</h1>
-                <p>Indulge in the Energy of the Concrete Jungle</p>
+              <h1>Discover the Iconic Beauty of Manhattan</h1>
+                <h5>Experience the Pulse of New York City</h5>
               </div>
             </div>
           </div>
@@ -68,8 +69,8 @@ const Home = () => {
             />
             <div className="container">
               <div className="carousel-caption text-end">
-                <h1>Immerse Yourself in the Vibrant Culture of Manhattan</h1>
-                <p>Find Inspiration at Every Corner of the Big Apple</p>
+                <h1> Manhattan Unveiled</h1>
+                <h5>Your Trusted Companion for Navigating New York's Vibrant Heart with BusyBuddy</h5>
               </div>
             </div>
           </div>
@@ -114,8 +115,8 @@ const Home = () => {
             >
               <path d="M5.793 1a1 1 0 0 1 1.414 0l.647.646a.5.5 0 1 1-.708.708L6.5 1.707 2 6.207V12.5a.5.5 0 0 0 .5.5.5.5 0 0 1 0 1A1.5 1.5 0 0 1 1 12.5V7.207l-.146.147a.5.5 0 0 1-.708-.708L5.793 1Zm3 1a1 1 0 0 1 1.414 0L12 3.793V2.5a.5.5 0 0 1 .5-.5h1a.5.5 0 0 1 .5.5v3.293l1.854 1.853a.5.5 0 0 1-.708.708L15 8.207V13.5a1.5 1.5 0 0 1-1.5 1.5h-8A1.5 1.5 0 0 1 4 13.5V8.207l-.146.147a.5.5 0 1 1-.708-.708L8.793 2Zm.707.707L5 7.207V13.5a.5.5 0 0 0 .5.5h8a.5.5 0 0 0 .5-.5V7.207l-4.5-4.5Z" />
             </svg>
-            <h2>Place Recommendation</h2>
-            <p>Explore, Experience, and Embrace the Best place</p>
+            <h2>Venue Recommendation</h2>
+            <p>Find venues based on attraction type, proximity, busyness, and more</p>
           </div>
           <div className="col-lg-4">
             <svg
@@ -132,7 +133,7 @@ const Home = () => {
               />
             </svg>
             <h2>Destination Busyness</h2>
-            <p>Escape to Serenity: Unwind from the Destination Busyness</p>
+            <p>Get insights about your favorite venue</p>
           </div>
           <div className="col-lg-4">
             <svg
@@ -153,7 +154,7 @@ const Home = () => {
               />
             </svg>
             <h2>BusyBuddy Map</h2>
-            <p>Navigate Your Way through the Urban Jungle</p>
+            <p>Explore BusyBuddy's features using our interactive map</p>
           </div>
         </div>
 
@@ -162,13 +163,10 @@ const Home = () => {
         <div className="row featurette">
           <div className="col-md-7">
             <h2 className="featurette-heading fw-normal lh-1">
-              Explore Manhattan: Discover Endless Scenery and Surprises
+            Navigate Manhattan: Uncover Hidden Gems and Urban Treasures
             </h2>
             <p className="lead">
-              Stroll through the streets and avenues of Manhattan, exploring the
-              essence of this city. Discover unique architecture, breathtaking
-              views, and rich historical landmarks that make Manhattan your
-              adventure paradise.
+            Embark on a journey through Manhattan's vibrant streets and avenues, guided by BusyBuddy. Explore iconic landmarks, hidden gems, and the pulse of the city, all at your fingertips.
             </p>
           </div>
           <div className="col-md-5">
@@ -188,14 +186,10 @@ const Home = () => {
           <div className="row featurette">
             <div className="col-md-7 order-md-2">
               <h2 className="featurette-heading fw-normal lh-1 ">
-                Manhattan Culinary Journey: Savour Unique and Delicious
-                Experiences
+              Culinary Discovery in Manhattan: Experience Unparalleled Flavors
               </h2>
               <p className="lead">
-                Step into the culinary world of Manhattan and indulge in a
-                variety of flavors and culinary arts. From street food to
-                upscale restaurants, Manhattan's food scene will satisfy your
-                cravings for delicious and unique dining experiences.
+              Dive into the culinary riches of Manhattan with BusyBuddy. Delight in a range of tastes, from street food to fine dining, as you explore the city's vibrant gastronomic landscape.
               </p>
             </div>
             <div className="col-md-5 order-md-1 ">
@@ -214,15 +208,10 @@ const Home = () => {
           <div className="row featurette">
             <div className="col-md-7">
               <h2 className="featurette-heading fw-normal lh-1 ">
-                Manhattan's Cultural Extravaganza: Immerse Yourself in the
-                Charms of Art and History
+              Artistic Enchantment in Manhattan: Immerse Yourself in Cultural Grandeur
               </h2>
               <p className="lead">
-                Manhattan is a treasure trove of culture and art, boasting
-                world-class museums, theaters, and music venues. Explore
-                Manhattan's cultural extravaganza and immerse yourself in the
-                allure of art and the richness of history, nourishing your
-                soul.
+              Delve into the cultural marvels of Manhattan with BusyBuddy. Encounter world-renowned museums, theaters, and artistic havens. Immerse yourself in the city's artistic tapestry, and let its cultural richness inspire your soul.
               </p>
             </div>
             <div className="col-md-5 order-md-1">
