@@ -55,20 +55,31 @@ export default function Header({ darkMode, onToggle }) {
       {/*  <header className={`py-3 text-center`}>*/}
       <div className="row header-style">
         <div className="col d-flex logo-container-style align-items-center ">
-          <Link
-            to="/" style={{ fontFamily: 'Federal Service, sans-serif' }}
-            className="d-inline-flex justify-content-center align-items-center text-decoration-none fs-26 font-weight-bold logo-style"
-          >
-            <img
-              src={require("../assets/logo.jpg")}
-              alt="Login"
-              width="70px"
-              height="72px"
-              className="img-style"
-               style={{ marginLeft: '20px' }}
-            />
-            BUSYBUDDY
-          </Link>
+        <Link
+  to="/" style={{ fontFamily: 'Federal Service, sans-serif' }}
+  className="d-inline-flex justify-content-center align-items-center text-decoration-none fs-26 font-weight-bold logo-style"
+>
+  {darkMode ? (
+    <img
+      src={require("../assets/darkmodelogo.jpeg")}
+      alt="Login"
+      width="70px"
+      height="72px"
+      className="img-style"
+      style={{ marginLeft: '20px' }}
+    />
+  ) : (
+    <img
+      src={require("../assets/logo.jpg")}
+      alt="Login"
+      width="70px"
+      height="72px"
+      className="img-style"
+      style={{ marginLeft: '20px' }}
+    />
+  )}
+  BUSYBUDDY
+</Link>
         </div>
         <nav className="col d-flex align-items-center justify-content-center nav-style">
           <ul className="nav justify-content-center">
@@ -133,7 +144,7 @@ export default function Header({ darkMode, onToggle }) {
               </>
             )}
           </div>
-           <div style={{ fontFamily: 'HappHearty, sans-serif', textAlign: 'center' }}>
+           <div style={{ fontFamily: 'Segoe UI, sans-serif', textAlign: 'center' }}>
           <ToggleSwitch darkMode={darkMode} onToggle={onToggle} />
         </div>
         </div>

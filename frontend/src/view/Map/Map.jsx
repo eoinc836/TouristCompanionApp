@@ -341,7 +341,7 @@ const Map = () => {
 
   const [selectedMarker, setSelectedMarker] = useState(null);
   const [drawerVisible, setDrawerVisible] = useState(false);
-
+  const [autoCompleteInput, setAutoCompleteInput] = useState("");
   const [currentWeather, setCurrentWeather] = useState(null);
   const [predictions, setPredictions] = useState({});
   const [showPrediction, setShowPrediction] = useState(true);
@@ -710,12 +710,13 @@ const onFinish = async (values) => {
       dataSource = transformedSavedPlaces;
     }
     if (form.getFieldValue('displayRoute')) {
-      const waypoints = dataSource.map(stop => {
-        return {
-            location: new window.google.maps.LatLng(stop.position.lat, stop.position.lng),
-            stopover: true,
-        };
-      });
+      const waypoints = dataSource
+  .filter(stop => stop.position && typeof stop.position.lat === 'number' && typeof stop.position.lng === 'number')
+  .map(stop => ({
+      location: new window.google.maps.LatLng(stop.position.lat, stop.position.lng),
+      stopover: true,
+  }));
+
       const directionsService = new window.google.maps.DirectionsService();
       const result = await new Promise((resolve, reject) => {
         directionsService.route({
@@ -975,6 +976,54 @@ const handleMarkerClick = async (marker) => {
       setBestTimeUsed(true);
   }
 
+  if(marker.busyness && marker.busyness["Monday"] != null){
+    //Set graph data for top 20 here
+    setMondayLevel(calculateAverageNonZeroBusyness(convertStringToArray(marker.busyness["Monday"])))
+    setTuesdayLevel(calculateAverageNonZeroBusyness(convertStringToArray(marker.busyness["Tuesday"])))
+    setWednesdayLevel(calculateAverageNonZeroBusyness(convertStringToArray(marker.busyness["Wednesday"])))
+    setThursdayLevel(calculateAverageNonZeroBusyness(convertStringToArray(marker.busyness["Thursday"])))
+    setFridayLevel(calculateAverageNonZeroBusyness(convertStringToArray(marker.busyness["Friday"])))
+    setSaturdayLevel(calculateAverageNonZeroBusyness(convertStringToArray(marker.busyness["Saturday"])))
+    setSundayLevel(calculateAverageNonZeroBusyness(convertStringToArray(marker.busyness["Sunday"])))
+
+    let selectedDay = (getDay(date.format('DD'), date.format('MM'), date.format('YYYY')))
+
+
+      let selectedDayBusyness;
+          
+          if (selectedDay === 'Monday') {
+            selectedDayBusyness = convertStringToArray(marker.busyness["Monday"]);
+          } else if (selectedDay === 'Tuesday') {
+            selectedDayBusyness = convertStringToArray(marker.busyness["Tuesday"]);
+          } else if (selectedDay=== 'Wednesday') {
+            selectedDayBusyness = convertStringToArray(marker.busyness["Wednesday"]);
+          } else if (selectedDay === 'Thursday') {
+            selectedDayBusyness = convertStringToArray(marker.busyness["Thursday"]);
+          } else if (selectedDay === 'Friday') {
+            selectedDayBusyness = convertStringToArray(marker.busyness["Friday"]);
+          } else if (selectedDay === 'Saturday') {
+            selectedDayBusyness = convertStringToArray(marker.busyness["Saturday"]);
+          } else if (selectedDay === 'Sunday') {
+            selectedDayBusyness = convertStringToArray(marker.busyness["Sunday"]);
+          }
+          
+          setDailyBusyness(selectedDayBusyness)
+  }
+
+  else if(marker.busyness && marker.busyness["Monday"] == null){
+    setMondayLevel(null)
+    setTuesdayLevel(null)
+    setWednesdayLevel(null)
+    setThursdayLevel(null)
+    setFridayLevel(null)
+    setSaturdayLevel(null)
+    setSundayLevel(null)
+
+    const arrayOfNulls = new Array(24).fill(null);
+    setDailyBusyness(arrayOfNulls)
+
+  }
+
   // Check if the place is in the saved places
   const isSaved = savedPlaces.some(savedPlace => savedPlace.saved_place === marker.title);
   setIsPlaceSaved(isSaved);
@@ -1129,7 +1178,7 @@ if (isSaved) {
   };
 
   const handleDestinationChange = (e) => {
-    setDestination(e.target.value);
+    setAutoCompleteInput(e.target.value);
   };
 
   // Prediction variables 
@@ -1511,7 +1560,7 @@ const handleBackToDetails = () => {
 
 
   const autocompleteRef = useRef(null);
-
+  const inputRef = useRef(null);
   const handleLoad = (autocomplete) => {
     autocompleteRef.current = autocomplete;
   };
@@ -1519,6 +1568,9 @@ const handleBackToDetails = () => {
   const handlePlaceChanged = () => {
     if (autocompleteRef.current !== null) {
       const place = autocompleteRef.current.getPlace();
+      if (place) {
+        setAutoCompleteInput(inputRef.current.value);
+      }
 
       // Set the center of the map to the coordinates of the selected place
       if (place.geometry && place.geometry.location) {
@@ -1643,11 +1695,9 @@ const handleBackToDetails = () => {
   ];
 
 
-  const bounds = {
-      north: 40.915255,
-      south: 40.477398,
-      east: -73.700272,
-      west: -74.259090,}
+  const autocompleteOptions = {
+    componentRestrictions: { country: "us" }, // Limit to a specific country (e.g., United States)
+  };
 
   // Info window when hovering on zone
   const HoveredZoneInfo = ({ hoveredZone, getBusynessDescription }) => {
@@ -1740,10 +1790,10 @@ const handleBackToDetails = () => {
     <Joyride steps={steps} continuous={true} showProgress={true} showSkipButton={true} styles={{
             options: {
               arrowColor: '#fff',
-              backgroundColor: '#fff',
+              backgroundColor: '#DCD7C9',
               beaconSize: 36,
               overlayColor: 'rgba(0, 0, 0, 0.5)',
-              primaryColor: '#f04',
+              primaryColor: '#45656C',
               spotlightShadow: '0 0 15px rgba(0, 0, 0, 0.5)',
               textColor: '#333',
               width: undefined,
@@ -1949,11 +1999,12 @@ const handleBackToDetails = () => {
                       <Autocomplete
                         onLoad={handleLoad}
                         onPlaceChanged={handlePlaceChanged}
-                        options={{ bounds: bounds }}
+                        options={autocompleteOptions}
                       >
                         <input
                           type="text"
-                          value={destination}
+                          ref= {inputRef}
+                          value={autoCompleteInput}
                           onChange={handleDestinationChange}
                           placeholder="Enter your destination"
                            style={{
@@ -2174,10 +2225,29 @@ const handleBackToDetails = () => {
                 </TabPane>
                 ))}
               </Tabs>
-
-
-
-            </div>
+{/* Button to go back to the itinerary form */}
+<Button 
+  type="primary" 
+  onClick={() => {
+    setIsItineraryView(false);
+    setDisplayRoute(false);  // Hide the route
+    form.setFieldsValue({ displayRoute: false }); // Uncheck the hidden switch
+    setShowTourStops(false);      // Hide the tour stops
+    setShowSavedPlaces(false);    // Hide the saved places
+  }}
+  style={{
+    margin: "10px",
+    backgroundColor: "#45656C",
+    marginLeft: "55px",
+    color: "#FFFFFF",
+    display: "flex",
+    justifyContent: "center"
+  }}
+>
+  Itinerary Form
+</Button>
+    
+  </div>
                ) : (
                  <Form
                    form={form}
@@ -2189,11 +2259,12 @@ const handleBackToDetails = () => {
                  >
                    <Form.Item
                      name="dateRange"
-                     label="Start and End Date"
+                     label={<span style={{ color: '#DCD7C9' }}>Start and End Date</span>}
                      rules={[{ required: true, message: 'Please input your date range!' }]}
                    >
                      <DatePicker.RangePicker
                       format="YYYY-MM-DD"
+                      style={{ color: '#DCD7C9' }}
                       disabledDate={(current) => {
                           // Disable dates that are before today's date
                           return current && current < moment().startOf('day');
@@ -2204,12 +2275,13 @@ const handleBackToDetails = () => {
                                     </Form.Item>
                                     <Form.Item
                       name="startEndHour"
-                      label="Preferred Visiting Hours"
+                      label={<span style={{ color: '#DCD7C9' }}>Preferred Visiting Hours</span>}
                       rules={[{ required: true, message: 'Please select the start and end hour!' }]}
                   >
                   <TimePicker.RangePicker
                       format="HH"
                       hideDisabledOptions
+                      style={{ color: '#DCD7C9' }}
                       disabledTime={() => {
                           return {
                               disabledHours: () => {
@@ -2224,7 +2296,7 @@ const handleBackToDetails = () => {
                    
                    <Form.Item
                      name="markers"
-                     label="Itinerary Stops"
+                     label={<span style={{ color: '#DCD7C9' }}>Itinerary Stops</span>}
                      rules={[{ required: true, message: 'Please select markers for your itinerary!' }]}
                    >
                      <Select placeholder="Select a type">
@@ -2233,45 +2305,62 @@ const handleBackToDetails = () => {
                      </Select>
                    </Form.Item>
                    <Form.Item
-                    name="displayRoute"
-                    valuePropName="checked"
-                  >
-                      <Switch
-                          checkedChildren={<span style={{ fontSize: '16px', color: '#DCD7C9' }}>Display Route</span>}
-                          unCheckedChildren={<span style={{ fontSize: '16px' , color: '#DCD7C9'}}>Hide Route</span>}
-                          style={{ width: "150px", height: "40px" , backgroundColor: '#45656C', color: '#DCD7C9' }}
-                          onChange={(checked) => {
-                              if (form.getFieldValue('markers') === 'top20') {
-                                  setDisplayRoute(checked);
-                                  setShowTourStops(!checked);  // Also toggle showTourStops
-                              }
-                              else {
-                                  setDisplayRoute(checked);
-                                  // here you may decide whether to setShowTourStops or not depending on your requirement.
-                              }
-                          }}
-                      />
-                  </Form.Item>
-                   <Form.Item style={{ margin: "10px", display: "flex", justifyContent: "center" }}>
-                     <Button type="primary" htmlType="submit" style={{ backgroundColor: "#45656C", color: "#DCD7C9" }}>
-                       Generate Itinerary
-                     </Button>
-                   </Form.Item>
+  name="displayRoute"
+  valuePropName="checked"
+  style={{ display: "none" }} // this hides the switch
+>
+  <Switch
+    checkedChildren={<span style={{ fontSize: '16px' }}>Display Route</span>}
+    unCheckedChildren={<span style={{ fontSize: '16px' }}>Hide Route</span>}
+    style={{ width: "150px", height: "40px" }}
+    onChange={(checked) => {
+      setDisplayRoute(checked);  // Adjust the display of the route
+  
+      if (checked) {  // If switch is turned on
+        if (form.getFieldValue('markers') === 'top20') {
+          setShowTourStops(true);       // Show the tour stops
+          setShowSavedPlaces(false);    // Hide the saved places
+        } 
+        else if (form.getFieldValue('markers') === 'saved') {
+          setShowTourStops(false);      // Hide the tour stops
+          setShowSavedPlaces(true);     // Show the saved places
+        }
+      } else {  // If switch is turned off
+        setShowTourStops(false);      // Hide the tour stops
+        setShowSavedPlaces(false);    // Hide the saved places
+      }
+    }}
+  />
+</Form.Item>
+                  <Form.Item style={{ margin: "10px", display: "flex", justifyContent: "center" }}>
+                  <Button 
+  type="primary" 
+  onClick={() => {
+    form.submit();
+    setIsItineraryView(true);
+    setDisplayRoute(true);  // Display the route
+    form.setFieldsValue({ displayRoute: true }); // Check the hidden switch
+
+    if (form.getFieldValue('markers') === 'top20') {
+      setShowTourStops(true);       // Show the tour stops
+      setShowSavedPlaces(false);    // Hide the saved places
+    }
+    else if (form.getFieldValue('markers') === 'saved') {
+      setShowTourStops(false);      // Hide the tour stops
+      setShowSavedPlaces(true);     // Show the saved places
+    }
+  }}
+  style={{ backgroundColor: "#45656C", color: "#FFFFFF" }}
+>
+  Generate Itinerary
+</Button>
+</Form.Item>
                  </Form>
                )}
-              <div style={{ display: 'flex', justifyContent: 'center' }}>
-                <Button
-                  onClick={() => setIsItineraryView(!isItineraryView)}
-                  style={{
-                    marginBottom: '10px',
-                    backgroundColor: "#45656C",
-                    color: "#DCD7C9",
-                    width: "150px"
-                  }}
-                >
-                  {isItineraryView ? "Go to Itinerary Form" : "Go to Itinerary"}
-                </Button>
-              </div>
+              
+
+
+
 
              </div>
           }
@@ -2319,9 +2408,16 @@ const handleBackToDetails = () => {
             setMapCenter({ lat: map.getCenter().lat(), lng: map.getCenter().lng() });
           }}
           ref={mapRef}>
-          {displayRoute && directionsRenderer.map((result, i) => (
-  <DirectionsRenderer directions={result} key={i} />
-  ))}
+         {displayRoute && directionsRenderer.map((result, i) => (
+  <DirectionsRenderer 
+    directions={result} 
+    key={i} 
+    options={{ 
+      suppressMarkers: true,
+    }} 
+  />
+))}
+
     {routeDirections && <DirectionsRenderer directions={routeDirections} options={{ suppressMarkers: true }} />}
           {hoveredZone && (
             <HoveredZoneInfo hoveredZone={hoveredZone} getBusynessDescription={getBusynessDescription} />
@@ -2626,7 +2722,7 @@ const handleBackToDetails = () => {
      direction="right"
      width={600}
      disableOverlay={false}
-     style={{ overflow: 'auto', backgroundColor: "#2b3345", color: "#DCD7C9", width: "575px", maxHeight: "95vh"}}
+     style={{ overflow: 'auto', backgroundColor: "#2b3345", color: "#DCD7C9", width: "575px", maxHeight: "100vh"}}
    >
      {selectedMarker && !bestTimeUsed ? (
    <Card className={`m-3 card-flip card-flip-container ${isFlipped ? 'is-flipped' : ''}`} style={{ width: "100%", height: "780px", backgroundColor: "#2b3345", color: "#DCD7C9" }}>
@@ -2769,7 +2865,9 @@ const handleBackToDetails = () => {
 
         {/* Placeholder for Busyness content */}
         <div style={{ flexGrow: 1, padding: "5px", display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
-          Content Goes Here
+        <WeeklyChart data={weeklyChartData}></WeeklyChart>
+        <br></br>
+        <DailyChart data={hourlyChartData}></DailyChart>
         </div>
 
         <Button

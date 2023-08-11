@@ -1,6 +1,6 @@
 .custom-background {
   background-color: #2b3345;
-  color:#DCD7C9;
+  color: #DCD7C9;
 }
 
 .carousel-item img {
@@ -15,16 +15,17 @@
 
 .chatbot-container {
   position: fixed;
-  top: 650px;
+  top: 600px;
   transform: translate(0, 0);
   right: 5%;
   z-index: 1001;
 }
 
+
 .transparent-button {
   background-color: white;
   border: 2px solid #45656C;
-  color: #45656C ;
+  color: #45656C;
   padding: 5px 10px;
   font-size: 16px;
   cursor: pointer;
@@ -33,17 +34,19 @@
 }
 
 .transparent-button:hover {
-  background-color: #45656C; 
-  color: #fff; 
+  background-color: #45656C;
+  color: #fff;
   border-color: #45656C;
 }
 
 .featurette-divider {
   margin: 5rem 0;
 }
+
 .featurette-divider1 {
   margin: 3rem 0;
 }
+
 .featurette-heading {
   font-weight: 500;
   line-height: 1.2;
@@ -52,6 +55,7 @@
 .featurette p {
   font-size: 18px;
   line-height: 1.5;
+
   .image-container {
     display: flex;
     align-items: center;
@@ -67,16 +71,18 @@
 /* Media Query for Small Screens */
 @media (max-width: 767px) {
   .container.marketing {
-    margin-top: 2rem; /* Adjust as needed for spacing */
+    margin-top: 2rem;
+    /* Adjust as needed for spacing */
   }
 
   .chatbot-container {
-    position: static;
     display: flex;
     justify-content: center;
     align-items: center;
-    margin-top: 1rem; /* Adjust as needed for spacing */
-    z-index: 1; /* Bring chatbot container to the front */
+    margin-top: 1rem;
+    /* Adjust as needed for spacing */
+    z-index: 1;
+    /* Bring chatbot container to the front */
     background-color: rgba(255, 255, 255, 0.95);
     padding: 10px;
     transform: translate(0, 0);
@@ -85,11 +91,13 @@
   }
 
   .carousel-inner {
-    max-height: 50vh; /* Adjust as needed for image size */
+    max-height: 50vh;
+    /* Adjust as needed for image size */
   }
 
   .carousel-control-prev,
   .carousel-control-next {
-    display: none; /* Hide carousel controls for small screens */
+    display: none;
+    /* Hide carousel controls for small screens */
   }
 }
