@@ -36,7 +36,7 @@ const Home = () => {
             <img
               src={require("../../assets/manhattan5.jpg")}
               className="d-block mx-auto"
-              style={{ maxWidth: "100%", maxHeight: "40%" }}
+               style={{ maxWidth: "100%", maxHeight: "100%", height: "75vh" }}
               alt="Slide 1"
             />
             <div className="container">
@@ -50,7 +50,7 @@ const Home = () => {
             <img
               src={require("../../assets/manhattan1.jpg")}
               className="d-block mx-auto"
-              style={{ maxWidth: "100%", maxHeight: "40%" }}
+             style={{ maxWidth: "100%", maxHeight: "100%", height: "75vh" }}
               alt="Slide 2"
             />
             <div className="container">
@@ -64,7 +64,7 @@ const Home = () => {
             <img
               src={require("../../assets/manhattan6.jpg")}
               className="d-block mx-auto"
-              style={{ maxWidth: "100%", maxHeight: "40%" }}
+               style={{ maxWidth: "100%", maxHeight: "100%", height: "75vh" }}
               alt="Slide 3"
             />
             <div className="container">

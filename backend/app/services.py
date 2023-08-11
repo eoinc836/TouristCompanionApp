@@ -2,7 +2,6 @@ from django.http import JsonResponse
 from django.shortcuts import HttpResponse
 from django.views.decorators.http import require_http_methods
 from django.views.decorators.csrf import csrf_exempt
-from django.contrib.auth.decorators import login_required
 from .models import *
 from django.core.cache import cache
 from .utils import is_forecast_available, find_zone, is_in_manhattan, top_attractions
@@ -252,7 +251,6 @@ def get_venues(request):
 
         response = requests.request("GET", url)
         data = response.json()
-        print("data is: ", data)
 
         if data["candidates"] and "rating" in data["candidates"][0]:
             venue_details[venue["venue_id"]]["rating"] = data["candidates"][0]['rating']
@@ -264,16 +262,12 @@ def get_venues(request):
 def saved_place(request):
     if request.method == 'POST':
         data = json.loads(request.body)
-        #print('data in services are:', data)
         username = data.get('username') 
-        print('username in services are:', username)
 
         # Get the user object of the provided username
         user = User.objects.get(username=username)
-        print('user is:', user)
          
         saved_place = data.get('saved_place') 
-        #print('saved place in services are:', saved_place)
 
         if username and saved_place:
             try:
@@ -308,7 +302,6 @@ def get_saved_places(request):
     if request.method == 'POST':
         data = json.loads(request.body)
         username = data.get('username')
-        print("username is: ", username)
         if username:
             try:
                 user = User.objects.get(username=username)
@@ -374,10 +367,7 @@ def reset_password(request):
 
         try:
             user = User.objects.filter(Q(email=email) & Q(username=username)).first()
-            print("user is: ", user)
-
             if user:
-                print("I'm here")
                 user.set_password(new_password)
                 user.save()
                 return JsonResponse({'message': 'Password reset successfully'})
@@ -392,12 +382,9 @@ def reset_password(request):
 	
 @require_http_methods(['GET'])
 def fetch_rating_from_google(request):
-    print("Function started.")
     
     venue_name = request.GET.get('venue_name', None)
     venue_address = request.GET.get('venue_address', None)
-    
-    print(f"Received venue_name: {venue_name}, venue_address: {venue_address}")
 
     if not venue_name or not venue_address:
         return JsonResponse({"error": "Missing required parameters."}, status=400)
