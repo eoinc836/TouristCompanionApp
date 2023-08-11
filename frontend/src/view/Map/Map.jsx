@@ -967,6 +967,9 @@ const fetchPlaceDescription = async (lat, lng) => {
 const handleMarkerClick = async (marker) => {
   setSelectedMarker(marker);
   setDrawerVisible(true);
+  console.log(savedPlaces)
+
+    
 
   if (marker.isBestTime) {
       setDrawerTitle(marker.title);
@@ -1019,10 +1022,64 @@ const handleMarkerClick = async (marker) => {
     setSaturdayLevel(null)
     setSundayLevel(null)
 
-    const arrayOfNulls = new Array(24).fill(null);
+    let arrayOfNulls = new Array(24).fill(null);
     setDailyBusyness(arrayOfNulls)
 
   }
+  else{
+    //Logic for saved places markers
+    for (const item of savedPlaces) {
+      const savedPlace = item.saved_place;
+      if(savedPlace === marker.title && item.busyness_monday != null){
+        console.log(savedPlace,'correct')
+        setMondayLevel(calculateAverageNonZeroBusyness(convertStringToArray(item.busyness_monday)))
+        setTuesdayLevel(calculateAverageNonZeroBusyness(convertStringToArray(item.busyness_tuesday)))
+        setWednesdayLevel(calculateAverageNonZeroBusyness(convertStringToArray(item.busyness_wednesday)))
+        setThursdayLevel(calculateAverageNonZeroBusyness(convertStringToArray(item.busyness_thursday)))
+        setFridayLevel(calculateAverageNonZeroBusyness(convertStringToArray(item.busyness_friday)))
+        setSaturdayLevel(calculateAverageNonZeroBusyness(convertStringToArray(item.busyness_saturday)))
+        setSundayLevel(calculateAverageNonZeroBusyness(convertStringToArray(item.busyness_sunday)))
+
+
+        let selectedDay = (getDay(date.format('DD'), date.format('MM'), date.format('YYYY')))
+
+
+        let selectedDayBusyness;
+          
+          if (selectedDay === 'Monday') {
+            selectedDayBusyness = convertStringToArray(item.busyness_monday);
+          } else if (selectedDay === 'Tuesday') {
+            selectedDayBusyness = convertStringToArray(item.busyness_tuesday);
+          } else if (selectedDay=== 'Wednesday') {
+            selectedDayBusyness = convertStringToArray(item.busyness_wednesday);
+          } else if (selectedDay === 'Thursday') {
+            selectedDayBusyness = convertStringToArray(item.busyness_thursday);
+          } else if (selectedDay === 'Friday') {
+            selectedDayBusyness = convertStringToArray(item.busyness_friday);
+          } else if (selectedDay === 'Saturday') {
+            selectedDayBusyness = convertStringToArray(item.busyness_saturday);
+          } else if (selectedDay === 'Sunday') {
+            selectedDayBusyness = convertStringToArray(item.busyness_sunday);
+          }
+          
+          setDailyBusyness(selectedDayBusyness)
+      }
+      else if(savedPlace === marker.title &&item.busyness_monday == null){
+        setMondayLevel(null)
+        setTuesdayLevel(null)
+        setWednesdayLevel(null)
+        setThursdayLevel(null)
+        setFridayLevel(null)
+        setSaturdayLevel(null)
+        setSundayLevel(null)
+    
+        const arrayOfNulls = new Array(24).fill(null);
+        setDailyBusyness(arrayOfNulls)
+      }
+      
+  }
+  }
+  
 
   // Check if the place is in the saved places
   const isSaved = savedPlaces.some(savedPlace => savedPlace.saved_place === marker.title);
