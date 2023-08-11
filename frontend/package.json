@@ -58,6 +58,7 @@
     ]
   },
   "devDependencies": {
+    "@testing-library/react": "^14.0.0",
     "http-proxy-middleware": "^2.0.3"
   }
 }
