@@ -967,12 +967,62 @@ const handleMarkerClick = async (marker) => {
   setSelectedMarker(marker);
   setDrawerVisible(true);
 
+  console.log(marker)
+
   if (marker.isBestTime) {
       setDrawerTitle(marker.title);
       setDrawerAddress(marker.address);
       setDrawerOpening(marker.opening_hours); 
       setDrawerRating(marker.rating);
       setBestTimeUsed(true);
+  }
+
+  if(marker.busyness && marker.busyness["Monday"] != null){
+    //Set graph data for top 20 here
+    setMondayLevel(calculateAverageNonZeroBusyness(convertStringToArray(marker.busyness["Monday"])))
+    setTuesdayLevel(calculateAverageNonZeroBusyness(convertStringToArray(marker.busyness["Tuesday"])))
+    setWednesdayLevel(calculateAverageNonZeroBusyness(convertStringToArray(marker.busyness["Wednesday"])))
+    setThursdayLevel(calculateAverageNonZeroBusyness(convertStringToArray(marker.busyness["Thursday"])))
+    setFridayLevel(calculateAverageNonZeroBusyness(convertStringToArray(marker.busyness["Friday"])))
+    setSaturdayLevel(calculateAverageNonZeroBusyness(convertStringToArray(marker.busyness["Saturday"])))
+    setSundayLevel(calculateAverageNonZeroBusyness(convertStringToArray(marker.busyness["Sunday"])))
+
+    let selectedDay = (getDay(date.format('DD'), date.format('MM'), date.format('YYYY')))
+
+
+      let selectedDayBusyness;
+          
+          if (selectedDay === 'Monday') {
+            selectedDayBusyness = convertStringToArray(marker.busyness["Monday"]);
+          } else if (selectedDay === 'Tuesday') {
+            selectedDayBusyness = convertStringToArray(marker.busyness["Tuesday"]);
+          } else if (selectedDay=== 'Wednesday') {
+            selectedDayBusyness = convertStringToArray(marker.busyness["Wednesday"]);
+          } else if (selectedDay === 'Thursday') {
+            selectedDayBusyness = convertStringToArray(marker.busyness["Thursday"]);
+          } else if (selectedDay === 'Friday') {
+            selectedDayBusyness = convertStringToArray(marker.busyness["Friday"]);
+          } else if (selectedDay === 'Saturday') {
+            selectedDayBusyness = convertStringToArray(marker.busyness["Saturday"]);
+          } else if (selectedDay === 'Sunday') {
+            selectedDayBusyness = convertStringToArray(marker.busyness["Sunday"]);
+          }
+          
+          setDailyBusyness(selectedDayBusyness)
+  }
+
+  else if(marker.busyness && marker.busyness["Monday"] == null){
+    setMondayLevel(null)
+    setTuesdayLevel(null)
+    setWednesdayLevel(null)
+    setThursdayLevel(null)
+    setFridayLevel(null)
+    setSaturdayLevel(null)
+    setSundayLevel(null)
+
+    const arrayOfNulls = new Array(24).fill(null);
+    setDailyBusyness(arrayOfNulls)
+
   }
 
   // Check if the place is in the saved places
@@ -2769,7 +2819,9 @@ const handleBackToDetails = () => {
 
         {/* Placeholder for Busyness content */}
         <div style={{ flexGrow: 1, padding: "5px", display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
-          Content Goes Here
+        <WeeklyChart data={weeklyChartData}></WeeklyChart>
+        <br></br>
+        <DailyChart data={hourlyChartData}></DailyChart>
         </div>
 
         <Button
