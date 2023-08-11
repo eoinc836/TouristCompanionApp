@@ -33,7 +33,7 @@ const Home = () => {
         <div className="carousel-inner">
           <div className={`carousel-item ${activeCarouselItem === 0 ? 'active' : ''}`}>
             <img
-              src={require("../../assets/manhattan5.jpg")}
+              src={require("../../assets/manhattan2.jpg")}
               className="d-block mx-auto"
                style={{ maxWidth: "100%", maxHeight: "100%", height: "75vh" }}
               alt="Slide 1"
@@ -61,7 +61,7 @@ const Home = () => {
           </div>
           <div className={`carousel-item ${activeCarouselItem === 2 ? 'active' : ''}`}>
             <img
-              src={require("../../assets/manhattan6.jpg")}
+              src={require("../../assets/manhattan3.jpg")}
               className="d-block mx-auto"
                style={{ maxWidth: "100%", maxHeight: "100%", height: "75vh" }}
               alt="Slide 3"

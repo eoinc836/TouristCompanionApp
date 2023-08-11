@@ -1,8 +1,8 @@
 import React, { useEffect, useState, useRef, useCallback } from "react";
-import { GoogleMap, Marker, InfoWindow, DirectionsService, DirectionsRenderer } from "@react-google-maps/api";
+import { GoogleMap, Marker, InfoWindow, DirectionsRenderer } from "@react-google-maps/api";
 import { useLoadScript } from "@react-google-maps/api";
-import { Tabs, Switch, Button,Rate,  TreeSelect, DatePicker, Select, Tooltip, Radio, Checkbox, Spin, Form, TimePicker, Collapse, List, Space, Typography, Timeline} from "antd";
-import { Sidebar, Menu, MenuItem, SubMenu } from 'react-pro-sidebar';
+import { Tabs, Switch, Button,Rate,  TreeSelect, DatePicker, Select, Tooltip, Radio, Form, TimePicker, Typography, Timeline} from "antd";
+import { Sidebar, Menu, MenuItem } from 'react-pro-sidebar';
 import axios from "axios";
 import { Card } from "react-bootstrap";
 import { Autocomplete } from "@react-google-maps/api";
@@ -17,14 +17,12 @@ import Drawer from 'react-modern-drawer'
 //import styles 
 import 'react-modern-drawer/dist/index.css'
 import WeatherForecast from './WeatherForecast';
-import { forEach } from "vega-lite/build/src/encoding";
 import Joyride from "react-joyride";
 import steps from "../../components/Tour";
 
 
 const { Option } = Select;
 const { TabPane } = Tabs;
-const { Text, Title } = Typography;
 
 function calculateAverageNonZeroBusyness(arr) {
   let sum = 0;
@@ -1882,7 +1880,7 @@ const handleBackToDetails = () => {
                                 >
                                   <h5>Welcome to BusyBuddy!</h5>
                                   <p> Let's get started!</p>
-                                  <p>Visualize Manhattan's busyness by choosing a time & date.</p>
+                                  <p>Visualize the busyness of Manhattan zones choosing a time & date.</p>
                                   <Button
                                     type="primary"
                                     onClick={handleNextForBusynessPrediction}
@@ -2667,7 +2665,7 @@ const handleBackToDetails = () => {
                                 boxShadow: "0px 0px 10px rgba(0, 0, 0, 0.2)",
                                 border: "1px solid rgba(0, 0, 0, 0.1)",
                                 fontFamily: "Arial, sans-serif",
-                                height: "30%",
+                                height: "auto",
                               }}
 
                 >

@@ -13,8 +13,7 @@ const DailyChart = ({ data }) => {
   const hasRandomValues = formattedData.some(entry => entry.IsRandom);
 
   const spec = {
-    // Vega-Lite specification goes here
-    // You can define your visualization here and use the "data" prop as the data source
+    // we define our visualization here and use the "data" prop as the data source
     mark: 'bar',
     width: 170,
     encoding: {

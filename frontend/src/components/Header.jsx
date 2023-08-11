@@ -9,17 +9,14 @@ const HeaderContainer = styled.header`
 `;
 
 export default function Header({ darkMode, onToggle }) {
-  //console.log("dark mode in header is: ", darkMode);
   const navigate = useNavigate();
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const location = useLocation();
-  //isLoggedIn = new URLSearchParams(location.search).get("loggedIn");
   const [username, setUsername] = useState("");
 
 
   const accessToken = sessionStorage.getItem("accessToken");
   const isLoggedInBool = !!accessToken; // Set to true if accessToken exists, otherwise false
-  //console.log('is logged in value in header file: ', isLoggedInBool);
 
   useEffect(() => {
     const storedUsername = sessionStorage.getItem("username");

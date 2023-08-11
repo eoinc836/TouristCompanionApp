@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import axios from 'axios';
 import "./Forgotpassword.scss";
-import { Link, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 
 function PasswordReset() {
   const [email, setEmail] = useState('');
