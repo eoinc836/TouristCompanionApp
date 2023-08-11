@@ -464,7 +464,7 @@ const Map = () => {
         lng: selectedMarker.position.lng
       };
 
-      fetch("http://localhost:8000/api/saved_place", {
+      fetch("http://137.43.49.75/api/saved_place", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -486,7 +486,7 @@ const Map = () => {
         saved_place: selectedMarker.title,
       };
 
-      fetch("http://localhost:8000/api/delete_saved_place", {
+      fetch("http://137.43.49.75/api/delete_saved_place", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -516,7 +516,7 @@ const Map = () => {
     console.log(`Fetching saved places for user: ${storedUsername}`);
 
     const data = { username: storedUsername };
-    fetch("http://localhost:8000/api/get_saved_places", {
+    fetch("http://137.43.49.75/api/get_saved_places", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -899,7 +899,7 @@ const Map = () => {
   }, [busynessLevels, attractionTypes, date]);
 
   const fetchRating = async (venue_name, venue_address) => {
-    const response = await fetch(`http://localhost:8000/api/fetch_rating?venue_name=${venue_name}&venue_address=${venue_address}`);
+    const response = await fetch(`http://137.43.49.75/api/fetch_rating?venue_name=${venue_name}&venue_address=${venue_address}`);
     if (response.ok) {
       const data = await response.json();
       return data.rating;
@@ -912,7 +912,7 @@ const Map = () => {
 
   const fetchPlacePhoto = async (lat, lng) => {
     console.log(`Calling API with lat: ${lat}, lng: ${lng}`);
-    const response = await fetch(`http://localhost:8000/api/get_place_photo?lat=${lat}&lng=${lng}`);
+    const response = await fetch(`http://137.43.49.75/api/get_place_photo?lat=${lat}&lng=${lng}`);
     if (response.ok) {
       const data = await response.json();
       console.log("API Response:", data);
@@ -928,7 +928,7 @@ const Map = () => {
 
   const fetchPlaceDescription = async (lat, lng) => {
     console.log(`Calling API with lat: ${lat}, lng: ${lng}`);
-    const response = await fetch(`http://localhost:8000/api/get_place_description?lat=${lat}&lng=${lng}`);
+    const response = await fetch(`http://137.43.49.75/api/get_place_description?lat=${lat}&lng=${lng}`);
     if (response.ok) {
       const data = await response.json();
       console.log("API Response:", data);
@@ -1262,7 +1262,7 @@ const Map = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await fetch('http://localhost:8000/api/geoJson');
+        const response = await fetch('http://137.43.49.75/api/geoJson');
         const data = await response.json();
 
         // Update the state with the fetched data
@@ -1363,7 +1363,7 @@ const Map = () => {
       const dayOfMonth = date.format('DD');
 
 
-      const url = `http://localhost:8000/api/predict?hour=${hour}&month=${month}&day_of_month=${dayOfMonth}`;
+      const url = `http://137.43.49.75/api/predict?hour=${hour}&month=${month}&day_of_month=${dayOfMonth}`;
 
       axios
         .get(url)
@@ -1474,7 +1474,7 @@ const Map = () => {
 
     const fetchData = (queryParamsFilter) => {
       setLoading(true);
-      axios.get(`http://localhost:8000/api/get_venues${queryParamsFilter}`)
+      axios.get(`http://137.43.49.75/api/get_venues${queryParamsFilter}`)
         .then((response) => {
           console.log(response.data);
           if (Object.keys(response.data).length === 0) {
@@ -1614,7 +1614,7 @@ const Map = () => {
       }
       const queryParams = `?venue_name=${place.name}&venue_address=${place.formatted_address}&venue_rating=${place.rating}`;
 
-      axios.get(`http://localhost:8000/api/get_forecast${queryParams}`)
+      axios.get(`http://137.43.49.75/api/get_forecast${queryParams}`)
         .then((response) => {
           console.log('API Response:', response.data);
 

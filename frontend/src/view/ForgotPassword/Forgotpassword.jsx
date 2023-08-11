@@ -16,7 +16,7 @@ function PasswordReset() {
     e.preventDefault();
     try {
       if (newPassword === confirmNewPassword) {
-        const response = await axios.post('http://localhost:8000/api/reset_password', {
+        const response = await axios.post('http://137.43.49.75/api/reset_password', {
           email,
           username,
           new_password: newPassword,

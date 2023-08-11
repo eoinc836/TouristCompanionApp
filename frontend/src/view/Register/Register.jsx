@@ -33,7 +33,7 @@ const App = () => {
   const onFinish = (values) => {
     console.log("Received values of form: ", values);
     const csrftoken = getCookie("csrftoken");
-    fetch("http://localhost:8000/api/register", {
+    fetch("http://137.43.49.75/api/register", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",

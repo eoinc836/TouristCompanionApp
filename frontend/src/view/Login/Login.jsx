@@ -25,7 +25,7 @@ const Login = () => {
       };
 
       const csrftoken = getCookie('csrftoken');
-      const response = await axios.post('http://localhost:8000/api/login', loginData, {
+      const response = await axios.post('http://137.43.49.75/api/login', loginData, {
         headers: {
           'Content-Type': 'application/json',
           'X-CSRFToken': csrftoken,
