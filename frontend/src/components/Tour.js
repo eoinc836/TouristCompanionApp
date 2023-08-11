@@ -21,7 +21,7 @@ const steps = [
     },
     {
         target: "#besttime",
-        content: "Explore Manhattan using this feature! Find out your favorite venue's busyness, or filter venues based on attraction type, proximity, busyness, and more!",
+        content: "Explore Manhattan using this feature! Find out insights about your favorite venue, or filter venues based on attraction type, proximity, busyness, and more!",
     },
     {
         target: "#itinerary",

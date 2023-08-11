@@ -58,8 +58,7 @@ const TopAttractions = () => {
             </div>
            <div className="col-md-6 mb-4">
     <div className="section info-text">  {/* Added the info-text class here */}
-    <br></br>
-    <br></br>
+    
         <h2>Things to Know Before Traveling</h2>
         <ul className="custom-list">
     <li>Up to 800 languages are spoken in New York City, making it the most linguistically diverse city in the world.</li>
@@ -70,11 +69,7 @@ const TopAttractions = () => {
     <li>Large backpacks and bags may be subject to security checks at popular attractions, museums, and stadiums. It's recommended to travel with smaller bags or check specific rules for each venue before visiting.</li>
     <li>It is illegal to drink alcoholic beverages in public places, such as streets, parks, and subways. </li>
     <li>New York has the largest US national park outside of Alaska.</li>
-    <li>Jaywalking, crossing the street outside designated crosswalks or against traffic signals, is illegal in New York City. Always use marked crosswalks and obey traffic signals for your safety.</li>
-    <br></br>
-    <br></br>
-    <br></br>
-    <br></br>
+    <li>If you're aiming to explore numerous attractions in NYC while also saving money, exploring options like the NYC Sightseeing Pass, NYC CityPASS, and GoCity PASS might be beneficial.</li>
     
     </ul>
   </div>
@@ -104,7 +99,7 @@ const TopAttractions = () => {
                     </div>
                     <div className="card-body">
                         <p className="card-text">
-                        The Statue of Liberty, one of New York's most famous landmarks, was a gift from France. On October 28, 1886, it was dedicated as a symbol of democracy and freedom.
+                        The Statue of Liberty, one of New York's most famous landmarks, was a gift from France. On October 28, 1886, it was dedicated as a symbol of democracy and freedom. 
 
                         </p>
                     </div>
@@ -118,7 +113,7 @@ const TopAttractions = () => {
                     </div>
                     <div className="card-body">
                         <p className="card-text">
-                        The High Line is a remarkable elevated park on Manhattan's West Side. It has a picturesque walking trail with flora, art, and city views. It's popular among locals and tourists.
+                        On the West Side of Manhattan, there lies a magnificent elevated park called The High Line. It offers a serene escape above the bustling streets of Manhattan, inviting visitors to immerse themselves in a tranquil oasis where urban beauty, creativity, and nature seamlessly blend together.
                         </p>
                     </div>
                 </div>
@@ -161,8 +156,7 @@ const TopAttractions = () => {
                     </div>
                     <div className="card-body">
                         <p className="card-text">
-                        Broadway is known for its lively theater culture. It has many theaters showing musicals, plays, and performances. Broadway shows attract theater
-                            enthusiasts from around the world.
+                        Broadway is renowned for its vibrant and bustling theater culture. The iconic district is home to numerous theaters that host an array of captivating musicals, gripping plays, and mesmerizing live performances. The allure of Broadway's theatrical productions, drawing theater enthusiasts from every corner of the globe.
                         </p>
                     </div>
                 </div>
