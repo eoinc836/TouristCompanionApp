@@ -13,25 +13,30 @@
   margin-top: 5rem;
 }
 
-/* Add this CSS in your Home.scss file or your preferred CSS file */
+.chatbot-container {
+  position: fixed;
+  top: 650px;
+  transform: translate(0, 0);
+  right: 5%;
+  z-index: 1001;
+}
 
 .transparent-button {
-  background-color: transparent;
-  border: 2px solid #000; /* Dark black border */
-  color: #000; /* Black text color */
-  padding: 10px 20px;
+  background-color: white;
+  border: 2px solid #45656C;
+  color: #45656C ;
+  padding: 5px 10px;
   font-size: 16px;
   cursor: pointer;
+  border-radius: 10px;
   transition: background-color 0.3s, color 0.3s, border-color 0.3s;
 }
 
 .transparent-button:hover {
-  background-color: #000; /* Dark black background on hover */
-  color: #fff; /* White text color on hover */
-  border-color: #000; /* Dark black border color on hover */
+  background-color: #45656C; 
+  color: #fff; 
+  border-color: #45656C;
 }
-
-
 
 .featurette-divider {
   margin: 5rem 0;
@@ -56,4 +61,35 @@
   }
 
 
+}
+
+
+/* Media Query for Small Screens */
+@media (max-width: 767px) {
+  .container.marketing {
+    margin-top: 2rem; /* Adjust as needed for spacing */
+  }
+
+  .chatbot-container {
+    position: static;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-top: 1rem; /* Adjust as needed for spacing */
+    z-index: 1; /* Bring chatbot container to the front */
+    background-color: rgba(255, 255, 255, 0.95);
+    padding: 10px;
+    transform: translate(0, 0);
+    border-radius: 5px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.8);
+  }
+
+  .carousel-inner {
+    max-height: 50vh; /* Adjust as needed for image size */
+  }
+
+  .carousel-control-prev,
+  .carousel-control-next {
+    display: none; /* Hide carousel controls for small screens */
+  }
 }

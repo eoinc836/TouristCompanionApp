@@ -1843,21 +1843,25 @@ const handleBackToDetails = () => {
 
 
           {showTimeConfig && showAnotherContent && !menuCollapse && (
-            <div className="time-configuration" style={{ padding: "15px" }}>
-              {/* Display a heading for the time configuration */}
-              <DatePicker
-                value={date} // Set the selected date for the DatePicker
-                onChange={handleDateChange} // Handle the date change event with the specified function
-                onOk={handleApiRequest} // Handle the "OK" button click event with the specified function
-                showTime={{ format: format }} // Display time selector with the specified time format
-                format={`YYYY-MM-DD ${format}`} // Format for displaying the date and time in the DatePicker
-                style={{
-                  width: "100%",
-                  borderRadius: "5px",
-                }} // Set the width of the DatePicker
-                    placeholder="Select a date to visit"
-              />
-            </div>
+           <div className="time-configuration" style={{ padding: "15px" }}>
+             {/* Display a heading for the time configuration */}
+             <DatePicker
+               value={date}
+               onChange={handleDateChange}
+               onOk={handleApiRequest}
+               showTime={{ format: format }}
+               format={`YYYY-MM-DD ${format}`}
+               style={{
+                 width: "100%",
+                 borderRadius: "5px",
+                 backgroundColor: " #45656C", // Change the background color
+                 color: "#DCD7C9", // Change the font color
+                 border: "1px solid #ccc", // Add border
+               }}
+               placeholder="Select a date to visit"
+             />
+           </div>
+
           )}
           <MenuItem
             active={true}
@@ -1949,20 +1953,24 @@ const handleBackToDetails = () => {
                           value={destination}
                           onChange={handleDestinationChange}
                           placeholder="Enter your destination"
+                           style={{
+                                    backgroundColor: "#45656C",
+                                    color: "#DCD7C9",
+                                  }}
                         />
                       </Autocomplete>
                     )}
                   </div>
                   <div
                     className="button-container"
-                    style={{ margin: "10px", marginLeft: "20px" }}
+                    style={{ display: "flex", justifyContent: "center" }}
                   >
                     <Button
                       type="primary"
                       onClick={getUserGeoLocation}
                       className="button geo-button"
                       size="small"
-                      style={{ backgroundColor: "#45656C", color: "#FFFFFF" }}
+                      style={{ backgroundColor: "#45656C", color: "#DCD7C9" }}
                     >
                       Current Location
                     </Button>
@@ -2034,7 +2042,7 @@ const handleBackToDetails = () => {
                         onClick={handleSearch}
                         className="button search-button"
                         size="small"
-                        style={{ backgroundColor: "#45656C", color: "#FFFFFF" }}
+                        style={{ backgroundColor: "#45656C", color: "#DCD7C9" }}
                         loading={loading}
                       >
                         Search
@@ -2226,9 +2234,9 @@ const handleBackToDetails = () => {
                     valuePropName="checked"
                   >
                       <Switch
-                          checkedChildren={<span style={{ fontSize: '16px' }}>Display Route</span>}
-                          unCheckedChildren={<span style={{ fontSize: '16px' }}>Hide Route</span>}
-                          style={{ width: "150px", height: "40px" }}
+                          checkedChildren={<span style={{ fontSize: '16px', color: '#DCD7C9' }}>Display Route</span>}
+                          unCheckedChildren={<span style={{ fontSize: '16px' , color: '#DCD7C9'}}>Hide Route</span>}
+                          style={{ width: "150px", height: "40px" , backgroundColor: '#45656C', color: '#DCD7C9' }}
                           onChange={(checked) => {
                               if (form.getFieldValue('markers') === 'top20') {
                                   setDisplayRoute(checked);
@@ -2242,25 +2250,25 @@ const handleBackToDetails = () => {
                       />
                   </Form.Item>
                    <Form.Item style={{ margin: "10px", display: "flex", justifyContent: "center" }}>
-                     <Button type="primary" htmlType="submit" style={{ backgroundColor: "#45656C", color: "#FFFFFF" }}>
+                     <Button type="primary" htmlType="submit" style={{ backgroundColor: "#45656C", color: "#DCD7C9" }}>
                        Generate Itinerary
                      </Button>
                    </Form.Item>
                  </Form>
                )}
-               <Button
-                     onClick={() => setIsItineraryView(!isItineraryView)}
-                     style={{
-                       marginBottom: '10px',
-                       marginLeft: '40px',
-                       backgroundColor: "#45656C",
-                       color: "#FFFFFF",
-                       display: "flex",
-                       justifyContent: "center"
-                     }}
-                   >
-                     {isItineraryView ? "Go to Itinerary Form" : "Go to Itinerary"}
-                   </Button>
+              <div style={{ display: 'flex', justifyContent: 'center' }}>
+                <Button
+                  onClick={() => setIsItineraryView(!isItineraryView)}
+                  style={{
+                    marginBottom: '10px',
+                    backgroundColor: "#45656C",
+                    color: "#DCD7C9",
+                    width: "150px"
+                  }}
+                >
+                  {isItineraryView ? "Go to Itinerary Form" : "Go to Itinerary"}
+                </Button>
+              </div>
 
              </div>
           }

@@ -14,6 +14,22 @@ color: #DCD7C9;
 .anticon {
 color: #DCD7C9;
 }
+.custom-search-bar input::placeholder {
+  color: #DCD7C9;
+}
+.ant-select:not(.ant-select-customize-input) .ant-select-selector {
+    background-color: #2b3345;
+      color: #DCD7C9;
+      }
+.ant-picker-range{
+background-color: #2b3345;
+      color: #DCD7C9;
+}
+.ant-form-item-control-input-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
 .sidebar {
   width: 300px;
   height: calc(100vh - 100px); 

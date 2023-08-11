@@ -5,18 +5,34 @@ import ZapierEmbed from './ZapierEmbed';
 
 const Home = () => {
   const [isChatbotOpen, setIsChatbotOpen] = useState(false);
+  const [activeCarouselItem, setActiveCarouselItem] = useState(0);
 
   const toggleChatbot = () => {
     setIsChatbotOpen(prevState => !prevState);
   };
 
+  const nextCarouselItem = () => {
+    setActiveCarouselItem((prevItem) => (prevItem + 1) % totalCarouselItems);
+  };
+
+  const totalCarouselItems = 3;
+
   return (
     <div className="custom-background">
+    <div className={`chatbot-container ${isChatbotOpen ? 'open' : ''}`}>
+                <button onClick={toggleChatbot} className="transparent-button">
+                  <img src={require("../../assets/chatbot.png")} alt="Chatbot" style={{ maxWidth: "30px", maxHeight: "30px" }}
+                    title="Ask Me Anything About New York"
+                  />
+
+                </button>
+                {isChatbotOpen && <ZapierEmbed pageId="cll4zocco131960omgcfmdy4qx" />}
+              </div>
       <div className="carousel-container">
-        <div id="myCarousel" className="carousel slide" data-bs-ride="carousel">
+        <div id="myCarousel" className="carousel slide" data-bs-ride="carousel" >
 
         <div className="carousel-inner">
-          <div className="carousel-item active">
+          <div className={`carousel-item ${activeCarouselItem === 0 ? 'active' : ''}`}>
             <img
               src={require("../../assets/manhattan5.jpg")}
               className="d-block mx-auto"
@@ -25,20 +41,12 @@ const Home = () => {
             />
             <div className="container">
             <div className="carousel-caption text-start">
-            <button onClick={toggleChatbot} className="transparent-button">
-  <img src={require("../../assets/chatbot.png")} alt="Chatbot" style={{ maxWidth: "30px", maxHeight: "30px" }} />
-  Ask Me Anything About New York
-</button>
-
-
-              {isChatbotOpen && <ZapierEmbed pageId="cll4zocco131960omgcfmdy4qx" />}
-
                 <h1>Discover the Iconic Beauty of Manhattan</h1>
                 <p>Experience the Pulse of New York City</p>
               </div>
             </div>
           </div>
-          <div className="carousel-item">
+          <div className={`carousel-item ${activeCarouselItem === 1 ? 'active' : ''}`}>
             <img
               src={require("../../assets/manhattan1.jpg")}
               className="d-block mx-auto"
@@ -52,7 +60,7 @@ const Home = () => {
               </div>
             </div>
           </div>
-          <div className="carousel-item">
+          <div className={`carousel-item ${activeCarouselItem === 2 ? 'active' : ''}`}>
             <img
               src={require("../../assets/manhattan6.jpg")}
               className="d-block mx-auto"
@@ -71,7 +79,8 @@ const Home = () => {
           className="carousel-control-prev"
           type="button"
           data-bs-target="#myCarousel"
-          data-bs-slide="prev"
+          //data-bs-slide="prev"
+          onClick={nextCarouselItem}
         >
           <span
             className="carousel-control-prev-icon"
@@ -83,7 +92,8 @@ const Home = () => {
           className="carousel-control-next"
           type="button"
           data-bs-target="#myCarousel"
-          data-bs-slide="next"
+          //data-bs-slide="next"
+          onClick={nextCarouselItem}
         >
           <span
             className="carousel-control-next-icon"
